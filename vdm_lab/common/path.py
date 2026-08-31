@@ -48,9 +48,9 @@ def generate_reference_path(
 
 
 def _generate_right_angle_path(ds=0.5, target_speed=5.5):
-    radius = 12.0
-    straight_in = 26.0
-    straight_out = 34.0
+    radius = 5.0
+    straight_in = 14.0
+    straight_out = 22.0
 
     x_in = np.arange(0.0, straight_in, ds)
     y_in = np.zeros_like(x_in)

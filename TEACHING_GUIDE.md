@@ -19,8 +19,8 @@
 
 路线集中在 `vdm_lab/config/routes.py`，当前包括：
 
-- `double_lane_change`：双移线
-- `right_angle`：直角弯
+- `double_lane_change`：强化双移线，横向位移更大、换道距离更短
+- `right_angle`：强化直角弯，转弯半径更小
 - `s_curve`：S 弯道
 - `mixed_course`：综合路线
 

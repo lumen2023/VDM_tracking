@@ -15,16 +15,18 @@ class RouteSpec:
 ROUTES = {
     "double_lane_change": RouteSpec(
         name="double_lane_change",
-        title="双移线",
+        title="强化双移线",
         kind="spline",
         waypoints=np.array(
             [
                 [0.0, 0.0],
-                [15.0, 0.0],
-                [27.0, 3.5],
-                [42.0, 3.5],
-                [54.0, 0.0],
-                [72.0, 0.0],
+                [6.0, 0.0],
+                [13.0, 6.0],
+                [22.0, 6.0],
+                [29.0, -3.0],
+                [39.0, -3.0],
+                [47.0, 0.0],
+                [58.0, 0.0],
             ]
         ),
         target_speeds={"low": 4.0, "medium": 7.0, "high": 9.0},

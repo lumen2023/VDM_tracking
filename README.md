@@ -91,8 +91,8 @@ python run_experiment.py --algo pp --route double_lane_change --speed-mode high
 
 | 路线 | 低速 low | 中速 medium | 高速 high |
 | --- | ---: | ---: | ---: |
-| `double_lane_change` 双移线 | `4.0 m/s` | `7.0 m/s` | `9.0 m/s` |
-| `right_angle` 直角弯 | `3.5 m/s` | `5.5 m/s` | `7.0 m/s` |
+| `double_lane_change` 强化双移线 | `4.0 m/s` | `7.0 m/s` | `9.0 m/s` |
+| `right_angle` 强化直角弯 | `3.5 m/s` | `5.5 m/s` | `7.0 m/s` |
 | `s_curve` S 弯道 | `4.0 m/s` | `6.5 m/s` | `8.0 m/s` |
 | `mixed_course` 综合路线 | `4.0 m/s` | `7.0 m/s` | `9.0 m/s` |
 
@@ -106,8 +106,8 @@ python run_experiment.py --algo lqr_kinematic --route s_curve --target-speed 5.0
 
 路线集中定义在 `vdm_lab/config/routes.py`。
 
-- `double_lane_change`：双移线，用于观察换道时的横向误差和前视距离影响
-- `right_angle`：直角弯，使用直线加圆弧构造，用于考察大曲率弯道跟踪
+- `double_lane_change`：强化双移线，在较短距离内完成较大横向位移，用于观察换道时的横向误差和前视距离影响
+- `right_angle`：强化直角弯，使用短直线加小半径圆弧构造，用于考察大曲率弯道跟踪
 - `s_curve`：S 弯道，用于考察连续左右转向时的控制平滑性
 - `mixed_course`：综合路线，包含直线、缓弯、S 弯和换道式曲线
 
@@ -309,8 +309,8 @@ Route speed settings:
 
 | Route | low | medium | high |
 | --- | ---: | ---: | ---: |
-| `double_lane_change` | `4.0 m/s` | `7.0 m/s` | `9.0 m/s` |
-| `right_angle` | `3.5 m/s` | `5.5 m/s` | `7.0 m/s` |
+| `double_lane_change` strengthened double lane change | `4.0 m/s` | `7.0 m/s` | `9.0 m/s` |
+| `right_angle` strengthened right-angle turn | `3.5 m/s` | `5.5 m/s` | `7.0 m/s` |
 | `s_curve` | `4.0 m/s` | `6.5 m/s` | `8.0 m/s` |
 | `mixed_course` | `4.0 m/s` | `7.0 m/s` | `9.0 m/s` |
 
@@ -324,8 +324,8 @@ python run_experiment.py --algo lqr_kinematic --route s_curve --target-speed 5.0
 
 Routes are defined in `vdm_lab/config/routes.py`.
 
-- `double_lane_change`: lane-change style route for lateral response analysis
-- `right_angle`: straight segment plus circular arc, useful for large-curvature tracking
+- `double_lane_change`: strengthened lane-change route with larger lateral displacement over a shorter distance
+- `right_angle`: strengthened right-angle turn with a short straight segment and a small-radius circular arc
 - `s_curve`: alternating left-right turns for smoothness and stability analysis
 - `mixed_course`: a combined route with straight, gentle curve, S-curve and lane-change parts
 
