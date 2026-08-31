@@ -131,11 +131,19 @@ class LiveRenderer:
         plt.show()
 
     def _capture_frame(self):
+        """Capture current canvas frame safely across Windows/Linux HiDPI."""
         self.fig.canvas.draw()
-        width, height = self.fig.canvas.get_width_height()
-        buffer = np.frombuffer(self.fig.canvas.buffer_rgba(), dtype=np.uint8)
-        rgba = buffer.reshape((height, width, 4))
-        self.frames.append(Image.fromarray(rgba[:, :, :3].copy()))
+
+        rgba = np.asarray(self.fig.canvas.buffer_rgba())
+
+        if rgba.ndim != 3 or rgba.shape[2] != 4:
+            raise RuntimeError(
+                f"Unexpected canvas buffer shape: {rgba.shape}"
+            )
+
+        rgb = np.ascontiguousarray(rgba[:, :, :3])
+
+        self.frames.append(Image.fromarray(rgb))
 
 def save_summary(path, records, output_path, title):
     fig, axes = plt.subplots(2, 2, figsize=(12, 8))
