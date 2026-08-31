@@ -51,7 +51,7 @@ print("numpy", numpy.__version__)
 print("scipy", scipy.__version__)
 print("matplotlib", matplotlib.__version__)
 print("cvxpy", cvxpy.__version__)
-print("pillow", Image.__module__.split(".")[0])
+print("pillow", Image.__version__)
 PY
 ```
 
@@ -269,7 +269,7 @@ print("numpy", numpy.__version__)
 print("scipy", scipy.__version__)
 print("matplotlib", matplotlib.__version__)
 print("cvxpy", cvxpy.__version__)
-print("pillow", Image.__module__.split(".")[0])
+print("pillow", Image.__version__)
 PY
 ```
 
