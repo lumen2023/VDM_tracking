@@ -18,6 +18,8 @@ def generate_reference_path(
 
     if route.kind == "right_angle" and waypoints is None:
         return _generate_right_angle_path(ds=ds, target_speed=target_speed)
+    if route.kind == "circle" and waypoints is None:
+        return _generate_circle_path(ds=ds, target_speed=target_speed)
 
     points = route.waypoints if waypoints is None else np.asarray(waypoints, dtype=float)
     if len(points) < 3:
@@ -72,6 +74,41 @@ def _generate_right_angle_path(ds=0.5, target_speed=5.5):
     y = np.concatenate([y_in, y_arc, y_out])
     yaw = np.concatenate([yaw_in, yaw_arc, yaw_out])
     curvature = np.concatenate([curvature_in, curvature_arc, curvature_out])
+    segment_lengths = np.hypot(np.diff(x), np.diff(y))
+    s = np.concatenate([[0.0], np.cumsum(segment_lengths)])
+    target = _forward_speed_profile(s, target_speed)
+    return Path(x=x, y=y, yaw=yaw, curvature=curvature, s=s, target_speed=target)
+
+
+def _generate_circle_path(ds=0.5, target_speed=3.0):
+    radius = 12.0
+    straight_in = 16.0
+    straight_out = 16.0
+    center_x = straight_in
+    center_y = radius
+
+    x_in = np.arange(0.0, straight_in, ds)
+    y_in = np.zeros_like(x_in)
+    yaw_in = np.zeros_like(x_in)
+    curvature_in = np.zeros_like(x_in)
+
+    num_arc = int(np.ceil(2.0 * np.pi * radius / ds)) + 1
+    theta = np.linspace(-0.5 * np.pi, 1.5 * np.pi, num_arc)
+    x_circle = center_x + radius * np.cos(theta)
+    y_circle = center_y + radius * np.sin(theta)
+    circle_heading = theta + 0.5 * np.pi
+    yaw_circle = np.arctan2(np.sin(circle_heading), np.cos(circle_heading))
+    curvature_circle = np.full_like(theta, 1.0 / radius)
+
+    x_out = np.arange(center_x + ds, center_x + straight_out + ds, ds)
+    y_out = np.zeros_like(x_out)
+    yaw_out = np.zeros_like(x_out)
+    curvature_out = np.zeros_like(x_out)
+
+    x = np.concatenate([x_in, x_circle, x_out])
+    y = np.concatenate([y_in, y_circle, y_out])
+    yaw = np.concatenate([yaw_in, yaw_circle, yaw_out])
+    curvature = np.concatenate([curvature_in, curvature_circle, curvature_out])
     segment_lengths = np.hypot(np.diff(x), np.diff(y))
     s = np.concatenate([[0.0], np.cumsum(segment_lengths)])
     target = _forward_speed_profile(s, target_speed)

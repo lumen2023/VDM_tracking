@@ -16,12 +16,15 @@ def nearest_horizon_reference(state, reference, config):
     base_index = reference.nearest_index
     distance = 0.0
     preview_speed = max(reference.target_speed, 1.0)
+    previous_yaw = state.yaw
     for i in range(horizon + 1):
         if i > 0:
             distance += max(state.v, preview_speed * 0.5) * config.sim.dt
         offset = int(round(distance / config.sim.waypoint_ds))
         index = min(base_index + offset, len(path.x) - 1)
-        z_ref[:, i] = [path.x[index], path.y[index], path.target_speed[index], path.yaw[index]]
+        yaw_ref = previous_yaw + pi_to_pi(path.yaw[index] - previous_yaw)
+        z_ref[:, i] = [path.x[index], path.y[index], path.target_speed[index], yaw_ref]
+        previous_yaw = yaw_ref
     return z_ref
 
 
@@ -33,7 +36,7 @@ def update_kinematic_array(z, acceleration, steer, config):
     next_x = x + v * math.cos(yaw) * dt
     next_y = y + v * math.sin(yaw) * dt
     next_v = clamp(v + acceleration * dt, vehicle.min_speed, vehicle.max_speed)
-    next_yaw = pi_to_pi(yaw + v / vehicle.wheelbase * math.tan(steer) * dt)
+    next_yaw = yaw + v / vehicle.wheelbase * math.tan(steer) * dt
     return np.array([next_x, next_y, next_v, next_yaw])
 
 

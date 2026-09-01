@@ -1,5 +1,4 @@
-import math
-
+from vdm_lab.common.bicycle_model import kinematic_derivatives
 from vdm_lab.common.geometry import clamp, pi_to_pi
 from vdm_lab.common.types import ControlCommand, VehicleConfig, VehicleState
 
@@ -19,9 +18,10 @@ def limit_command(command, vehicle_config):
 
 def update_state(state, command, vehicle_config, dt):
     command = limit_command(command, vehicle_config)
-    next_x = state.x + state.v * math.cos(state.yaw) * dt
-    next_y = state.y + state.v * math.sin(state.yaw) * dt
-    next_yaw = pi_to_pi(state.yaw + state.v / vehicle_config.wheelbase * math.tan(command.steer) * dt)
+    x_dot, y_dot, yaw_rate, _ = kinematic_derivatives(state, command.steer, vehicle_config)
+    next_x = state.x + x_dot * dt
+    next_y = state.y + y_dot * dt
+    next_yaw = pi_to_pi(state.yaw + yaw_rate * dt)
     next_v = clamp(
         state.v + command.acceleration * dt,
         vehicle_config.min_speed,

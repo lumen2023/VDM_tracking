@@ -1,6 +1,7 @@
 import importlib
 import math
 
+from vdm_lab.common.bicycle_model import kinematic_derivatives, normal_acceleration
 from vdm_lab.common.path import generate_reference_path
 from vdm_lab.common.reference import ReferenceTracker, distance_to_goal
 from vdm_lab.common.types import ControlCommand, LabConfig, StepRecord, VehicleState
@@ -48,6 +49,9 @@ def run_simulation(controller_module, config=None, animate=False, gif_path=None)
             config.vehicle,
             title=getattr(controller_module, "NAME", "VDM Lab"),
             gif_path=gif_path,
+            show_history_ghosts=config.sim.show_history_ghosts,
+            ghost_stride=config.sim.history_ghost_stride,
+            ghost_count=config.sim.history_ghost_count,
         )
 
     time = 0.0
@@ -61,6 +65,7 @@ def run_simulation(controller_module, config=None, animate=False, gif_path=None)
         if prediction is not None:
             predictions.append((time, prediction))
 
+        _, _, yaw_rate, beta = kinematic_derivatives(state, command.steer, config.vehicle)
         records.append(
             StepRecord(
                 time=time,
@@ -70,9 +75,13 @@ def run_simulation(controller_module, config=None, animate=False, gif_path=None)
                 speed=state.v,
                 acceleration=command.acceleration,
                 steer=command.steer,
+                beta=beta,
+                yaw_rate=yaw_rate,
                 target_index=reference.nearest_index,
                 lateral_error=reference.lateral_error,
                 heading_error=reference.heading_error,
+                curvature=reference.curvature,
+                normal_accel=normal_acceleration(state.v, reference.curvature),
                 target_speed=reference.target_speed,
             )
         )

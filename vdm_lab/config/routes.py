@@ -53,6 +53,12 @@ ROUTES = {
         ),
         target_speeds={"low": 4.0, "medium": 6.5, "high": 8.0},
     ),
+    "circle": RouteSpec(
+        name="circle",
+        title="圆形路径",
+        kind="circle",
+        target_speeds={"low": 3.0, "medium": 5.0, "high": 7.0},
+    ),
     "mixed_course": RouteSpec(
         name="mixed_course",
         title="综合路线",

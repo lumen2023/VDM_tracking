@@ -43,6 +43,9 @@ def compute_metrics(path, records):
     speeds = np.array([r.speed for r in records], dtype=float)
     steers = np.array([abs(r.steer) for r in records], dtype=float)
     accelerations = np.array([abs(r.acceleration) for r in records], dtype=float)
+    normal_accels = np.array([abs(r.normal_accel) for r in records], dtype=float)
+    betas = np.array([abs(r.beta) for r in records], dtype=float)
+    yaw_rates = np.array([abs(r.yaw_rate) for r in records], dtype=float)
     last = records[-1]
     finish_error = float(np.hypot(last.x - path.x[-1], last.y - path.y[-1]))
 
@@ -53,6 +56,9 @@ def compute_metrics(path, records):
         "mean_heading_error_rad": float(heading_errors.mean()),
         "max_steer_rad": float(steers.max()),
         "max_acceleration_mps2": float(accelerations.max()),
+        "max_normal_acceleration_mps2": float(normal_accels.max()),
+        "max_side_slip_beta_rad": float(betas.max()),
+        "max_yaw_rate_radps": float(yaw_rates.max()),
         "min_speed_mps": float(speeds.min()),
         "steps": len(records),
         "reached_goal": bool(finish_error < 1.5 and last.speed < 0.5),

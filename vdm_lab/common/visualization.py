@@ -55,9 +55,9 @@ def _wheel_polygon(cx, cy, yaw, vehicle):
     return _rotate(wheel, yaw) + np.array([cx, cy])
 
 
-def draw_vehicle(ax, state, command, vehicle):
+def draw_vehicle(ax, state, command, vehicle, color="#111827", alpha=1.0, linewidth=1.6, show_steer=True):
     body = _vehicle_polygon(state, vehicle)
-    ax.plot(body[:, 0], body[:, 1], color="#111827", linewidth=1.6)
+    ax.plot(body[:, 0], body[:, 1], color=color, linewidth=linewidth, alpha=alpha)
     axle_points = [
         (0.0, vehicle.wheel_track / 2.0, state.yaw),
         (0.0, -vehicle.wheel_track / 2.0, state.yaw),
@@ -68,11 +68,13 @@ def draw_vehicle(ax, state, command, vehicle):
         wx = state.x + local_x * math.cos(state.yaw) - local_y * math.sin(state.yaw)
         wy = state.y + local_x * math.sin(state.yaw) + local_y * math.cos(state.yaw)
         wheel = _wheel_polygon(wx, wy, wheel_yaw, vehicle)
-        ax.plot(wheel[:, 0], wheel[:, 1], color="#111827", linewidth=1.2)
+        ax.plot(wheel[:, 0], wheel[:, 1], color=color, linewidth=max(0.8, linewidth * 0.75), alpha=alpha)
 
     arrow_len = vehicle.wheelbase * 0.7
     ax.arrow(state.x, state.y, arrow_len * math.cos(state.yaw), arrow_len * math.sin(state.yaw),
-             color="#111827", width=0.04, head_width=0.45, length_includes_head=True)
+             color=color, width=0.04, head_width=0.45, length_includes_head=True, alpha=alpha)
+    if not show_steer:
+        return
     front_x = state.x + vehicle.wheelbase * math.cos(state.yaw)
     front_y = state.y + vehicle.wheelbase * math.sin(state.yaw)
     steer_yaw = state.yaw + command.steer
@@ -80,13 +82,46 @@ def draw_vehicle(ax, state, command, vehicle):
              color="#dc2626", width=0.025, head_width=0.35, length_includes_head=True)
 
 
+def draw_history_ghosts(ax, records, vehicle, stride=12, count=0):
+    if not records or stride <= 0:
+        return
+
+    history = records[:-1]
+    if not history:
+        return
+
+    sampled = history[::stride]
+    if count > 0:
+        sampled = sampled[-count:]
+    if not sampled:
+        return
+
+    for i, record in enumerate(sampled):
+        alpha = 0.08 + 0.18 * (i + 1) / len(sampled)
+        state = _state_from_record(record)
+        command = ControlCommand(acceleration=record.acceleration, steer=record.steer)
+        draw_vehicle(
+            ax,
+            state,
+            command,
+            vehicle,
+            color="#64748b",
+            alpha=alpha,
+            linewidth=1.0,
+            show_steer=False,
+        )
+
+
 class LiveRenderer:
-    def __init__(self, path, vehicle, title, gif_path=None, fps=12):
+    def __init__(self, path, vehicle, title, gif_path=None, fps=12, show_history_ghosts=True, ghost_stride=12, ghost_count=0):
         self.path = path
         self.vehicle = vehicle
         self.title = title
         self.gif_path = gif_path
         self.fps = fps
+        self.show_history_ghosts = show_history_ghosts
+        self.ghost_stride = ghost_stride
+        self.ghost_count = ghost_count
         self.frames = []
         self.x_margin = max(6.0, 0.08 * (path.x.max() - path.x.min()))
         self.y_margin = max(6.0, 0.18 * (path.y.max() - path.y.min()))
@@ -105,6 +140,8 @@ class LiveRenderer:
         )
         if prediction is not None:
             self.ax.plot(prediction[0], prediction[1], color="#9333ea", marker=".", linewidth=1.2, label="MPC prediction")
+        if self.show_history_ghosts:
+            draw_history_ghosts(self.ax, records, self.vehicle, self.ghost_stride, self.ghost_count)
         draw_vehicle(self.ax, state, command, self.vehicle)
         self.ax.set_xlim(self.path.x.min() - self.x_margin, self.path.x.max() + self.x_margin)
         self.ax.set_ylim(self.path.y.min() - self.y_margin, self.path.y.max() + self.y_margin)
@@ -170,9 +207,10 @@ def save_summary(path, records, output_path, title):
     axes[1, 0].grid(True, alpha=0.3)
     axes[1, 0].legend()
 
-    axes[1, 1].plot(times, [r.steer for r in records], color="#9333ea", label="steer")
-    axes[1, 1].plot(times, [r.acceleration for r in records], color="#ea580c", label="acceleration")
-    axes[1, 1].set_title("Control input")
+    axes[1, 1].plot(times, [r.steer for r in records], color="#9333ea", label="steer [rad]")
+    axes[1, 1].plot(times, [r.beta for r in records], color="#0f766e", label="beta [rad]")
+    axes[1, 1].plot(times, [r.normal_accel for r in records], color="#ea580c", label="normal accel [m/s^2]")
+    axes[1, 1].set_title("Control and bicycle-model terms")
     axes[1, 1].set_xlabel("time [s]")
     axes[1, 1].grid(True, alpha=0.3)
     axes[1, 1].legend()
@@ -184,7 +222,19 @@ def save_summary(path, records, output_path, title):
     return output_path
 
 
-def save_gif(path, records, predictions, output_path, title, vehicle, fps=12, max_frames=180):
+def save_gif(
+    path,
+    records,
+    predictions,
+    output_path,
+    title,
+    vehicle,
+    fps=12,
+    max_frames=180,
+    show_history_ghosts=True,
+    ghost_stride=12,
+    ghost_count=0,
+):
     if not records:
         raise ValueError("没有仿真记录，无法生成 GIF。")
 
@@ -212,6 +262,8 @@ def save_gif(path, records, predictions, output_path, title, vehicle, fps=12, ma
         if prediction is not None:
             ax.plot(prediction[0], prediction[1], color="#9333ea", marker=".", linewidth=1.2, label="MPC prediction")
 
+        if show_history_ghosts:
+            draw_history_ghosts(ax, records[: record_index + 1], vehicle, ghost_stride, ghost_count)
         state = _state_from_record(record)
         command = ControlCommand(acceleration=record.acceleration, steer=record.steer)
         draw_vehicle(ax, state, command, vehicle)

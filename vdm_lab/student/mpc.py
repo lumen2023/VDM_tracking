@@ -8,6 +8,7 @@ NAME = "Linear MPC Student"
 
 def nearest_horizon_reference(state, reference, config):
     # TODO 学生填写 1：从最近点开始，为预测时域 T+1 个点构造 [x, y, v, yaw] 参考轨迹。
+    # 提示：圆形路径会跨越 pi/-pi，参考 yaw 要相对当前航向做连续化处理。
     raise NotImplementedError("请先填写 MPC 的预测时域参考轨迹构造。")
 
 

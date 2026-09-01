@@ -37,6 +37,9 @@ class SimulationConfig:
     waypoint_ds: float = 0.5
     route_name: str = "mixed_course"
     animate: bool = False
+    show_history_ghosts: bool = True
+    history_ghost_stride: int = 12
+    history_ghost_count: int = 0
 
 
 @dataclass
@@ -108,7 +111,11 @@ class StepRecord:
     speed: float
     acceleration: float
     steer: float
+    beta: float
+    yaw_rate: float
     target_index: int
     lateral_error: float
     heading_error: float
+    curvature: float
+    normal_accel: float
     target_speed: float

@@ -27,6 +27,14 @@ def parse_args():
     parser.add_argument("--save-log", action="store_true", help="保存 trajectory.csv 和 metrics.json")
     parser.add_argument("--save-fig", action="store_true", help="保存 summary.png")
     parser.add_argument("--save-gif", action="store_true", help="保存 animation.gif 教学演示动图")
+    parser.add_argument(
+        "--history-ghosts",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="在实时动画和 GIF 中显示历史车辆姿态虚影，默认开启；关闭用 --no-history-ghosts",
+    )
+    parser.add_argument("--ghost-stride", type=int, default=12, help="历史虚影采样间隔，单位为仿真步")
+    parser.add_argument("--ghost-count", type=int, default=0, help="最多显示的历史虚影数量；0 表示从起点开始一直保留")
     return parser.parse_args()
 
 
@@ -39,6 +47,9 @@ def main():
     config = LabConfig(vehicle=make_vehicle_config(args.vehicle))
     config.sim.route_name = args.route
     config.sim.speed_mode = args.speed_mode
+    config.sim.show_history_ghosts = args.history_ghosts
+    config.sim.history_ghost_stride = args.ghost_stride
+    config.sim.history_ghost_count = args.ghost_count
     if args.target_speed is not None:
         config.sim.target_speed = args.target_speed
 
@@ -64,6 +75,9 @@ def main():
             output_dir / "animation.gif",
             getattr(controller, "NAME", args.algo),
             config.vehicle,
+            show_history_ghosts=config.sim.show_history_ghosts,
+            ghost_stride=config.sim.history_ghost_stride,
+            ghost_count=config.sim.history_ghost_count,
         )
 
     print(f"algo={args.algo}, version={args.version}")
