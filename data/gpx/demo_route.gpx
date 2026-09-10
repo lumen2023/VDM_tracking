@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- track-length = 2894 filtered ascend = 0 plain-ascend = 0 cost=0 energy=0.0kwh time=6m 24.46409003620596s -->
+<gpx 
+ xmlns="http://www.topografix.com/GPX/1/1" 
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" 
+ version="1.1" 
+ creator="BRouter-Web 0.18.1">
+ <wpt lat="31.894336720564812" lon="118.7990713119507"><name>from</name><type>from</type></wpt>
+ <wpt lat="31.894865043276383" lon="118.80550861358644"><name>via1</name><type>via</type></wpt>
+ <wpt lat="31.888138138833543" lon="118.80604505538942"><name>via2</name><type>via</type></wpt>
+ <wpt lat="31.88840328329508" lon="118.81132900714876"><name>via3</name><type>via</type></wpt>
+ <wpt lat="31.887961461602504" lon="118.8114255666733"><name>via4</name><type>via</type></wpt>
+ <wpt lat="31.887556091840253" lon="118.81163477897645"><name>via5</name><type>via</type></wpt>
+ <wpt lat="31.887178019125248" lon="118.81192982196808"><name>via6</name><type>via</type></wpt>
+ <wpt lat="31.886799984774424" lon="118.81233751773836"><name>via7</name><type>via</type></wpt>
+ <wpt lat="31.886563118681686" lon="118.81277203559877"><name>via8</name><type>via</type></wpt>
+ <wpt lat="31.88637635603569" lon="118.81325483322145"><name>via9</name><type>via</type></wpt>
+ <wpt lat="31.88628982215309" lon="118.81375372409822"><name>via10</name><type>via</type></wpt>
+ <wpt lat="31.88625793202464" lon="118.81431162357332"><name>via11</name><type>via</type></wpt>
+ <wpt lat="31.886417350243068" lon="118.8151001930237"><name>via12</name><type>via</type></wpt>
+ <wpt lat="31.886626893013823" lon="118.81555616855623"><name>via13</name><type>via</type></wpt>
+ <wpt lat="31.88692295156987" lon="118.81606042385103"><name>via14</name><type>via</type></wpt>
+ <wpt lat="31.887232514122616" lon="118.81640911102296"><name>via15</name><type>via</type></wpt>
+ <wpt lat="31.887597081720983" lon="118.81666123867036"><name>via16</name><type>via</type></wpt>
+ <wpt lat="31.88795233102467" lon="118.81683290004732"><name>via17</name><type>via</type></wpt>
+ <wpt lat="31.888407841909146" lon="118.816956281662"><name>via18</name><type>via</type></wpt>
+ <wpt lat="31.88870317119301" lon="118.81696701049805"><name>via19</name><type>via</type></wpt>
+ <wpt lat="31.888776754369704" lon="118.81835639476778"><name>via20</name><type>via</type></wpt>
+ <wpt lat="31.889514242231364" lon="118.81828665733339"><name>to</name><type>to</type></wpt>
+ <trk>
+  <name>demo_route</name>
+  <trkseg>
+   <trkpt lat="31.894336720564812" lon="118.7990713119507"/>
+   <trkpt lat="31.894865043276383" lon="118.80550861358644"/>
+   <trkpt lat="31.888138138833543" lon="118.80604505538942"/>
+   <trkpt lat="31.88840328329508" lon="118.81132900714876"/>
+   <trkpt lat="31.887961461602504" lon="118.8114255666733"/>
+   <trkpt lat="31.887556091840253" lon="118.81163477897645"/>
+   <trkpt lat="31.887178019125248" lon="118.81192982196808"/>
+   <trkpt lat="31.886799984774424" lon="118.81233751773836"/>
+   <trkpt lat="31.886563118681686" lon="118.81277203559877"/>
+   <trkpt lat="31.88637635603569" lon="118.81325483322145"/>
+   <trkpt lat="31.88628982215309" lon="118.81375372409822"/>
+   <trkpt lat="31.88625793202464" lon="118.81431162357332"/>
+   <trkpt lat="31.886417350243068" lon="118.8151001930237"/>
+   <trkpt lat="31.886626893013823" lon="118.81555616855623"/>
+   <trkpt lat="31.88692295156987" lon="118.81606042385103"/>
+   <trkpt lat="31.887232514122616" lon="118.81640911102296"/>
+   <trkpt lat="31.887597081720983" lon="118.81666123867036"/>
+   <trkpt lat="31.88795233102467" lon="118.81683290004732"/>
+   <trkpt lat="31.888407841909146" lon="118.816956281662"/>
+   <trkpt lat="31.88870317119301" lon="118.81696701049805"/>
+   <trkpt lat="31.888776754369704" lon="118.81835639476778"/>
+   <trkpt lat="31.889514242231364" lon="118.81828665733339"/>
+  </trkseg>
+ </trk>
+</gpx>

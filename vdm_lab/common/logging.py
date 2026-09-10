@@ -24,6 +24,53 @@ def save_records(output_dir, records):
     return csv_path
 
 
+def save_reference_path(output_dir, path):
+    """
+    Save the processed reference path used by the controllers.
+
+    For GPX routes, geographic latitude/longitude are preserved alongside
+    local x/y, making it easy to compare simulation and real GNSS logs later.
+    """
+    csv_path = output_dir / "reference_path.csv"
+
+    lat = getattr(path, "lat", None)
+    lon = getattr(path, "lon", None)
+    elevation = getattr(path, "elevation", None)
+
+    with csv_path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(
+            [
+                "index",
+                "s_m",
+                "x_m",
+                "y_m",
+                "yaw_rad",
+                "curvature_1pm",
+                "target_speed_mps",
+                "lat_deg",
+                "lon_deg",
+                "elevation_m",
+            ]
+        )
+        for i in range(len(path.x)):
+            writer.writerow(
+                [
+                    i,
+                    path.s[i],
+                    path.x[i],
+                    path.y[i],
+                    path.yaw[i],
+                    path.curvature[i],
+                    path.target_speed[i],
+                    "" if lat is None else lat[i],
+                    "" if lon is None else lon[i],
+                    "" if elevation is None else elevation[i],
+                ]
+            )
+    return csv_path
+
+
 def save_predictions(output_dir, predictions):
     if not predictions:
         return None
@@ -33,8 +80,24 @@ def save_predictions(output_dir, predictions):
         writer.writerow(["time", "horizon_index", "x", "y", "v", "yaw"])
         for time, prediction in predictions:
             for i in range(prediction.shape[1]):
-                writer.writerow([time, i, prediction[0, i], prediction[1, i], prediction[2, i], prediction[3, i]])
+                writer.writerow(
+                    [
+                        time,
+                        i,
+                        prediction[0, i],
+                        prediction[1, i],
+                        prediction[2, i],
+                        prediction[3, i],
+                    ]
+                )
     return path
+
+
+def _safe_nanmax(values):
+    values = np.asarray(values, dtype=float)
+    if values.size == 0 or np.all(np.isnan(values)):
+        return float("nan")
+    return float(np.nanmax(values))
 
 
 def compute_metrics(path, records):
@@ -57,8 +120,8 @@ def compute_metrics(path, records):
         "max_steer_rad": float(steers.max()),
         "max_acceleration_mps2": float(accelerations.max()),
         "max_normal_acceleration_mps2": float(normal_accels.max()),
-        "max_side_slip_beta_rad": float(betas.max()),
-        "max_yaw_rate_radps": float(yaw_rates.max()),
+        "max_side_slip_beta_rad": _safe_nanmax(betas),
+        "max_yaw_rate_radps": _safe_nanmax(yaw_rates),
         "min_speed_mps": float(speeds.min()),
         "steps": len(records),
         "reached_goal": bool(finish_error < 1.5 and last.speed < 0.5),

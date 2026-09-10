@@ -41,6 +41,35 @@ class SimulationConfig:
     history_ghost_stride: int = 12
     history_ghost_count: int = 0
 
+    # -------- GPX extension --------
+    # If set, GPX overrides route_name.
+    gpx_file: str | None = None
+    gpx_gap_warning_m: float = 50.0
+    coordinate_origin_lon: float | None = None
+    coordinate_origin_lat: float | None = None
+
+    # Long-route visualization.
+    # auto: small route -> full; long route -> vehicle-following local view
+    # full: always show the complete route
+    # follow: follow vehicle locally and show a whole-route overview inset
+    view_mode: str = "auto"
+    follow_radius: float = 45.0
+
+    # Optional map background for geographic GPX routes.
+    basemap: str = "none"
+    basemap_zoom: int = 16
+    basemap_opacity: float = 0.72
+    basemap_padding_m: float = 100.0
+    basemap_url: str | None = None
+    basemap_file: str | None = None
+    basemap_max_pixels: int = 2200
+    basemap_retries: int = 3
+    basemap_strict: bool = False
+
+    # A 4-km route cannot finish within the original default 90 s.
+    # When GPX is active, automatically extend the time budget if necessary.
+    auto_extend_gpx_time: bool = True
+
 
 @dataclass
 class ControllerConfig:
@@ -90,6 +119,12 @@ class Path:
     curvature: np.ndarray
     s: np.ndarray
     target_speed: np.ndarray
+
+    # Optional geographic data. Existing synthetic routes leave these as None.
+    lat: np.ndarray | None = None
+    lon: np.ndarray | None = None
+    elevation: np.ndarray | None = None
+    source: str = "generated"
 
 
 @dataclass

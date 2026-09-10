@@ -12,12 +12,183 @@
 
 车辆统一只允许前进，速度下限为 `0.0 m/s`。仓库已移除倒车路径、泊车路径、复杂规划器和其他控制算法，学生主要关注“参考路径 -> 误差计算 -> 控制律 -> 车辆状态更新 -> 数据分析”的闭环流程。
 
+在保留上述原有教学功能的基础上，当前版本还支持 BRouter/GPX
+实际路线、在线 OSM 底图、离线 `.npz` 底图包和离线
+OSM GeoJSON 平面场景。新功能只扩展路径输入、车辆后端和可视化层，
+PP/LQR/MPC 控制器接口保持不变。
+
 课程对应材料为 `VehicleDynamicsMobility_01_BicycleModel.pdf`。代码中的自行车模型、曲率、法向加速度和路径跟踪控制均围绕该课件展开；配套题目见 [vdm_lab/tasks/README.md](vdm_lab/tasks/README.md)。
 
 ## 文档分工
 
 - 本 README 是完整部署和运行手册，覆盖环境安装、算法入口、路线库、速度档位、车辆参数、日志、绘图和 GIF 生成。
 - [vdm_lab/tasks/README.md](vdm_lab/tasks/README.md) 是课程任务书，重点连接 PDF 公式、`KMLM.png`、`exp_cm.png`、圆形路径稳态验证和实验报告要求。
+- [vdm_lab/tasks/gpx_geojson_task.md](vdm_lab/tasks/gpx_geojson_task.md) 是 GPX 路线叠加离线 GeoJSON 底图的专项实验，包含 Ubuntu / Windows 兼容命令说明。
+- [vdm_lab/GPX_EXTENSION_README.md](vdm_lab/GPX_EXTENSION_README.md) 详细说明 GPX、地图坐标、离线场景和外部车辆模型扩展。
+
+## 功能总览与快速启动
+
+所有命令都应在仓库根目录执行：
+
+```bash
+cd ~/VDM_tracking
+conda activate vdm-lab
+```
+
+### 跨平台启动：Bash 与 PowerShell
+
+`run_experiment.py` 在 Windows 和 Ubuntu 上使用完全相同的参数接口，
+包括 `--algo`、`--gpx`、`--basemap-file` 和 `--waypoint-ds`；区别只在
+shell 的续行符。Ubuntu Bash 用反斜杠 `\`，Windows PowerShell 用反引号
+`` ` ``（续行符后不能有空格）。不要将带 `\` 的 Bash 多行命令直接粘贴到
+PowerShell。
+
+默认 PP + GPX + 离线 GeoJSON 示例可直接运行：
+
+```bash
+bash scripts/run_pp.sh
+```
+
+```powershell
+.\scripts\run_pp.ps1
+```
+
+如 PowerShell 的执行策略阻止脚本，在仓库根目录运行：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run_pp.ps1
+```
+
+长期使用时，推荐不依赖 shell 续行符的跨平台入口：
+
+```text
+python examples/run_pp_demo.py
+```
+
+| 模式 | 路径来源 | 场景背景 | 是否联网 | 坐标原点 |
+| --- | --- | --- | --- | --- |
+| 原有内置路线 | `--route` | 无 | 否 | 生成路径自身坐标 |
+| GPX 路线 | `--gpx` | 无 | 否 | 默认为 GPX 首点 |
+| GPX + 在线地图 | `--gpx` | `--basemap osm` | 是 | GPX 首点或 `--map-origin` |
+| GPX + NPZ 离线包 | `--gpx` | `--basemap local` | 否 | GPX 首点或 `--map-origin` |
+| GPX + GeoJSON 场景 | `--gpx` | `--basemap geojson` | 否 | 文件名边界中心或 `--map-origin` |
+
+### A. 原有功能：内置路线
+
+原有 PP、运动学 LQR、动力学 LQR、MPC、学生版/答案版、速度档位、
+车辆参数、日志、汇总图和 GIF 功能全部保留。最小启动命令：
+
+```bash
+python run_experiment.py --algo pp --route mixed_course --animate
+```
+
+运行完整答案版并保存结果：
+
+```bash
+python run_experiment.py \
+  --algo lqr_kinematic \
+  --version solution \
+  --route right_angle \
+  --speed-mode low \
+  --save-log --save-fig --save-gif
+```
+
+### B. 新功能：只跟踪 GPX
+
+```bash
+python run_experiment.py \
+  --algo pp \
+  --gpx data/gpx/homework_route_1.gpx \
+  --target-speed 8 \
+  --waypoint-ds 1.0 \
+  --animate
+```
+
+`--gpx` 的优先级高于 `--route`。GPX 默认用首个有效点作为局部
+East/North 米制坐标原点。公里级路线会自动延长仿真时间，也可用
+`--max-time` 手动覆盖。
+
+### C. 推荐新功能：GPX + 当前离线 GeoJSON 场景
+
+仓库中已有：
+
+```text
+data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz
+```
+
+可直接离线运行：
+
+```bash
+python run_experiment.py \
+  --algo pp \
+  --gpx data/gpx/demo_route.gpx \
+  --basemap geojson \
+  --basemap-file 'data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz' \
+  --map-origin 118.8145 31.8885 \
+  --target-speed 8 \
+  --waypoint-ds 1.0 \
+  --animate
+```
+
+对这个文件，`--map-origin` 可省略。程序会从文件名读取西南角
+`(118.792,31.875)` 和东北角 `(118.837,31.902)`，自动计算几何中心
+`(118.8145,31.8885)` 为 `(0,0)`。离线场景会绘制道路、建筑、水系、
+绿地、铁路以及部分公交/信号点。
+
+如需更高或更低清晰度：
+
+```bash
+--basemap-max-pixels 3000
+```
+
+### D. 可选新功能：在线 OSM 或 NPZ 离线包
+
+当网络可以稳定访问 OSM 时：
+
+```bash
+python run_experiment.py \
+  --algo pp \
+  --gpx data/gpx/homework_route_1.gpx \
+  --basemap osm \
+  --basemap-zoom 16 \
+  --animate
+```
+
+当网络不可用时，优先使用上述 GeoJSON，或加载已经生成的
+`.npz` 地图包：
+
+```bash
+python run_experiment.py \
+  --algo pp \
+  --gpx data/gpx/homework_route_1.gpx \
+  --basemap local \
+  --basemap-file data/maps/homework_route_1_z16.npz \
+  --animate
+```
+
+使用 `prepare_offline_basemap.py` 生成 NPZ 的方法、瓦片授权注意事项和
+在线失败重试参数详见
+[GPX 扩展文档](vdm_lab/GPX_EXTENSION_README.md)。
+
+### E. 长路线视角与保存
+
+`--view-mode auto` 对长路线会自动使用车辆跟随视角和全局小窗。
+
+```bash
+--view-mode full
+--view-mode follow --follow-radius 60
+```
+
+保存 GPX 场景实验：
+
+```bash
+python run_experiment.py \
+  --algo pp \
+  --gpx data/gpx/demo_route.gpx \
+  --basemap geojson \
+  --basemap-file 'data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz' \
+  --save-log --save-fig --save-gif
+```
 
 ## 课程模型对应关系
 
@@ -212,11 +383,18 @@ outputs/<时间戳>_<算法>_<路线>_<速度档位>/
 - `summary.png`：轨迹、误差、速度、控制输入汇总图
 - `animation.gif`：路径跟踪过程动图，便于实验报告和课堂展示
 - `mpc_predictions.csv`：MPC 预测轨迹采样，仅 MPC 输出
+- `reference_path.csv`：控制器实际使用的重采样参考路径；GPX 模式同时保存经纬度和高程
+- `gpx_overview.png`：GPX 的局部米制坐标/原始经纬度对照图；启用底图时会显示场景
 
 ## 8. 代码结构
 
 ```text
 run_experiment.py
+prepare_offline_basemap.py  # 从授权 XYZ 服务生成离线 NPZ 地图包
+data/
+  gpx/
+    homework_route_1.gpx
+  planet_118.792,31.875_118.837,31.902.osm.geojson.xz
 vdm_lab/
   config/
     vehicle_params.py  # 车辆参数组
@@ -226,6 +404,10 @@ vdm_lab/
     path.py            # 路径生成和速度曲线
     reference.py       # 最近点、横向误差、航向误差
     simulation.py      # 统一仿真循环
+    gpx.py             # GPX/WGS84 -> 局部 East/North 参考路径
+    basemap.py         # 在线瓦片、NPZ 离线包和底图统一入口
+    vector_map.py      # OSM GeoJSON/GeoJSON.XZ 离线场景渲染
+    vehicle_backend.py # 默认自行车模型/外部车辆模型接口
     vehicle.py         # 仅前进自行车模型
     bicycle_model.py   # PDF 对应的 beta、yaw rate、法向加速度公式
     visualization.py   # 实时绘图、历史姿态虚影、汇总图、GIF 制作
@@ -267,6 +449,42 @@ python -m pip install -r requirements.txt
 
 确认当前环境支持 Matplotlib 图形界面。服务器或远程终端上建议先使用 `--save-fig` 或 `--save-gif` 查看结果。
 
+`unrecognized arguments: --gpx / --waypoint-ds`
+
+请确认在仓库根目录运行当前的 `run_experiment.py`：
+
+```bash
+cd ~/VDM_tracking
+python run_experiment.py --help
+```
+
+`Connection reset by peer` 或 OSM 瓦片空白
+
+这是在线地图连接问题，不影响轨迹跟踪算法。当前项目已有离线
+GeoJSON，建议改用：
+
+```bash
+--basemap geojson \
+--basemap-file 'data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz'
+```
+
+GeoJSON 场景和 GPX 整体偏移
+
+两者必须使用同一个 WGS84 原点。当前地图会自动使用
+`(118.8145,31.8885)`；也可显式指定：
+
+```bash
+--map-origin 118.8145 31.8885
+```
+
+`GPX 存在较稀疏路段`
+
+这表示原始 GPX 某些相邻点距离较大。`--waypoint-ds` 只会对现有折线
+加密，不能恢复缺失的道路几何。正式实验建议从 BRouter 导出更高密度路线。
+
+`GPX 规划路径导出工具`
+https://brouter.de/brouter-web
+
 <a id="en"></a>
 
 # Student VDM Path Tracking Lab
@@ -281,12 +499,178 @@ This repository is designed for a Vehicle Dynamics and Motion Control lab. The l
 
 The vehicle can only move forward. The minimum speed is fixed at `0.0 m/s`. Reverse motion, parking paths, complex planners and unrelated controllers have been removed so that students can focus on the closed loop: reference path, error computation, control law, vehicle update and data analysis.
 
+In addition to the original teaching features, the current version supports
+BRouter/GPX routes, an online OSM basemap, portable offline `.npz` basemaps,
+and offline OSM GeoJSON scenes. These additions extend only the path input,
+vehicle backend and visualization layers; the PP/LQR/MPC controller interface
+remains unchanged.
+
 The course reference is `VehicleDynamicsMobility_01_BicycleModel.pdf`. The bicycle model, curvature, normal acceleration and path tracking workflow in this repository are tied to that lecture material. See [vdm_lab/tasks/README.md](vdm_lab/tasks/README.md) for the course assignments.
 
 ## Document Roles
 
 - This README is the full setup and running guide, covering environment setup, algorithm entry points, routes, speed modes, vehicle parameters, logs, plots and GIF generation.
 - [vdm_lab/tasks/README.md](vdm_lab/tasks/README.md) is the course assignment sheet, focused on PDF formulas, `KMLM.png`, `exp_cm.png`, circular-path steady-state validation and report requirements.
+- [vdm_lab/GPX_EXTENSION_README.md](vdm_lab/GPX_EXTENSION_README.md) documents GPX input, coordinate origins, online/offline maps and external vehicle backends.
+
+## Feature Overview and Quick Start
+
+Run all commands from the repository root:
+
+```bash
+cd ~/VDM_tracking
+conda activate vdm-lab
+```
+
+| Mode | Route input | Scene background | Network | Coordinate origin |
+| --- | --- | --- | --- | --- |
+| Original built-in route | `--route` | none | no | generated route coordinates |
+| GPX only | `--gpx` | none | no | first GPX point by default |
+| GPX + online map | `--gpx` | `--basemap osm` | yes | first GPX point or `--map-origin` |
+| GPX + offline NPZ | `--gpx` | `--basemap local` | no | first GPX point or `--map-origin` |
+| GPX + GeoJSON scene | `--gpx` | `--basemap geojson` | no | filename-bounds center or `--map-origin` |
+
+### Cross-platform launch: Bash and PowerShell
+
+`run_experiment.py` has the same arguments on Windows and Ubuntu, including
+`--algo`, `--gpx`, `--basemap-file`, and `--waypoint-ds`. Only the shell line
+continuation differs: Bash uses `\`, while PowerShell uses a backtick `` ` ``
+(with no trailing spaces). Do not paste a Bash multi-line command into
+PowerShell.
+
+Run the default PP + GPX + offline GeoJSON demo with either script:
+
+```bash
+bash scripts/run_pp.sh
+```
+
+```powershell
+.\scripts\run_pp.ps1
+```
+
+If PowerShell execution policy blocks the script, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run_pp.ps1
+```
+
+For a shell-independent, cross-platform entry point, use:
+
+```text
+python examples/run_pp_demo.py
+```
+
+### A. Original Built-in Routes
+
+All original PP, kinematic LQR, dynamic LQR, MPC, student/solution,
+speed-mode, vehicle-parameter, logging, plot and GIF functions remain
+available:
+
+```bash
+python run_experiment.py --algo pp --route mixed_course --animate
+```
+
+Run a solution and save all results:
+
+```bash
+python run_experiment.py \
+  --algo lqr_kinematic \
+  --version solution \
+  --route right_angle \
+  --speed-mode low \
+  --save-log --save-fig --save-gif
+```
+
+### B. GPX Tracking Without a Map
+
+```bash
+python run_experiment.py \
+  --algo pp \
+  --gpx data/gpx/homework_route_1.gpx \
+  --target-speed 8 \
+  --waypoint-ds 1.0 \
+  --animate
+```
+
+`--gpx` takes precedence over `--route`. By default, the first valid GPX
+point is the local East/North metric origin. Long GPX routes automatically
+receive a larger simulation time budget; use `--max-time` to override it.
+
+### C. Recommended: GPX With the Current Offline GeoJSON Scene
+
+The repository currently contains:
+
+```text
+data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz
+```
+
+Run it completely offline:
+
+```bash
+python run_experiment.py \
+  --algo pp \
+  --gpx data/gpx/homework_route_1.gpx \
+  --basemap geojson \
+  --basemap-file 'data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz' \
+  --map-origin 118.8145 31.8885 \
+  --target-speed 8 \
+  --waypoint-ds 1.0 \
+  --animate
+```
+
+For this filename, `--map-origin` is optional. The southwest and northeast
+bounds are parsed from the filename and their center `(118.8145,31.8885)` is
+automatically used as local `(0,0)`. Roads, buildings, water, green areas,
+railways and selected transit/signal points are rendered. Adjust the one-time
+rasterization resolution with `--basemap-max-pixels 3000` if needed.
+
+### D. Optional Online OSM or Offline NPZ
+
+Use online OSM only when the network can access the service reliably:
+
+```bash
+python run_experiment.py \
+  --algo pp \
+  --gpx data/gpx/homework_route_1.gpx \
+  --basemap osm \
+  --basemap-zoom 16 \
+  --animate
+```
+
+With a previously generated portable map package:
+
+```bash
+python run_experiment.py \
+  --algo pp \
+  --gpx data/gpx/homework_route_1.gpx \
+  --basemap local \
+  --basemap-file data/maps/homework_route_1_z16.npz \
+  --animate
+```
+
+See the [GPX extension guide](vdm_lab/GPX_EXTENSION_README.md) for NPZ
+generation, tile licensing and network retry options.
+
+### E. Long-route Views and Saved Results
+
+`--view-mode auto` selects a vehicle-following view with a whole-route inset
+for long routes. Override it with:
+
+```bash
+--view-mode full
+--view-mode follow --follow-radius 60
+```
+
+Save a complete offline-scene experiment:
+
+```bash
+python run_experiment.py \
+  --algo pp \
+  --gpx data/gpx/homework_route_1.gpx \
+  --basemap geojson \
+  --basemap-file 'data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz' \
+  --save-log --save-fig --save-gif
+```
 
 ## Course Model Mapping
 
@@ -481,11 +865,18 @@ Common files:
 - `summary.png`: trajectory, error, speed and control summary
 - `animation.gif`: path tracking animation for reports and classroom demonstration
 - `mpc_predictions.csv`: MPC predicted trajectory samples, only generated by MPC
+- `reference_path.csv`: the exact resampled reference path used by controllers; GPX runs also include latitude, longitude and elevation
+- `gpx_overview.png`: local-metric and original geographic GPX views, including the scene when a basemap is enabled
 
 ## 8. Project Structure
 
 ```text
 run_experiment.py
+prepare_offline_basemap.py
+data/
+  gpx/
+    homework_route_1.gpx
+  planet_118.792,31.875_118.837,31.902.osm.geojson.xz
 vdm_lab/
   config/
     vehicle_params.py
@@ -495,6 +886,10 @@ vdm_lab/
     path.py
     reference.py
     simulation.py
+    gpx.py
+    basemap.py
+    vector_map.py
+    vehicle_backend.py
     vehicle.py
     bicycle_model.py
     visualization.py
@@ -535,3 +930,37 @@ You are running a student template and a required TODO formula is still missing.
 No animation window appears
 
 Make sure your environment supports Matplotlib GUI windows. On a remote server, use `--save-fig` or `--save-gif` and inspect the saved files instead.
+
+`unrecognized arguments: --gpx / --waypoint-ds`
+
+Run the current root entry point:
+
+```bash
+cd ~/VDM_tracking
+python run_experiment.py --help
+```
+
+`Connection reset by peer` or blank OSM tiles
+
+This is an online-map connection issue, not a controller failure. Use the
+included offline GeoJSON scene:
+
+```bash
+--basemap geojson \
+--basemap-file 'data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz'
+```
+
+The GeoJSON scene and GPX are shifted relative to each other
+
+They must use the same WGS84 origin. The current map automatically selects
+`(118.8145,31.8885)`, or set it explicitly:
+
+```bash
+--map-origin 118.8145 31.8885
+```
+
+`GPX contains sparse segments`
+
+Some adjacent source points are far apart. `--waypoint-ds` densifies the
+existing polyline but cannot reconstruct missing road geometry. Export a
+denser BRouter route for formal experiments.

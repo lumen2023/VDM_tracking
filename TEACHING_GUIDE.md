@@ -22,6 +22,11 @@
 
 ## 参数与路线
 
+跨平台运行时，`run_experiment.py` 的参数接口保持一致；只有 shell 多行
+续行符不同：Bash 使用 `\`，Windows PowerShell 使用反引号 `` ` ``。GPX
+离线地图的默认 PP 示例可从仓库根目录运行 `bash scripts/run_pp.sh`、
+`.\scripts\run_pp.ps1`，或跨平台运行 `python examples/run_pp_demo.py`。
+
 车辆参数集中在 `vdm_lab/config/vehicle_params.py`，课程默认使用 `student_car`。学生调试车辆响应时只改参数文件或新增参数组，算法文件只从 `config.vehicle` 读取参数。
 
 目标速度分为 `low`、`medium`、`high` 三档，默认使用低速 `low`。档位解析在 `vdm_lab/config/speed_profiles.py`，每条路线的具体速度值写在 `vdm_lab/config/routes.py`，便于教师根据课程难度调整。
