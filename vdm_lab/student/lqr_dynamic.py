@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 
+from vdm_lab.common.geometry import clamp
 from vdm_lab.common.types import ControlCommand
 from vdm_lab.common.vehicle import speed_pid
 
@@ -10,27 +11,58 @@ NAME = "LQR Dynamic Student"
 
 
 def solve_lqr(A, B, Q, R, eps, max_iter):
-    # TODO 学生填写 1：可参考运动学 LQR，完成 Riccati 迭代与 K 的计算。
-    raise NotImplementedError("请先填写动力学 LQR 的 Riccati 迭代。")
+    """Solve the discrete algebraic Riccati equation by fixed-point iteration."""
+    P = Q.copy()
+    for _ in range(max_iter):
+        P_next = A.T @ P @ A - A.T @ P @ B @ np.linalg.pinv(R + B.T @ P @ B) @ B.T @ P @ A + Q
+        if np.max(np.abs(P_next - P)) < eps:
+            P = P_next
+            break
+        P = P_next
+    return np.linalg.pinv(R + B.T @ P @ B) @ B.T @ P @ A
 
 
 def build_dynamic_model(speed, config):
     vehicle = config.vehicle
     controller = config.controller
 
-    # TODO 学生填写 2：车速过低时会导致 1/v 发散，请给 v 设置下限保护。
-    raise NotImplementedError("请先填写动力学模型的车速保护。")
+    dt = config.sim.dt
+    v = max(speed, controller.lqr_min_model_speed)
+    mass = vehicle.mass
+    iz = vehicle.inertia_z
+    lf = vehicle.lf
+    lr = vehicle.lr
+    cf = vehicle.cf
+    cr = vehicle.cr
 
-    A = np.zeros((4, 4))
-    B = np.zeros((4, 1))
+    A_c = np.zeros((4, 4))
 
-    # TODO 学生填写 3：根据线性二自由度车辆模型填写 A、B 矩阵，并离散化。
+    A_c[0, 1] = 1.0
+    A_c[1, 1] = -(cf + cr) / mass / v
+    A_c[1, 2] = (cf + cr) / mass
+    A_c[1, 3] = (lr * cr - lf * cf) / mass / v
+    A_c[2, 3] = 1.0
+    A_c[3, 1] = (lr * cr - lf * cf) / iz / v
+    A_c[3, 2] = (lf * cf - lr * cr) / iz
+    A_c[3, 3] = -(lf * lf * cf + lr * lr * cr) / iz / v
+
+    identity = np.eye(4)
+    A = np.linalg.pinv(identity - 0.5 * dt * A_c) @ (identity + 0.5 * dt * A_c)
+    B_c = np.zeros((4, 1))
+    B_c[1, 0] = cf / mass
+    B_c[3, 0] = lf * cf / iz
+    B = B_c * dt
     return A, B
 
 
 def dynamic_feedforward(speed, curvature, K, config):
-    # TODO 学生填写 4：填写动力学 LQR 曲率前馈项，思考稳态横摆误差如何补偿。
-    raise NotImplementedError("请先填写动力学 LQR 的前馈转角。")
+    vehicle = config.vehicle
+    v = max(speed, config.controller.lqr_min_model_speed)
+    mass = vehicle.mass
+    wheelbase = vehicle.lf + vehicle.lr
+    kv = vehicle.lr * mass / (2.0 * vehicle.cf * wheelbase) - vehicle.lf * mass / (2.0 * vehicle.cr * wheelbase)
+    yaw_steady_error = vehicle.lr * curvature - vehicle.lf * mass * v * v * curvature / (2.0 * vehicle.cr * wheelbase)
+    return wheelbase * curvature + kv * v * v * curvature - K[0, 2] * yaw_steady_error
 
 
 def control(state, reference, previous_control, config):
@@ -47,7 +79,12 @@ def control(state, reference, previous_control, config):
     e_yaw_dot = speed / vehicle.wheelbase * math.tan(previous_control.steer) - speed * reference.curvature
     error_state = np.array([[e_y], [e_y_dot], [e_yaw], [e_yaw_dot]])
 
-    steer = float(-(K @ error_state)[0, 0] + dynamic_feedforward(speed, reference.curvature, K, config))
+    feedback = float(-(K @ error_state)[0, 0])
+    feedforward = float(dynamic_feedforward(speed, reference.curvature, K, config))
+    steer = feedback + feedforward
     goal_distance = math.hypot(state.x - reference.path.x[-1], state.y - reference.path.y[-1])
     acceleration = speed_pid(reference.target_speed, state.v, goal_distance, controller, vehicle)
-    return ControlCommand(acceleration=acceleration, steer=steer)
+    return ControlCommand(
+        acceleration=acceleration,
+        steer=clamp(steer, -vehicle.max_steer, vehicle.max_steer),
+    )

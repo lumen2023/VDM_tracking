@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "theme": "morandi",
+  "locale": "zh",
+  "question": "首步转角变化率约束是否能以可接受的跟踪代价降低 MPC 的控制突变？",
+  "data": {
+    "generator": "scripts/generate_mpc_rate_limit_figures.py",
+    "route": "circle",
+    "speed_modes": ["low", "medium", "high"],
+    "conditions": ["baseline_mpc", "actuator_aware_mpc"]
+  },
+  "figures": [
+    {
+      "name": "mpc_rate_limit_dashboard",
+      "families": ["trajectory line", "time series"],
+      "outputs": ["png", "svg"]
+    },
+    {
+      "name": "mpc_rate_limit_tradeoff",
+      "families": ["line", "grouped bar", "scatter", "heatmap"],
+      "outputs": ["png", "svg"]
+    }
+  ],
+  "statistics": {
+    "inferential_test": false,
+    "reason": "每个条件为确定性仿真轨迹，图中仅呈现描述性指标。"
+  }
+}
