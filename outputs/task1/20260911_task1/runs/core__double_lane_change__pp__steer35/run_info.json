@@ -1,8 +1,0 @@
-{
-  "status": "reached_goal",
-  "simulation_wall_seconds": 0.004432981000036307,
-  "mean_control_wall_seconds": 8.510408748327254e-06,
-  "warnings": {},
-  "failure": null,
-  "command_equivalent": "python run_experiment.py --algo pp --version solution --route double_lane_change --speed-mode medium --save-log --save-fig"
-}
