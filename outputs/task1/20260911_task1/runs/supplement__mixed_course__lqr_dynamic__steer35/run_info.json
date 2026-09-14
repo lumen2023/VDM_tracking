@@ -1,8 +1,0 @@
-{
-  "status": "reached_goal",
-  "simulation_wall_seconds": 0.3110423719999744,
-  "mean_control_wall_seconds": 0.0016691272622849451,
-  "warnings": {},
-  "failure": null,
-  "command_equivalent": "python run_experiment.py --algo lqr_dynamic --version solution --route mixed_course --speed-mode medium --save-log --save-fig"
-}

@@ -6,11 +6,7 @@ __pycache__/
 .venv/
 venv/
 .vscode/
-outputs/*
-!outputs/task1/
-outputs/task1/*
-!outputs/task1/20260911_task1/
-reports/task1_submission*.zip
+outputs/
 MotionPlanning/
 *.egg-info/
 .DS_Store

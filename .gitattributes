@@ -1,3 +1,0 @@
-# Normalize committed experiment tables without changing numeric data.
-outputs/task1/20260911_task1/**/*.csv text eol=lf
-reports/task1/tables/*.csv text eol=lf
