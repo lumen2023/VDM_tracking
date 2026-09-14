@@ -1,0 +1,10 @@
+﻿route,algo,local_peak_prominence_1pm,preceding_local_peak_time_s,error_minus_preceding_peak_s,max_rate_time_s,speed_at_max_rate_mps,max_rate_is_terminal_command,note
+double_lane_change,lqr_kinematic,0.02,5.299999999999997,0.3999999999999986,6.299999999999994,6.975861918408151,False,Plateau peak uses its midpoint; a global peak on another bend is not a causal delay reference.
+double_lane_change,mpc,0.02,5.299999999999997,0.0,7.099999999999991,6.819463139833417,False,Plateau peak uses its midpoint; a global peak on another bend is not a causal delay reference.
+double_lane_change,pp,0.02,6.799999999999992,0.09999999999999964,6.399999999999993,6.978517107383254,False,Plateau peak uses its midpoint; a global peak on another bend is not a causal delay reference.
+right_angle,lqr_kinematic,0.02,4.699999999999999,0.5999999999999979,4.100000000000001,5.369073044980858,False,Plateau peak uses its midpoint; a global peak on another bend is not a causal delay reference.
+right_angle,mpc,0.02,4.699999999999999,0.5999999999999979,5.299999999999997,5.181311039652176,False,Plateau peak uses its midpoint; a global peak on another bend is not a causal delay reference.
+right_angle,pp,0.02,4.6,0.1999999999999993,3.800000000000002,5.314279840646692,False,Plateau peak uses its midpoint; a global peak on another bend is not a causal delay reference.
+s_curve,lqr_kinematic,0.02,5.899999999999995,0.3999999999999986,5.399999999999997,6.4484594414507,False,Plateau peak uses its midpoint; a global peak on another bend is not a causal delay reference.
+s_curve,mpc,0.02,5.799999999999995,0.1999999999999993,8.299999999999986,6.242008216380018,False,Plateau peak uses its midpoint; a global peak on another bend is not a causal delay reference.
+s_curve,pp,0.02,7.899999999999988,0.0,13.699999999999967,1.294237425933385,False,Plateau peak uses its midpoint; a global peak on another bend is not a causal delay reference.

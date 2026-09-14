@@ -1,0 +1,100 @@
+{
+  "source": "../data/20260911_task1",
+  "plot_font": "Microsoft YaHei",
+  "checks": [
+    {
+      "case": "core__double_lane_change__lqr_kinematic__steer35",
+      "samples": 140,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "core__double_lane_change__mpc__steer35",
+      "samples": 137,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "core__double_lane_change__pp__steer35",
+      "samples": 137,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "core__right_angle__lqr_kinematic__steer35",
+      "samples": 115,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "core__right_angle__mpc__steer35",
+      "samples": 115,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "core__right_angle__pp__steer35",
+      "samples": 114,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "core__s_curve__lqr_kinematic__steer35",
+      "samples": 150,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "core__s_curve__mpc__steer35",
+      "samples": 147,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "core__s_curve__pp__steer35",
+      "samples": 147,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "steering__right_angle__lqr_kinematic__steer15",
+      "samples": 120,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "steering__right_angle__lqr_kinematic__steer25",
+      "samples": 115,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "steering__right_angle__pp__steer15",
+      "samples": 116,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "steering__right_angle__pp__steer25",
+      "samples": 114,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "supplement__mixed_course__lqr_dynamic__steer35",
+      "samples": 183,
+      "status": "reached_goal",
+      "checks": "PASS"
+    },
+    {
+      "case": "supplement__s_curve__lqr_dynamic__steer35",
+      "samples": 152,
+      "status": "reached_goal",
+      "checks": "PASS"
+    }
+  ],
+  "total_runs": 15,
+  "reached_goal": 15,
+  "core_input_equality": "PASS",
+  "note": "No failed run removed. Numeric, model, state-transition and metric checks performed on raw CSV."
+}

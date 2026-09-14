@@ -1,0 +1,8 @@
+{
+  "status": "reached_goal",
+  "simulation_wall_seconds": 0.14664113200001339,
+  "mean_control_wall_seconds": 0.0012458519739104066,
+  "warnings": {},
+  "failure": null,
+  "command_equivalent": "python run_experiment.py --algo lqr_kinematic --version solution --route right_angle --speed-mode medium --save-log --save-fig"
+}

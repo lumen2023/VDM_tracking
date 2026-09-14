@@ -1,0 +1,3 @@
+# This file only affects the task1 directory.
+data/**/*.csv text eol=lf
+reports/tables/*.csv text eol=lf

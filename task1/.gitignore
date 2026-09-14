@@ -1,0 +1,7 @@
+# Local runtime/generated artifacts stay within this folder but are not submitted.
+/artifacts/
+/outputs/
+/environment_checks/
+/.venv/
+__pycache__/
+*.py[cod]

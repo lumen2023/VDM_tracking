@@ -1,0 +1,8 @@
+{
+  "status": "reached_goal",
+  "simulation_wall_seconds": 0.002153554999949847,
+  "mean_control_wall_seconds": 4.236068967845218e-06,
+  "warnings": {},
+  "failure": null,
+  "command_equivalent": "Use scripts/run_task1.py with the saved config.json; original CLI has no max_steer override."
+}
