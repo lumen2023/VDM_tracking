@@ -1,0 +1,4 @@
+{
+  "requirements.lock.txt": "task1/requirements.lock.txt",
+  "scripts/run_task1.py": "task1/provenance/run_task1_20260911.py.txt"
+}
