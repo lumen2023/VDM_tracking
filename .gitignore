@@ -10,3 +10,4 @@ outputs/
 MotionPlanning/
 *.egg-info/
 .DS_Store
+circle_speed_analysis.csv

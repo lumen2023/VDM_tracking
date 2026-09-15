@@ -1,966 +1,1452 @@
-<a id="zh"></a>
 
-# 学生 VDM 路径跟踪仿真实验
+# VDM Path Tracking Simulation
 
-语言 / Language: **中文** | [English](#en)
+本仓库用于车辆动力学与运动控制课程的路径跟踪仿真实验。当前阶段围绕运动学自行车模型与路径跟踪控制展开，逐步实现并比较 Pure Pursuit（PP）、LQR 和 MPC，并进一步研究速度、车辆参数、控制器参数及车辆模型对跟踪性能的影响。
 
-本仓库用于车辆动力学与运动控制课程实验。实验聚焦路径跟踪控制，让学生学习并实现：
+---
 
-- Pure Pursuit，简称 PP
-- LQR，包含运动学 LQR 和动力学 LQR 扩展
-- Linear MPC
+## 1. Pure Pursuit（PP）
 
-车辆统一只允许前进，速度下限为 `0.0 m/s`。仓库已移除倒车路径、泊车路径、复杂规划器和其他控制算法，学生主要关注“参考路径 -> 误差计算 -> 控制律 -> 车辆状态更新 -> 数据分析”的闭环流程。
+### 1.1 实验目标
 
-在保留上述原有教学功能的基础上，当前版本还支持 BRouter/GPX
-实际路线、在线 OSM 底图、离线 `.npz` 底图包和离线
-OSM GeoJSON 平面场景。新功能只扩展路径输入、车辆后端和可视化层，
-PP/LQR/MPC 控制器接口保持不变。
+本阶段完成以下工作：
 
-课程对应材料为 `VehicleDynamicsMobility_01_BicycleModel.pdf`。代码中的自行车模型、曲率、法向加速度和路径跟踪控制均围绕该课件展开；配套题目见 [vdm_lab/tasks/README.md](vdm_lab/tasks/README.md)。
+1. 理解运动学自行车模型与路径跟踪闭环；
+2. 完成 `vdm_lab/student/pure_pursuit.py` 中 PP 控制器的核心实现；
+3. 使用 `solution` 版本验证学生版 PP 的正确性；
+4. 在半径固定的 `circle` 路线上进行 low / medium / high 三档速度实验；
+5. 结合理论公式与仿真数据分析“为什么车辆速度越高，路径跟踪通常越困难”。
 
-## 文档分工
+PP 的核心思想是：车辆不直接追踪当前位置附近的最近路径点，而是在参考路径前方选取一个**前视目标点**，并通过几何关系计算前轮转角，使车辆不断朝该目标点行驶。
 
-- 本 README 是完整部署和运行手册，覆盖环境安装、算法入口、路线库、速度档位、车辆参数、日志、绘图和 GIF 生成。
-- [vdm_lab/tasks/README.md](vdm_lab/tasks/README.md) 是课程任务书，重点连接 PDF 公式、`KMLM.png`、`exp_cm.png`、圆形路径稳态验证和实验报告要求。
-- [vdm_lab/tasks/gpx_geojson_task.md](vdm_lab/tasks/gpx_geojson_task.md) 是 GPX 路线叠加离线 GeoJSON 底图的专项实验，包含 Ubuntu / Windows 兼容命令说明。
-- [vdm_lab/GPX_EXTENSION_README.md](vdm_lab/GPX_EXTENSION_README.md) 详细说明 GPX、地图坐标、离线场景和外部车辆模型扩展。
+---
 
-## 功能总览与快速启动
+### 1.2 PP 算法实现
 
-所有命令都应在仓库根目录执行：
+学生版 PP 位于：
 
-```bash
-cd ~/VDM_tracking
-conda activate vdm-lab
+```text
+vdm_lab/student/pure_pursuit.py
 ```
 
-### 跨平台启动：Bash 与 PowerShell
+本次实现主要完成四个步骤。
 
-`run_experiment.py` 在 Windows 和 Ubuntu 上使用完全相同的参数接口，
-包括 `--algo`、`--gpx`、`--basemap-file` 和 `--waypoint-ds`；区别只在
-shell 的续行符。Ubuntu Bash 用反斜杠 `\`，Windows PowerShell 用反引号
-`` ` ``（续行符后不能有空格）。不要将带 `\` 的 Bash 多行命令直接粘贴到
-PowerShell。
+#### Step 1：计算前视距离
 
-默认 PP + GPX + 离线 GeoJSON 示例可直接运行：
+前视距离随车速增大：
 
-```bash
-bash scripts/run_pp.sh
+\[
+L_f = L_0 + k_v v
+\]
+
+代码实现：
+
+```python
+lookahead = controller.pp_base_lookahead + controller.pp_speed_gain * state.v
 ```
+
+其中：
+
+- `L0 = pp_base_lookahead`：基础前视距离；
+- `kv = pp_speed_gain`：速度增益；
+- `v = state.v`：车辆当前速度。
+
+速度越高，车辆观察的路径点越远，通常可以获得更平滑的转向响应；但前视距离过大也可能导致切弯和较大的横向偏差。
+
+#### Step 2：搜索前视目标点
+
+从当前最近路径点 `reference.nearest_index` 开始沿参考路径向前搜索，直到候选点与车辆的欧氏距离不小于 `lookahead`：
+
+```python
+target_index = reference.nearest_index
+
+while target_index < len(path.x) - 1:
+    distance = math.hypot(
+        path.x[target_index] - state.x,
+        path.y[target_index] - state.y,
+    )
+
+    if distance >= lookahead:
+        break
+
+    target_index += 1
+```
+
+这样可以避免车辆反复追踪已经驶过的路径点。
+
+#### Step 3：计算目标点相对车辆的方向角
+
+目标点相对于车辆当前航向的夹角为：
+
+\[
+\alpha =
+\operatorname{atan2}(y_t-y,\;x_t-x)-\psi
+\]
+
+代码中通过 `pi_to_pi()` 将角度归一化到 \([-\pi,\pi]\)：
+
+```python
+alpha = pi_to_pi(
+    math.atan2(
+        target_y - state.y,
+        target_x - state.x,
+    ) - state.yaw
+)
+```
+
+当：
+
+- \(\alpha > 0\)：目标点位于车辆左侧；
+- \(\alpha < 0\)：目标点位于车辆右侧；
+- \(\alpha \approx 0\)：目标点基本位于正前方。
+
+#### Step 4：计算前轮转角
+
+PP 的几何转向关系为：
+
+\[
+\delta_f =
+\operatorname{atan2}
+\left(
+2L\sin\alpha,\;L_f
+\right)
+\]
+
+其中 \(L\) 为车辆轴距。
+
+代码实现：
+
+```python
+steer = math.atan2(
+    2.0 * vehicle.wheelbase * math.sin(alpha),
+    lookahead,
+)
+```
+
+最终控制器返回：
+
+```python
+return ControlCommand(
+    acceleration=acceleration,
+    steer=steer,
+)
+```
+
+其中纵向加速度由项目现有的速度比例控制器 `speed_pid()` 计算，PP 主要负责横向转向控制。
+
+---
+
+### 1.3 Student PP 与参考实现验证
+
+为了确认学生版 PP 实现正确，分别在 `double_lane_change` 和 `circle` 低速工况下运行 `solution` 与 `student` 版本。
+
+运行示例：
 
 ```powershell
-.\scripts\run_pp.ps1
+python run_experiment.py --algo pp --version student --route double_lane_change --speed-mode low --save-log --save-fig
+python run_experiment.py --algo pp --version student --route circle --speed-mode low --save-log --save-fig
 ```
 
-如 PowerShell 的执行策略阻止脚本，在仓库根目录运行：
+结果如下。
+
+| Route              | Version  | Reached Goal | Mean Lateral Error / m | Max Lateral Error / m |
+| ------------------ | -------- | ------------ | ---------------------: | --------------------: |
+| double_lane_change | solution | True         |                  0.313 |                 0.756 |
+| double_lane_change | student  | True         |                  0.313 |                 0.756 |
+| circle             | solution | True         |                  0.286 |                 0.446 |
+| circle             | student  | True         |                  0.286 |                 0.446 |
+
+学生版与参考实现的主要指标一致，因此可以确认本组实现的 PP 核心逻辑正确。
+
+---
+
+### 1.4 圆形路径速度实验
+
+#### 1.4.1 实验设置
+
+为了单独研究速度变化对 PP 跟踪性能的影响，固定：
+
+- 控制器：Pure Pursuit；
+- 车辆：`student_car`；
+- 路线：`circle`；
+- 圆弧半径：\(R = 12\,m\)；
+- 车辆轴距：\(L = l_f + l_r = 2.5\,m\)；
+- 其他控制器与仿真参数保持不变。
+
+只改变目标速度：
+
+| Speed Mode | Target Speed |
+| ---------- | -----------: |
+| low        |      3.0 m/s |
+| medium     |      5.0 m/s |
+| high       |      7.0 m/s |
+
+运行命令：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\run_pp.ps1
+python run_experiment.py --algo pp --version student --route circle --speed-mode low --save-log --save-fig
+python run_experiment.py --algo pp --version student --route circle --speed-mode medium --save-log --save-fig
+python run_experiment.py --algo pp --version student --route circle --speed-mode high --save-log --save-fig
 ```
 
-长期使用时，推荐不依赖 shell 续行符的跨平台入口：
+本次实验对应输出目录：
 
 ```text
-python examples/run_pp_demo.py
+outputs/20260915_080400_pp_circle_low
+outputs/20260915_080444_pp_circle_medium
+outputs/20260915_080458_pp_circle_high
 ```
 
-| 模式 | 路径来源 | 场景背景 | 是否联网 | 坐标原点 |
-| --- | --- | --- | --- | --- |
-| 原有内置路线 | `--route` | 无 | 否 | 生成路径自身坐标 |
-| GPX 路线 | `--gpx` | 无 | 否 | 默认为 GPX 首点 |
-| GPX + 在线地图 | `--gpx` | `--basemap osm` | 是 | GPX 首点或 `--map-origin` |
-| GPX + NPZ 离线包 | `--gpx` | `--basemap local` | 否 | GPX 首点或 `--map-origin` |
-| GPX + GeoJSON 场景 | `--gpx` | `--basemap geojson` | 否 | 文件名边界中心或 `--map-origin` |
+#### 1.4.2 全程指标
 
-### A. 原有功能：内置路线
+由各实验的 `metrics.json` 得到：
 
-原有 PP、运动学 LQR、动力学 LQR、MPC、学生版/答案版、速度档位、
-车辆参数、日志、汇总图和 GIF 功能全部保留。最小启动命令：
+| Metric                          |    Low | Medium |   High |
+| ------------------------------- | -----: | -----: | -----: |
+| Target speed / m/s              |    3.0 |    5.0 |    7.0 |
+| Mean lateral error / m          |  0.286 |  0.288 |  0.275 |
+| Max lateral error / m           |  0.446 |  0.505 |  0.525 |
+| Mean heading error / rad        | 0.0646 | 0.0582 | 0.0505 |
+| Max steer / rad                 |  0.232 |  0.242 |  0.229 |
+| Max normal acceleration / m/s² |  0.750 |  2.083 |  4.082 |
+| Max side-slip\(\beta\) / rad    |  0.118 |  0.123 |  0.116 |
+| Max yaw rate / rad/s            |  0.282 |  0.490 |  0.636 |
+| Reached goal                    |   True |   True |   True |
 
-```bash
-python run_experiment.py --algo pp --route mixed_course --animate
-```
+可以看到，最大横向误差随速度增加：
 
-运行完整答案版并保存结果：
+\[
+0.446 \rightarrow 0.505 \rightarrow 0.525\,m
+\]
 
-```bash
-python run_experiment.py \
-  --algo lqr_kinematic \
-  --version solution \
-  --route right_angle \
-  --speed-mode low \
-  --save-log --save-fig --save-gif
-```
+从 low 到 high，最大横向误差增加约 **17.7%**。
 
-### B. 新功能：只跟踪 GPX
+全程平均横向误差并未单调增加，因此不能简单用“平均误差越大”概括高速跟踪困难。后续需要进一步分析稳态圆弧段。
 
-```bash
-python run_experiment.py \
-  --algo pp \
-  --gpx data/gpx/homework_route_1.gpx \
-  --target-speed 8 \
-  --waypoint-ds 1.0 \
-  --animate
-```
+---
 
-`--gpx` 的优先级高于 `--route`。GPX 默认用首个有效点作为局部
-East/North 米制坐标原点。公里级路线会自动延长仿真时间，也可用
-`--max-time` 手动覆盖。
+### 1.5 圆弧稳态分析
 
-### C. 推荐新功能：GPX + 当前离线 GeoJSON 场景
+任务中圆形路径的理论曲率为：
 
-仓库中已有：
+\[
+\kappa = \frac{1}{R}
+       = \frac{1}{12}
+       \approx 0.08333\,m^{-1}
+\]
+
+稳态分析使用 `trajectory.csv` 中满足：
 
 ```text
-data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz
+abs(curvature - 1/12) < 0.005
 ```
 
-可直接离线运行：
+的记录作为圆弧候选段，并去除候选段首尾各 10% 的记录，以降低进入和驶出圆弧时瞬态过程的影响。
 
-```bash
-python run_experiment.py \
-  --algo pp \
-  --gpx data/gpx/demo_route.gpx \
-  --basemap geojson \
-  --basemap-file 'data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz' \
-  --map-origin 118.8145 31.8885 \
-  --target-speed 8 \
-  --waypoint-ds 1.0 \
-  --animate
-```
-
-对这个文件，`--map-origin` 可省略。程序会从文件名读取西南角
-`(118.792,31.875)` 和东北角 `(118.837,31.902)`，自动计算几何中心
-`(118.8145,31.8885)` 为 `(0,0)`。离线场景会绘制道路、建筑、水系、
-绿地、铁路以及部分公交/信号点。
-
-如需更高或更低清晰度：
-
-```bash
---basemap-max-pixels 3000
-```
-
-### D. 可选新功能：在线 OSM 或 NPZ 离线包
-
-当网络可以稳定访问 OSM 时：
-
-```bash
-python run_experiment.py \
-  --algo pp \
-  --gpx data/gpx/homework_route_1.gpx \
-  --basemap osm \
-  --basemap-zoom 16 \
-  --animate
-```
-
-当网络不可用时，优先使用上述 GeoJSON，或加载已经生成的
-`.npz` 地图包：
-
-```bash
-python run_experiment.py \
-  --algo pp \
-  --gpx data/gpx/homework_route_1.gpx \
-  --basemap local \
-  --basemap-file data/maps/homework_route_1_z16.npz \
-  --animate
-```
-
-使用 `prepare_offline_basemap.py` 生成 NPZ 的方法、瓦片授权注意事项和
-在线失败重试参数详见
-[GPX 扩展文档](vdm_lab/GPX_EXTENSION_README.md)。
-
-### E. 长路线视角与保存
-
-`--view-mode auto` 对长路线会自动使用车辆跟随视角和全局小窗。
-
-```bash
---view-mode full
---view-mode follow --follow-radius 60
-```
-
-保存 GPX 场景实验：
-
-```bash
-python run_experiment.py \
-  --algo pp \
-  --gpx data/gpx/demo_route.gpx \
-  --basemap geojson \
-  --basemap-file 'data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz' \
-  --save-log --save-fig --save-gif
-```
-
-## 课程模型对应关系
-
-| 课程概念 | PDF 中的符号 | 代码位置 |
-| --- | --- | --- |
-| 前轮转角 | `δf` | `ControlCommand.steer` |
-| 侧偏角 | `β` | `front_steer_slip_angle()` 与 `StepRecord.beta` |
-| 横摆角速度 | `ψ_dot` | `yaw_rate_from_steer()` 与 `StepRecord.yaw_rate` |
-| 曲率半径 | `ρ = 1 / κ` | `Path.curvature` |
-| 法向加速度 | `a_n = v^2 κ` | `StepRecord.normal_accel` |
-| 车辆参数 | `lf, lr, m, Iz, Cf, Cr` | `vdm_lab/config/vehicle_params.py` |
-
-课程图示：
-
-![Kinematic bicycle model](vdm_lab/KMLM.png)
-
-![Circular motion example](vdm_lab/exp_cm.png)
-
-## 效果预览
-
-以下 GIF 由当前新实验框架在低速档 `low` 下生成，可直接作为课堂演示或实验报告参考。
-
-| PP 双移线 | LQR 运动学直角弯 |
-| --- | --- |
-| ![PP double lane change](vdm_lab/assets/demo_gifs/pp_double_lane_change_low.gif) | ![LQR kinematic right angle](vdm_lab/assets/demo_gifs/lqr_kinematic_right_angle_low.gif) |
-
-| LQR 动力学 S 弯 | MPC 综合路线 |
-| --- | --- |
-| ![LQR dynamic s curve](vdm_lab/assets/demo_gifs/lqr_dynamic_s_curve_low.gif) | ![MPC mixed course](vdm_lab/assets/demo_gifs/mpc_mixed_course_low.gif) |
-
-| PP 圆形路径 | LQR 运动学圆形路径 | MPC 圆形路径 |
-| --- | --- | --- |
-| ![PP circle](vdm_lab/assets/demo_gifs/pp_circle_low.gif) | ![LQR kinematic circle](vdm_lab/assets/demo_gifs/lqr_kinematic_circle_low.gif) | ![MPC circle](vdm_lab/assets/demo_gifs/mpc_circle_low.gif) |
-
-原仓库中与本实验相关的历史演示 GIF 保留在 `vdm_lab/assets/original_gifs/`，用于和当前实验效果对照。
-
-## 课程任务入口
-
-课程任务的详细题目、公式推导、数据统计方法和提交要求统一放在 [vdm_lab/tasks/README.md](vdm_lab/tasks/README.md)。当前任务包括：
-
-- 题目 1：根据 `KMLM.png` 推导并解释运动学自行车模型
-- 题目 2：根据 `exp_cm.png` 分析曲率、速度和法向加速度
-- 题目 3：圆形路径稳态跟踪，验证曲率、转角、横摆角速度和法向加速度
-
-## 1. 从 Conda 新建环境
-
-推荐使用独立 Conda 环境，避免系统 Python 或全局 Anaconda 环境里的 `numpy/scipy/cvxpy` 版本冲突。
-
-```bash
-conda create -n vdm-lab python=3.10 -y
-conda activate vdm-lab
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-检查依赖是否安装成功：
-
-```bash
-python - <<'PY'
-import numpy
-import scipy
-import matplotlib
-import cvxpy
-from PIL import Image
-
-print("numpy", numpy.__version__)
-print("scipy", scipy.__version__)
-print("matplotlib", matplotlib.__version__)
-print("cvxpy", cvxpy.__version__)
-print("pillow", Image.__version__)
-PY
-```
-
-如果只学习 PP 和 LQR，`cvxpy` 暂时不会被调用；运行 MPC 时必须安装 `cvxpy`。
-
-## 2. 运行完整答案版
-
-完整答案版位于 `vdm_lab/solutions/`。建议先运行完整版本，确认环境、绘图、日志和 GIF 保存都正常。
-
-```bash
-python run_experiment.py --algo pp --version solution --route double_lane_change --save-log --save-fig --save-gif
-python run_experiment.py --algo lqr_kinematic --version solution --route right_angle --save-log --save-fig --save-gif
-python run_experiment.py --algo lqr_dynamic --version solution --route s_curve --save-log --save-fig --save-gif
-python run_experiment.py --algo pp --version solution --route circle --save-log --save-fig --save-gif
-python run_experiment.py --algo mpc --version solution --route mixed_course --save-log --save-fig --save-gif
-```
-
-实时可视化并同步保存完整 GIF：
-
-```bash
-python run_experiment.py --algo pp --version solution --route double_lane_change --animate --save-gif
-```
-
-在本地桌面环境中会弹出 Matplotlib 动画窗口；同时程序会把每一帧保存为 `outputs/<时间戳>_<算法>_<路线>_<速度档位>/animation.gif`。
-
-GIF 和实时动画默认会显示历史车辆姿态虚影，并从起点开始一直保留到当前帧，方便观察车辆每一步姿态变化。关闭虚影、调整采样间隔，或在画面过密时限制虚影数量：
-
-```bash
-python run_experiment.py --algo pp --route double_lane_change --save-gif --no-history-ghosts
-python run_experiment.py --algo pp --route double_lane_change --save-gif --ghost-count 12 --ghost-stride 8
-```
-
-默认 `--ghost-count 0` 表示不限制虚影数量；`--ghost-stride` 越小，虚影越密。
-
-## 3. 速度档位
-
-目标速度分为低速、中速、高速三档。当前默认是低速 `low`。
-
-```bash
-python run_experiment.py --algo pp --route double_lane_change
-python run_experiment.py --algo pp --route double_lane_change --speed-mode low
-python run_experiment.py --algo pp --route double_lane_change --speed-mode medium
-python run_experiment.py --algo pp --route double_lane_change --speed-mode high
-```
-
-各路线速度设定：
-
-| 路线 | 低速 low | 中速 medium | 高速 high |
-| --- | ---: | ---: | ---: |
-| `double_lane_change` 强化双移线 | `4.0 m/s` | `7.0 m/s` | `9.0 m/s` |
-| `right_angle` 强化直角弯 | `3.5 m/s` | `5.5 m/s` | `7.0 m/s` |
-| `s_curve` S 弯道 | `4.0 m/s` | `6.5 m/s` | `8.0 m/s` |
-| `circle` 圆形路径 | `3.0 m/s` | `5.0 m/s` | `7.0 m/s` |
-| `mixed_course` 综合路线 | `4.0 m/s` | `7.0 m/s` | `9.0 m/s` |
-
-需要临时指定任意速度时，可以覆盖档位：
-
-```bash
-python run_experiment.py --algo lqr_kinematic --route s_curve --target-speed 5.0
-```
-
-## 4. 路线库
-
-路线集中定义在 `vdm_lab/config/routes.py`。
-
-- `double_lane_change`：强化双移线，在较短距离内完成较大横向位移，用于观察换道时的横向误差和前视距离影响
-- `right_angle`：强化直角弯，使用短直线加小半径圆弧构造，用于考察大曲率弯道跟踪
-- `s_curve`：S 弯道，用于考察连续左右转向时的控制平滑性
-- `circle`：直线切入、一整圈圆和直线驶出，用于验证 `kappa = 1/R`、`delta_f ≈ atan(L kappa)`、`psi_dot ≈ v kappa` 和 `a_n = v^2 kappa`
-- `mixed_course`：综合路线，包含直线、缓弯、S 弯和换道式曲线
-
-切换路线：
-
-```bash
-python run_experiment.py --algo lqr_kinematic --version solution --route right_angle
-python run_experiment.py --algo pp --version solution --route circle
-python run_experiment.py --algo mpc --version solution --route mixed_course
-```
-
-## 5. 车辆参数
-
-车辆参数集中定义在 `vdm_lab/config/vehicle_params.py`。学生调参时优先修改或新增参数组，不要在算法文件里直接写死车辆参数。
-
-默认参数组为 `student_car`，另提供 `compact_ev` 用于对比：
-
-```bash
-python run_experiment.py --algo pp --version solution --vehicle student_car
-python run_experiment.py --algo pp --version solution --vehicle compact_ev
-```
-
-参数包括轴距、车宽、轮距、轮胎尺寸、最大转角、最大转角速度、加速度限幅、减速度限幅、速度范围、质量、转动惯量、前后轴到质心距离和侧偏刚度。
-
-## 6. 学生待填写版
-
-学生版位于 `vdm_lab/student/`。未填写时，程序会在关键公式位置抛出中文 `NotImplementedError`。
-
-```bash
-python run_experiment.py --algo pp --version student --route double_lane_change
-```
-
-建议填写顺序：
-
-1. `vdm_lab/student/pure_pursuit.py`
-2. `vdm_lab/student/lqr_kinematic.py`
-3. `vdm_lab/student/lqr_dynamic.py`
-4. `vdm_lab/student/mpc.py`
-
-学生版保留函数签名、输入输出、车辆限幅、日志接口和中文 TODO。学生主要补控制算法关键公式，不需要重写仿真框架。
-
-## 7. 输出文件
-
-使用 `--save-log`、`--save-fig` 或 `--save-gif` 后，结果保存到：
+分析脚本：
 
 ```text
-outputs/<时间戳>_<算法>_<路线>_<速度档位>/
+analyze_circle.py
 ```
 
-常见文件：
-
-- `trajectory.csv`：每个仿真步的车辆状态、控制量、`beta`、`yaw_rate`、目标点编号、横向误差、航向误差、曲率和法向加速度
-- `metrics.json`：平均横向误差、最大横向误差、终点误差、最大转角、最大加速度、最大法向加速度、最大侧偏角、最大横摆角速度、是否到达终点
-- `summary.png`：轨迹、误差、速度、控制输入汇总图
-- `animation.gif`：路径跟踪过程动图，便于实验报告和课堂展示
-- `mpc_predictions.csv`：MPC 预测轨迹采样，仅 MPC 输出
-- `reference_path.csv`：控制器实际使用的重采样参考路径；GPX 模式同时保存经纬度和高程
-- `gpx_overview.png`：GPX 的局部米制坐标/原始经纬度对照图；启用底图时会显示场景
-
-## 8. 代码结构
+汇总结果：
 
 ```text
-run_experiment.py
-prepare_offline_basemap.py  # 从授权 XYZ 服务生成离线 NPZ 地图包
-data/
-  gpx/
-    homework_route_1.gpx
-  planet_118.792,31.875_118.837,31.902.osm.geojson.xz
-vdm_lab/
-  config/
-    vehicle_params.py  # 车辆参数组
-    routes.py          # 双移线、直角弯、S 弯、圆形和综合路线
-    speed_profiles.py  # 低速、中速、高速档位解析
-  common/
-    path.py            # 路径生成和速度曲线
-    reference.py       # 最近点、横向误差、航向误差
-    simulation.py      # 统一仿真循环
-    gpx.py             # GPX/WGS84 -> 局部 East/North 参考路径
-    basemap.py         # 在线瓦片、NPZ 离线包和底图统一入口
-    vector_map.py      # OSM GeoJSON/GeoJSON.XZ 离线场景渲染
-    vehicle_backend.py # 默认自行车模型/外部车辆模型接口
-    vehicle.py         # 仅前进自行车模型
-    bicycle_model.py   # PDF 对应的 beta、yaw rate、法向加速度公式
-    visualization.py   # 实时绘图、历史姿态虚影、汇总图、GIF 制作
-    logging.py         # CSV/JSON 记录
-  solutions/           # 教师完整答案
-  student/             # 学生待填写版
-  tasks/               # 课程模型与实验题目
-  assets/
-    demo_gifs/         # 当前框架生成的效果 GIF
-    original_gifs/     # 原仓库 PP/LQR/MPC 历史 GIF
+circle_speed_analysis.csv
 ```
 
-## 9. 常见问题
+#### 1.5.1 稳态实验结果
 
-`ModuleNotFoundError: No module named 'cvxpy'`
+| Metric                              |    Low |   Medium |   High |
+| ----------------------------------- | -----: | -------: | -----: |
+| Target speed / m/s                  |  3.000 |    5.000 |  7.000 |
+| Mean actual speed / m/s             |  3.000 |    4.794 |  6.071 |
+| Mean steer / rad                    | 0.2136 |   0.2146 | 0.2148 |
+| Mean yaw rate / rad/s               | 0.2588 |   0.4155 | 0.5268 |
+| Mean normal acceleration / m/s²    | 0.7500 |   1.9232 | 3.1694 |
+| Mean lateral error / m              | 0.4379 |   0.4724 | 0.4804 |
+| Max lateral error / m               | 0.4462 |   0.5046 | 0.5251 |
+| Lateral error std / m               | 0.0037 |   0.0169 | 0.0144 |
+| Max\(                               |  \beta | \) / rad | 0.1176 |
+| Mean steer rate\(J_\delta\) / rad/s | 0.1941 |   0.0340 | 0.1091 |
 
-```bash
-conda activate vdm-lab
-python -m pip install -r requirements.txt
+稳态平均横向误差：
+
+\[
+0.438 \rightarrow 0.472 \rightarrow 0.480\,m
+\]
+
+从 low 到 high 增加约 **9.7%**。
+
+同时，medium / high 的横向误差标准差明显高于 low，说明速度提高后圆弧跟踪误差的波动也更明显。
+
+---
+
+### 1.6 理论值与仿真结果对比
+
+#### 1.6.1 稳态前轮转角
+
+对于小侧偏、近似稳态的运动学自行车模型：
+
+\[
+\delta_f \approx \arctan(L\kappa)
+\]
+
+代入：
+
+\[
+L=2.5\,m,\qquad
+\kappa=\frac{1}{12}\,m^{-1}
+\]
+
+得到：
+
+\[
+\delta_f
+\approx
+\arctan\left(\frac{2.5}{12}\right)
+\approx
+0.2054\,rad
+\approx
+11.77^\circ
+\]
+
+三档速度的仿真平均转角分别为：
+
+| Speed  | Simulation / rad | Theory / rad | Relative Error |
+| ------ | ---------------: | -----------: | -------------: |
+| low    |           0.2136 |       0.2054 |          4.01% |
+| medium |           0.2146 |       0.2054 |          4.48% |
+| high   |           0.2148 |       0.2054 |          4.57% |
+
+三档转角几乎不随速度变化，说明固定圆弧下所需的几何稳态转角主要由**车辆轴距和路径曲率**决定，而不是直接由车速决定。
+
+#### 1.6.2 横摆角速度
+
+稳态近似关系：
+
+\[
+\dot{\psi} \approx v\kappa
+\]
+
+使用目标速度时的理论值：
+
+| Speed  | Target\(v\) / m/s | Theory yaw rate / rad/s | Simulation / rad/s |
+| ------ | ----------------: | ----------------------: | -----------------: |
+| low    |               3.0 |                  0.2500 |             0.2588 |
+| medium |               5.0 |                  0.4167 |             0.4155 |
+| high   |               7.0 |                  0.5833 |             0.5268 |
+
+需要注意，medium 和 high 工况的圆弧实际平均速度分别只有约 `4.794 m/s` 和 `6.071 m/s`，并未完全达到目标速度。
+
+若使用实际速度计算理论 yaw rate，则与仿真结果的相对误差约保持在 3.5%–4.1%。这说明 `vκ` 是较好的稳态近似，但实际仿真使用的是完整运动学自行车模型：
+
+\[
+\dot\psi =
+\frac{v}{L}
+\tan(\delta_f)
+\cos(\beta)
+\]
+
+因此存在一定差异。
+
+#### 1.6.3 法向加速度
+
+圆周运动关系：
+
+\[
+a_n=v^2\kappa
+\]
+
+使用目标速度得到：
+
+| Speed  | Theory\(a_n\) / m/s² | Simulation Mean / m/s² |
+| ------ | --------------------: | ----------------------: |
+| low    |                0.7500 |                  0.7500 |
+| medium |                2.0833 |                  1.9232 |
+| high   |                4.0833 |                  3.1694 |
+
+从 3 m/s 提高到 7 m/s，速度约提高到原来的：
+
+\[
+\frac{7}{3}\approx2.33
+\]
+
+而理论法向加速度需求提高到：
+
+\[
+\left(\frac{7}{3}\right)^2\approx5.44
+\]
+
+倍。
+
+medium 和 high 的仿真均值低于以目标速度计算的理论值，主要是因为圆弧稳态区间内车辆实际平均速度没有完全达到目标速度。
+
+需要说明的是，本项目中的 `normal_accel` 本身就是根据：
+
+```python
+normal_accel = speed * speed * curvature
 ```
 
-`ValueError: numpy.dtype size changed`
+计算得到，因此使用同一时刻实际速度和曲率重新计算时会得到相同结果。这里的比较主要用于验证代码公式与课程理论的一致性，而不是独立的真实车辆物理验证。
 
-这通常是 `numpy` 和 `scipy` 二进制版本不兼容。建议重新创建 Conda 环境：
+---
 
-```bash
-conda deactivate
-conda env remove -n vdm-lab -y
-conda create -n vdm-lab python=3.10 -y
-conda activate vdm-lab
-python -m pip install -r requirements.txt
+### 1.7 为什么高速路径跟踪更困难？
+
+结合理论和本次 PP 实验，可以得到以下结论。
+
+#### 1. 横向动态需求随速度快速增长
+
+在路径曲率固定时：
+
+\[
+a_n=v^2\kappa
+\]
+
+因此速度提高后，横向加速度需求按速度平方增长。高速车辆需要更快建立横向运动状态，对车辆横向响应提出更高要求。
+
+#### 2. 横摆响应随速度提高
+
+近似有：
+
+\[
+\dot{\psi}\approx v\kappa
+\]
+
+因此相同曲率下，高速车辆需要更高的横摆响应速度。
+
+#### 3. 单个采样周期内车辆前进距离增加
+
+仿真采样时间 `dt` 固定时：
+
+\[
+\Delta s \approx v\,dt
+\]
+
+速度越高，每个控制周期内车辆前进越远，因此控制器可用于发现并修正偏差的时间更短。
+
+#### 4. 高速下最大误差和稳态误差均有所增加
+
+本实验中：
+
+- 最大横向误差：`0.446 m → 0.525 m`；
+- 稳态平均横向误差：`0.438 m → 0.480 m`；
+- medium / high 的稳态误差波动明显高于 low。
+
+因此，高速工况下跟踪性能更容易受到瞬态响应、控制延迟及车辆约束的影响。
+
+#### 5. 高速困难并不意味着需要显著更大的稳态转角
+
+三档速度的稳态平均转角都约为：
+
+\[
+0.214\,rad
+\]
+
+说明对于相同半径圆弧，稳态几何转角基本不变。
+
+高速跟踪困难更主要来自：
+
+- 更高的横摆响应需求；
+- 更高的横向加速度需求；
+- 更短的误差修正时间；
+- 控制器和车辆执行器的动态限制。
+
+---
+
+### 1.8 PP 阶段结论
+
+本阶段完成了学生版 Pure Pursuit 控制器，并通过 `solution` 与 `student` 对比确认实现正确。
+
+PP 的优点包括：
+
+- 算法结构简单；
+- 几何意义清晰；
+- 计算量低；
+- 易于与不同参考路径和车辆模型结合。
+
+同时，PP 的性能对前视距离较敏感。随着速度提高，前视距离随速度自适应增加，可以改善控制平滑性，但也可能增加切弯和路径偏差。
+
+圆形路径实验表明：
+
+1. 固定曲率下，稳态转角随速度变化较小；
+2. 速度提高后，横摆和横向加速度需求明显提高；
+3. 稳态及最大横向误差均有一定增加；
+4. 高速跟踪困难主要体现为动态响应要求和误差修正时间的增加，而不是单纯需要更大的方向盘转角。
+
+这部分结果将作为后续 **LQR 与 MPC 对比实验**的 PP 基准。
+
+---
+
+### 1.9 当前 PP 相关文件
+
+```text
+vdm_lab/student/pure_pursuit.py
+analyze_circle.py
+circle_speed_analysis.csv
+
+outputs/
+├── 20260915_080400_pp_circle_low/
+├── 20260915_080444_pp_circle_medium/
+└── 20260915_080458_pp_circle_high/
 ```
 
-`NotImplementedError`
+如果 `outputs/` 会提交到 GitHub，可以直接在 README 中加入以下结果图：
 
-说明你正在运行学生版，并且对应 TODO 还没有填写。先打开报错中提示的 `vdm_lab/student/*.py` 文件。
+| Low                                                    | Medium                                                    | High                                                    |
+| ------------------------------------------------------ | --------------------------------------------------------- | ------------------------------------------------------- |
+| ![](outputs/20260915_080400_pp_circle_low/summary.png) | ![](outputs/20260915_080444_pp_circle_medium/summary.png) | ![](outputs/20260915_080458_pp_circle_high/summary.png) |
 
-实时动画窗口没有弹出
+若不准备提交整个 `outputs/` 目录，建议将代表性图片复制到固定目录，例如：
 
-确认当前环境支持 Matplotlib 图形界面。服务器或远程终端上建议先使用 `--save-fig` 或 `--save-gif` 查看结果。
-
-`unrecognized arguments: --gpx / --waypoint-ds`
-
-请确认在仓库根目录运行当前的 `run_experiment.py`：
-
-```bash
-cd ~/VDM_tracking
-python run_experiment.py --help
+```text
+docs/figures/pp/
 ```
 
-`Connection reset by peer` 或 OSM 瓦片空白
+再从 README 中引用固定路径，避免时间戳目录变化导致图片链接失效。
 
-这是在线地图连接问题，不影响轨迹跟踪算法。当前项目已有离线
-GeoJSON，建议改用：
+---
 
-```bash
---basemap geojson \
---basemap-file 'data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz'
+## 2. Kinematic LQR
+
+### 2.1 算法目标
+
+在完成 Pure Pursuit 后，本阶段实现运动学 LQR（Linear Quadratic Regulator）路径跟踪控制器。
+
+与 PP 通过前视目标点进行几何跟踪不同，LQR 直接基于车辆相对于参考路径的误差状态进行反馈控制。本文使用的误差状态为：
+
+\[
+x_e =
+\begin{bmatrix}
+e_y \\
+\dot e_y \\
+e_\psi \\
+\dot e_\psi
+\end{bmatrix}
+\]
+
+其中：
+
+- \(e_y\)：横向误差；
+- \(\dot e_y\)：横向误差变化率；
+- \(e_\psi\)：航向误差；
+- \(\dot e_\psi\)：航向误差变化率。
+
+控制目标是同时减小路径跟踪误差与控制输入代价。
+
+---
+
+### 2.2 运动学误差模型
+
+LQR 使用离散状态空间模型：
+
+\[
+x_{k+1}=Ax_k+Bu_k
+\]
+
+其中控制输入 \(u_k\) 为前轮转角。
+
+学生版中建立的运动学误差模型为：
+
+```python
+A[0, 0] = 1.0
+A[0, 1] = dt
+
+A[1, 2] = speed
+
+A[2, 2] = 1.0
+A[2, 3] = dt
+
+B[3, 0] = speed / wheelbase
 ```
 
-GeoJSON 场景和 GPX 整体偏移
+其中近似关系：
 
-两者必须使用同一个 WGS84 原点。当前地图会自动使用
-`(118.8145,31.8885)`；也可显式指定：
+\[
+\dot e_y \approx v e_\psi
+\]
 
-```bash
---map-origin 118.8145 31.8885
+说明相同的航向误差在更高车速下会更快转化为横向位置误差，这也是高速路径跟踪难度增加的一个重要原因。
+
+误差状态计算为：
+
+```python
+e_y = reference.lateral_error
+
+e_y_dot = speed * math.sin(
+    reference.heading_error
+)
+
+e_yaw = reference.heading_error
+
+e_yaw_dot = (
+    speed / vehicle.wheelbase
+    * math.tan(previous_control.steer)
+    - speed * reference.curvature
+)
+
+error_state = np.array([
+    [e_y],
+    [e_y_dot],
+    [e_yaw],
+    [e_yaw_dot],
+])
 ```
 
-`GPX 存在较稀疏路段`
+其中：
 
-这表示原始 GPX 某些相邻点距离较大。`--waypoint-ds` 只会对现有折线
-加密，不能恢复缺失的道路几何。正式实验建议从 BRouter 导出更高密度路线。
+\[
+\dot e_\psi
+===========
 
-`GPX 规划路径导出工具`
-https://brouter.de/brouter-web
+\dot\psi_}
+----------
 
-<a id="en"></a>
+\dot\psi_{\text{reference}}
+\]
 
-# Student VDM Path Tracking Lab
+并使用：
 
-Language / 语言: [中文](#zh) | **English**
+\[
+\dot\psi_{\text{vehicle}}
+\approx
+\frac{v}{L}\tan\delta
+\]
 
-This repository is designed for a Vehicle Dynamics and Motion Control lab. The lab focuses on path tracking and asks students to understand or implement:
+和：
 
-- Pure Pursuit, PP
-- LQR, including a kinematic baseline and a dynamic extension
-- Linear MPC
+\[
+\dot\psi_{\text{reference}}
+\approx
+v\kappa
+\]
 
-The vehicle can only move forward. The minimum speed is fixed at `0.0 m/s`. Reverse motion, parking paths, complex planners and unrelated controllers have been removed so that students can focus on the closed loop: reference path, error computation, control law, vehicle update and data analysis.
+构造航向误差变化率。
 
-In addition to the original teaching features, the current version supports
-BRouter/GPX routes, an online OSM basemap, portable offline `.npz` basemaps,
-and offline OSM GeoJSON scenes. These additions extend only the path input,
-vehicle backend and visualization layers; the PP/LQR/MPC controller interface
-remains unchanged.
+---
 
-The course reference is `VehicleDynamicsMobility_01_BicycleModel.pdf`. The bicycle model, curvature, normal acceleration and path tracking workflow in this repository are tied to that lecture material. See [vdm_lab/tasks/README.md](vdm_lab/tasks/README.md) for the course assignments.
+### 2.3 LQR 最优反馈
 
-## Document Roles
+LQR 最小化代价函数：
 
-- This README is the full setup and running guide, covering environment setup, algorithm entry points, routes, speed modes, vehicle parameters, logs, plots and GIF generation.
-- [vdm_lab/tasks/README.md](vdm_lab/tasks/README.md) is the course assignment sheet, focused on PDF formulas, `KMLM.png`, `exp_cm.png`, circular-path steady-state validation and report requirements.
-- [vdm_lab/GPX_EXTENSION_README.md](vdm_lab/GPX_EXTENSION_README.md) documents GPX input, coordinate origins, online/offline maps and external vehicle backends.
+\[
+J=
+\sum
+\left(
+x^TQx+u^TRu
+\right)
+\]
 
-## Feature Overview and Quick Start
+其中：
 
-Run all commands from the repository root:
+- \(Q\) 决定控制器对状态误差的重视程度；
+- \(R\) 决定控制器对转向输入大小的惩罚程度。
 
-```bash
-cd ~/VDM_tracking
-conda activate vdm-lab
+通过离散 Riccati 迭代求得矩阵 \(P\)，然后计算反馈增益：
+
+\[
+K=
+(R+B^TPB)^{-1}B^TPA
+\]
+
+反馈控制为：
+
+\[
+\delta_{fb}=-Kx
+\]
+
+代码中使用：
+
+```python
+feedback = float(
+    -(K @ error_state)[0, 0]
+)
 ```
 
-| Mode | Route input | Scene background | Network | Coordinate origin |
-| --- | --- | --- | --- | --- |
-| Original built-in route | `--route` | none | no | generated route coordinates |
-| GPX only | `--gpx` | none | no | first GPX point by default |
-| GPX + online map | `--gpx` | `--basemap osm` | yes | first GPX point or `--map-origin` |
-| GPX + offline NPZ | `--gpx` | `--basemap local` | no | first GPX point or `--map-origin` |
-| GPX + GeoJSON scene | `--gpx` | `--basemap geojson` | no | filename-bounds center or `--map-origin` |
+---
 
-### Cross-platform launch: Bash and PowerShell
+### 2.4 曲率前馈
 
-`run_experiment.py` has the same arguments on Windows and Ubuntu, including
-`--algo`, `--gpx`, `--basemap-file`, and `--waypoint-ds`. Only the shell line
-continuation differs: Bash uses `\`, while PowerShell uses a backtick `` ` ``
-(with no trailing spaces). Do not paste a Bash multi-line command into
-PowerShell.
+如果仅使用：
 
-Run the default PP + GPX + offline GeoJSON demo with either script:
+\[
+\delta=-Kx
+\]
 
-```bash
-bash scripts/run_pp.sh
+当车辆恰好位于路径中心且航向误差为零时，反馈项也为零。对于曲线路径，这会导致车辆没有提前建立所需转角。
+
+因此加入曲率前馈：
+
+\[
+\delta_{ff}=L\kappa
+\]
+
+代码：
+
+```python
+feedforward = (
+    vehicle.wheelbase
+    * reference.curvature
+)
 ```
+
+最终控制律：
+
+\[
+\boxed{
+\delta=-Kx+L\kappa
+}
+\]
+
+最终转角还受车辆最大转角约束。
+
+---
+
+### 2.5 Student 与 Solution 验证
+
+使用 `double_lane_change` 低速工况验证学生版实现。
 
 ```powershell
-.\scripts\run_pp.ps1
+python run_experiment.py --algo lqr_kinematic --version student --route double_lane_change --speed-mode low --save-log --save-fig
+python run_experiment.py --algo lqr_kinematic --version solution --route double_lane_change --speed-mode low --save-log --save-fig
 ```
 
-If PowerShell execution policy blocks the script, run:
+实验结果：
+
+| Metric                 | Student | Solution |
+| ---------------------- | ------: | -------: |
+| Steps                  |     191 |      191 |
+| Reached goal           |    True |     True |
+| Mean lateral error / m |   0.221 |    0.221 |
+| Max lateral error / m  |   0.562 |    0.562 |
+| Finish error / m       |   0.784 |    0.784 |
+
+Student 与 Solution 的结果一致，因此运动学 LQR 实现验证通过。
+
+---
+
+### 2.6 Circle 三档速度实验
+
+固定：
+
+- 算法：Kinematic LQR；
+- 车辆：`student_car`；
+- 路线：`circle`；
+- 圆弧半径：\(R=12\,m\)；
+- 其他控制与车辆参数不变。
+
+仅改变目标速度：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\run_pp.ps1
+python run_experiment.py --algo lqr_kinematic --version student --route circle --speed-mode low --save-log --save-fig
+python run_experiment.py --algo lqr_kinematic --version student --route circle --speed-mode medium --save-log --save-fig
+python run_experiment.py --algo lqr_kinematic --version student --route circle --speed-mode high --save-log --save-fig
 ```
 
-For a shell-independent, cross-platform entry point, use:
+对应输出目录：
 
 ```text
-python examples/run_pp_demo.py
+outputs/20260915_113151_lqr_kinematic_circle_low
+outputs/20260915_113156_lqr_kinematic_circle_medium
+outputs/20260915_113201_lqr_kinematic_circle_high
 ```
 
-### A. Original Built-in Routes
+全程统计：
 
-All original PP, kinematic LQR, dynamic LQR, MPC, student/solution,
-speed-mode, vehicle-parameter, logging, plot and GIF functions remain
-available:
+| Metric                 |   Low | Medium |  High |
+| ---------------------- | ----: | -----: | ----: |
+| Target speed / m/s     |   3.0 |    5.0 |   7.0 |
+| Mean lateral error / m | 0.219 |  0.239 | 0.190 |
+| Max lateral error / m  | 0.342 |  0.413 | 0.476 |
+| Reached goal           |  True |   True |  True |
 
-```bash
-python run_experiment.py --algo pp --route mixed_course --animate
-```
+最大横向误差随速度提高：
 
-Run a solution and save all results:
+\[
+0.342\rightarrow0.413\rightarrow0.476\,m
+\]
 
-```bash
-python run_experiment.py \
-  --algo lqr_kinematic \
-  --version solution \
-  --route right_angle \
-  --speed-mode low \
-  --save-log --save-fig --save-gif
-```
+说明高速度下的峰值路径偏差更加明显。
 
-### B. GPX Tracking Without a Map
+---
 
-```bash
-python run_experiment.py \
-  --algo pp \
-  --gpx data/gpx/homework_route_1.gpx \
-  --target-speed 8 \
-  --waypoint-ds 1.0 \
-  --animate
-```
+### 2.7 LQR 稳态圆弧分析
 
-`--gpx` takes precedence over `--route`. By default, the first valid GPX
-point is the local East/North metric origin. Long GPX routes automatically
-receive a larger simulation time budget; use `--max-time` to override it.
-
-### C. Recommended: GPX With the Current Offline GeoJSON Scene
-
-The repository currently contains:
+使用与 PP 相同的筛选条件：
 
 ```text
-data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz
+abs(curvature - 1/12) < 0.005
 ```
 
-Run it completely offline:
-
-```bash
-python run_experiment.py \
-  --algo pp \
-  --gpx data/gpx/homework_route_1.gpx \
-  --basemap geojson \
-  --basemap-file 'data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz' \
-  --map-origin 118.8145 31.8885 \
-  --target-speed 8 \
-  --waypoint-ds 1.0 \
-  --animate
-```
+并去除候选圆弧段首尾各 10% 的过渡记录。
 
-For this filename, `--map-origin` is optional. The southwest and northeast
-bounds are parsed from the filename and their center `(118.8145,31.8885)` is
-automatically used as local `(0,0)`. Roads, buildings, water, green areas,
-railways and selected transit/signal points are rendered. Adjust the one-time
-rasterization resolution with `--basemap-max-pixels 3000` if needed.
+结果如下：
 
-### D. Optional Online OSM or Offline NPZ
-
-Use online OSM only when the network can access the service reliably:
+| Metric                              |    Low |   Medium |   High |
+| ----------------------------------- | -----: | -------: | -----: |
+| Target speed / m/s                  |  3.000 |    5.000 |  7.000 |
+| Mean actual speed / m/s             |  3.000 |    4.787 |  6.060 |
+| Mean steer / rad                    | 0.2104 |   0.2115 | 0.1997 |
+| Theory steer / rad                  | 0.2054 |   0.2054 | 0.2054 |
+| Steer relative error                |  2.45% |    2.96% |  2.77% |
+| Mean yaw rate / rad/s               | 0.2554 |   0.4092 | 0.5224 |
+| Mean normal acceleration / m/s²    | 0.7500 |   1.9179 | 3.1622 |
+| Mean lateral error / m              | 0.3294 |   0.3791 | 0.3255 |
+| Max lateral error / m               | 0.3419 |   0.4130 | 0.4761 |
+| Lateral error std / m               | 0.0099 |   0.0196 | 0.0708 |
+| Max\(                               |  \beta | \) / rad | 0.1364 |
+| Mean steer rate\(J_\delta\) / rad/s | 0.9726 |   0.5035 | 5.6422 |
 
-```bash
-python run_experiment.py \
-  --algo pp \
-  --gpx data/gpx/homework_route_1.gpx \
-  --basemap osm \
-  --basemap-zoom 16 \
-  --animate
-```
+从结果可见：
 
-With a previously generated portable map package:
-
-```bash
-python run_experiment.py \
-  --algo pp \
-  --gpx data/gpx/homework_route_1.gpx \
-  --basemap local \
-  --basemap-file data/maps/homework_route_1_z16.npz \
-  --animate
-```
-
-See the [GPX extension guide](vdm_lab/GPX_EXTENSION_README.md) for NPZ
-generation, tile licensing and network retry options.
+1. 三档速度下平均转角仍接近理论值 \(0.2054\,rad\)；
+2. 高速时最大横向误差继续增大；
+3. high 工况的横向误差标准差明显升高；
+4. high 工况的最大 \(|\beta|\) 和转角变化率显著增大；
+5. 因此 LQR 虽然能够保持较好的路径精度，但高速时控制动作明显更激烈。
 
-### E. Long-route Views and Saved Results
+特别是：
 
-`--view-mode auto` selects a vehicle-following view with a whole-route inset
-for long routes. Override it with:
-
-```bash
---view-mode full
---view-mode follow --follow-radius 60
-```
+\[
+J_\delta:
+0.9726,\ 0.5035,\ 5.6422\,rad/s
+\]
 
-Save a complete offline-scene experiment:
-
-```bash
-python run_experiment.py \
-  --algo pp \
-  --gpx data/gpx/homework_route_1.gpx \
-  --basemap geojson \
-  --basemap-file 'data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz' \
-  --save-log --save-fig --save-gif
-```
+high 工况的平均转角变化率远高于 low / medium，说明高速时控制器为了压制误差进行了更加快速的转向修正。
 
-## Course Model Mapping
+---
 
-| Course concept | Symbol in PDF | Code location |
-| --- | --- | --- |
-| Front steering angle | `δf` | `ControlCommand.steer` |
-| Side-slip angle | `β` | `front_steer_slip_angle()` and `StepRecord.beta` |
-| Yaw rate | `ψ_dot` | `yaw_rate_from_steer()` and `StepRecord.yaw_rate` |
-| Radius and curvature | `ρ = 1 / κ` | `Path.curvature` |
-| Normal acceleration | `a_n = v^2 κ` | `StepRecord.normal_accel` |
-| Vehicle parameters | `lf, lr, m, Iz, Cf, Cr` | `vdm_lab/config/vehicle_params.py` |
+### 2.8 PP 与 Kinematic LQR 对比
 
-Lecture figures:
+#### 2.8.1 全程横向误差
 
-![Kinematic bicycle model](vdm_lab/KMLM.png)
+| Speed  | PP Mean / m |    LQR Mean / m | PP Max / m |     LQR Max / m |
+| ------ | ----------: | --------------: | ---------: | --------------: |
+| low    |       0.286 | **0.219** |      0.446 | **0.342** |
+| medium |       0.288 | **0.239** |      0.505 | **0.413** |
+| high   |       0.275 | **0.190** |      0.525 | **0.476** |
 
-![Circular motion example](vdm_lab/exp_cm.png)
+在三档速度下，LQR 的平均误差和最大误差均低于 PP。
 
-## Demo Videos
+全程平均误差相对 PP 大约降低：
 
-The following GIFs are generated by the current lab framework in the low-speed mode.
+- low：23.4%；
+- medium：17.0%；
+- high：30.9%。
 
-| PP Double Lane Change | Kinematic LQR Right Angle |
-| --- | --- |
-| ![PP double lane change](vdm_lab/assets/demo_gifs/pp_double_lane_change_low.gif) | ![LQR kinematic right angle](vdm_lab/assets/demo_gifs/lqr_kinematic_right_angle_low.gif) |
+---
 
-| Dynamic LQR S-Curve | MPC Mixed Course |
-| --- | --- |
-| ![LQR dynamic s curve](vdm_lab/assets/demo_gifs/lqr_dynamic_s_curve_low.gif) | ![MPC mixed course](vdm_lab/assets/demo_gifs/mpc_mixed_course_low.gif) |
+#### 2.8.2 稳态圆弧横向误差
 
-| PP Circle | Kinematic LQR Circle | MPC Circle |
-| --- | --- | --- |
-| ![PP circle](vdm_lab/assets/demo_gifs/pp_circle_low.gif) | ![LQR kinematic circle](vdm_lab/assets/demo_gifs/lqr_kinematic_circle_low.gif) | ![MPC circle](vdm_lab/assets/demo_gifs/mpc_circle_low.gif) |
+| Speed  | PP Mean / m |     LQR Mean / m | Improvement |
+| ------ | ----------: | ---------------: | ----------: |
+| low    |      0.4379 | **0.3294** |       24.8% |
+| medium |      0.4724 | **0.3791** |       19.8% |
+| high   |      0.4804 | **0.3255** |       32.3% |
 
-Historical PP/LQR/MPC GIFs from the original repository are kept in `vdm_lab/assets/original_gifs/` for comparison.
+LQR 在三档速度下均降低了稳态圆弧平均横向误差。
 
-## Course Tasks
+但是更高的精度伴随着更激烈的控制动作。
 
-Detailed questions, derivations, data processing steps and report requirements are kept in [vdm_lab/tasks/README.md](vdm_lab/tasks/README.md). Current tasks:
+---
 
-- Task 1: derive and explain the kinematic bicycle model using `KMLM.png`
-- Task 2: analyze curvature, speed and normal acceleration using `exp_cm.png`
-- Task 3: circular-path steady-state tracking for curvature, steering angle, yaw rate and normal acceleration
+#### 2.8.3 控制平滑性比较
 
-## 1. Create a Conda Environment
+| Speed  | PP\(J_\delta\) / rad/s | LQR\(J_\delta\) / rad/s |
+| ------ | ---------------------: | ----------------------: |
+| low    |                 0.1941 |                  0.9726 |
+| medium |                 0.0340 |                  0.5035 |
+| high   |                 0.1091 |        **5.6422** |
 
-Use an isolated Conda environment to avoid version conflicts among `numpy`, `scipy` and `cvxpy`.
+特别是在 high 工况：
 
-```bash
-conda create -n vdm-lab python=3.10 -y
-conda activate vdm-lab
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
+\[
+\frac{J_{\delta,LQR}}{J_{\delta,PP}}
+\approx
+51.7
+\]
 
-Check the installation:
+说明 LQR 为获得更高跟踪精度，进行了远比 PP 更频繁或更剧烈的转向修正。
 
-```bash
-python - <<'PY'
-import numpy
-import scipy
-import matplotlib
-import cvxpy
-from PIL import Image
+因此不能仅依据横向误差判断控制器性能，还需要同时评价：
 
-print("numpy", numpy.__version__)
-print("scipy", scipy.__version__)
-print("matplotlib", matplotlib.__version__)
-print("cvxpy", cvxpy.__version__)
-print("pillow", Image.__version__)
-PY
-```
+- 跟踪精度；
+- 控制平滑性；
+- 侧偏响应；
+- 是否出现转角饱和；
+- 高速稳定性。
 
-`cvxpy` is only required for MPC. PP and LQR can run without calling it.
+---
 
-## 2. Run Reference Solutions
+#### 2.8.4 侧偏角比较
 
-Reference implementations are in `vdm_lab/solutions/`. Run them first to verify the environment, plots, logs and GIF export.
+| Speed | PP max \(|\beta|\) / rad | LQR max \(|\beta|\) / rad |
+| --- | ---: | ---: |
+| low | 0.1176 | 0.1364 |
+| medium | 0.1230 | 0.1785 |
+| high | 0.1162 | **0.3368** |
 
-```bash
-python run_experiment.py --algo pp --version solution --route double_lane_change --save-log --save-fig --save-gif
-python run_experiment.py --algo lqr_kinematic --version solution --route right_angle --save-log --save-fig --save-gif
-python run_experiment.py --algo lqr_dynamic --version solution --route s_curve --save-log --save-fig --save-gif
-python run_experiment.py --algo pp --version solution --route circle --save-log --save-fig --save-gif
-python run_experiment.py --algo mpc --version solution --route mixed_course --save-log --save-fig --save-gif
-```
+high 工况下 LQR 的最大侧偏角约为 PP 的 2.9 倍。
 
-Show the real-time animation and record a GIF at the same time:
+需要注意，本阶段使用的仍然是运动学自行车模型，因此该结果主要反映当前模型中的几何侧偏量和控制激烈程度。轮胎侧向力饱和等真实高速动力学效应需要在后续动力学模型中进一步分析。
 
-```bash
-python run_experiment.py --algo pp --version solution --route double_lane_change --animate --save-gif
-```
+---
 
-On a desktop environment, a Matplotlib animation window will open. The full animation is also saved to `outputs/<timestamp>_<algorithm>_<route>_<speed_mode>/animation.gif`.
+### 2.9 LQR 阶段结论
 
-GIFs and real-time animation show historical vehicle pose ghosts by default. These ghosts are retained from the start of the run to the current frame, which helps students observe step-by-step pose changes. Disable them, tune the sampling stride, or limit the count if the figure becomes too dense:
+本阶段完成了运动学 LQR 的：
 
-```bash
-python run_experiment.py --algo pp --route double_lane_change --save-gif --no-history-ghosts
-python run_experiment.py --algo pp --route double_lane_change --save-gif --ghost-count 12 --ghost-stride 8
-```
+- 状态空间误差模型；
+- Riccati 迭代；
+- 最优反馈增益计算；
+- 曲率前馈；
+- 学生版与参考版验证；
+- circle 低、中、高三档速度实验；
+- PP 与 LQR 初步对比。
 
-The default `--ghost-count 0` means no count limit. A smaller `--ghost-stride` makes the retained ghosts denser.
+实验显示：
 
-## 3. Speed Modes
+1. 在本次 `double_lane_change` 和 `circle` 工况中，LQR 的横向跟踪误差均低于 PP；
+2. LQR 的平均稳态转角与圆形路径理论值接近；
+3. 随速度提高，LQR 的最大横向误差仍明显增加；
+4. high 工况下横向误差标准差、侧偏角和转角变化率显著增加；
+5. LQR 表现出“更高跟踪精度，但可能更激进”的控制特征；
+6. 因此后续与 MPC 比较时，需要同时考虑误差和控制平滑性，而不能只比较单一的平均横向误差。
 
-The target speed has three modes: low, medium and high. The default mode is `low`.
+下一阶段将在相同路线和速度条件下实现并测试 **MPC**，形成 PP / LQR / MPC 的统一对比。
 
-```bash
-python run_experiment.py --algo pp --route double_lane_change
-python run_experiment.py --algo pp --route double_lane_change --speed-mode low
-python run_experiment.py --algo pp --route double_lane_change --speed-mode medium
-python run_experiment.py --algo pp --route double_lane_change --speed-mode high
-```
+---
 
-Route speed settings:
-
-| Route | low | medium | high |
-| --- | ---: | ---: | ---: |
-| `double_lane_change` strengthened double lane change | `4.0 m/s` | `7.0 m/s` | `9.0 m/s` |
-| `right_angle` strengthened right-angle turn | `3.5 m/s` | `5.5 m/s` | `7.0 m/s` |
-| `s_curve` | `4.0 m/s` | `6.5 m/s` | `8.0 m/s` |
-| `circle` circular path | `3.0 m/s` | `5.0 m/s` | `7.0 m/s` |
-| `mixed_course` | `4.0 m/s` | `7.0 m/s` | `9.0 m/s` |
-
-To override the mode with a custom speed:
-
-```bash
-python run_experiment.py --algo lqr_kinematic --route s_curve --target-speed 5.0
-```
-
-## 4. Routes
-
-Routes are defined in `vdm_lab/config/routes.py`.
-
-- `double_lane_change`: strengthened lane-change route with larger lateral displacement over a shorter distance
-- `right_angle`: strengthened right-angle turn with a short straight segment and a small-radius circular arc
-- `s_curve`: alternating left-right turns for smoothness and stability analysis
-- `circle`: a straight tangent entry, one circular lap and a straight exit, used to verify `kappa = 1/R`, `delta_f ≈ atan(L kappa)`, `psi_dot ≈ v kappa` and `a_n = v^2 kappa`
-- `mixed_course`: a combined route with straight, gentle curve, S-curve and lane-change parts
-
-Examples:
-
-```bash
-python run_experiment.py --algo lqr_kinematic --version solution --route right_angle
-python run_experiment.py --algo pp --version solution --route circle
-python run_experiment.py --algo mpc --version solution --route mixed_course
-```
-
-## 5. Vehicle Parameters
-
-Vehicle parameters are centralized in `vdm_lab/config/vehicle_params.py`. Students should tune or add vehicle presets there instead of hard-coding values in algorithm files.
-
-The default vehicle preset is `student_car`; `compact_ev` is also provided for comparison.
-
-```bash
-python run_experiment.py --algo pp --version solution --vehicle student_car
-python run_experiment.py --algo pp --version solution --vehicle compact_ev
-```
-
-The parameters include wheelbase, width, track width, tire size, steering limits, acceleration limits, speed range, mass, yaw inertia, axle-to-CG distances and cornering stiffness.
-
-## 6. Student Templates
-
-Student templates are in `vdm_lab/student/`. Before completion, they raise a Chinese `NotImplementedError` at the key formula positions.
-
-```bash
-python run_experiment.py --algo pp --version student --route double_lane_change
-```
-
-Recommended order:
-
-1. `vdm_lab/student/pure_pursuit.py`
-2. `vdm_lab/student/lqr_kinematic.py`
-3. `vdm_lab/student/lqr_dynamic.py`
-4. `vdm_lab/student/mpc.py`
-
-The templates keep function signatures, inputs, outputs, saturation, logging and Chinese TODO comments. Students mainly fill in the control formulas.
-
-## 7. Outputs
-
-With `--save-log`, `--save-fig` or `--save-gif`, outputs are written to:
+### 2.10 当前 LQR 相关文件
 
 ```text
-outputs/<timestamp>_<algorithm>_<route>_<speed_mode>/
+vdm_lab/student/lqr_kinematic.py
+analyze_circle_lqr.py
+circle_speed_analysis_lqr.csv
+
+outputs/
+├── 20260915_113151_lqr_kinematic_circle_low/
+├── 20260915_113156_lqr_kinematic_circle_medium/
+└── 20260915_113201_lqr_kinematic_circle_high/
 ```
 
-Common files:
+如果这些输出目录会提交到 GitHub，可以在 README 中加入：
 
-- `trajectory.csv`: state, input, `beta`, `yaw_rate`, target index, lateral error, heading error, curvature and normal acceleration at each simulation step
-- `metrics.json`: mean and max lateral error, final error, max steering angle, max acceleration, max normal acceleration, max side-slip angle, max yaw rate and goal status
-- `summary.png`: trajectory, error, speed and control summary
-- `animation.gif`: path tracking animation for reports and classroom demonstration
-- `mpc_predictions.csv`: MPC predicted trajectory samples, only generated by MPC
-- `reference_path.csv`: the exact resampled reference path used by controllers; GPX runs also include latitude, longitude and elevation
-- `gpx_overview.png`: local-metric and original geographic GPX views, including the scene when a basemap is enabled
+| Low                                                               | Medium                                                               | High                                                               |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| ![](outputs/20260915_113151_lqr_kinematic_circle_low/summary.png) | ![](outputs/20260915_113156_lqr_kinematic_circle_medium/summary.png) | ![](outputs/20260915_113201_lqr_kinematic_circle_high/summary.png) |
 
-## 8. Project Structure
+---
+
+## 3. Linear MPC
+
+### 3.1 算法目标
+
+在完成 Pure Pursuit 和 Kinematic LQR 后，本阶段实现 Linear Model Predictive Control（MPC）。
+
+与前两种方法不同，MPC 不只计算当前一步控制，而是在每一个仿真时刻预测未来一段时间内的车辆状态，并同时优化一串未来控制输入：
+
+\[
+u_0,u_1,\ldots,u_{T-1}
+\]
+
+其中控制输入为：
+
+\[
+u=\begin{bmatrix}a\\\delta\end{bmatrix}
+\]
+
+MPC 通过最小化未来预测时域内的跟踪误差、控制输入大小和控制变化，同时满足车辆速度、加速度、转角与转角变化率约束，得到当前时刻最合适的控制命令。
+
+最后只执行最优控制序列中的第一步：
+
+\[
+\boxed{a_0,\delta_0}
+\]
+
+下一仿真周期再根据新的车辆状态重新预测和优化，这就是滚动时域控制（Receding Horizon Control）。
+
+---
+
+### 3.2 预测参考轨迹
+
+MPC 状态定义为：
+
+\[
+z=\begin{bmatrix}x\\y\\v\\\psi\end{bmatrix}
+\]
+
+对于预测时域 \(T\)，构造：
+
+\[
+z_{ref}\in\mathbb{R}^{4\times(T+1)}
+\]
+
+即未来 \(T+1\) 个参考状态。
+
+参考点从当前最近路径点开始，根据预计行驶距离：
+
+\[
+\Delta s\approx v\Delta t
+\]
+
+向前选择对应路径点。
+
+对于圆形路径，还需要对参考航向进行连续化处理。由于 \(+\pi\) 与 \(-\pi\) 实际表示相邻方向，如果直接相减可能产生接近 \(2\pi\) 的伪误差，因此使用 `pi_to_pi()` 保证预测时域内 yaw 连续。
+
+---
+
+### 3.3 线性化车辆模型
+
+MPC 内部预测基于运动学自行车模型：
+
+\[
+x_{k+1}=x_k+v_k\cos\psi_k\Delta t
+\]
+
+\[
+y_{k+1}=y_k+v_k\sin\psi_k\Delta t
+\]
+
+\[
+v_{k+1}=v_k+a_k\Delta t
+\]
+
+\[
+\psi_{k+1}=\psi_k+\frac{v_k}{L}\tan\delta_k\Delta t
+\]
+
+由于模型中含有 \(\sin\)、\(\cos\) 和 \(\tan\) 等非线性项，因此在当前预测轨迹附近进行一阶线性化：
+
+\[
+\boxed{z_{k+1}=Az_k+Bu_k+C}
+\]
+
+其中 \(A\)、\(B\)、\(C\) 随预测速度、yaw 和 steer 更新。因此本项目中的 Linear MPC 实际流程是：先预测未来状态，再沿预测轨迹局部线性化，然后求解线性约束下的二次规划问题。
+
+---
+
+### 3.4 MPC 目标函数
+
+MPC 的代价函数由四部分组成：
+
+\[
+J=
+\sum_{t=0}^{T-1}
+\left[
+(z_t-z_t^{ref})^TQ(z_t-z_t^{ref})
++u_t^TRu_t
+\right]
+\]
+
+再加控制变化惩罚：
+
+\[
+\sum_{t=0}^{T-2}
+(u_{t+1}-u_t)^TR_d(u_{t+1}-u_t)
+\]
+
+以及终端状态代价：
+
+\[
+(z_T-z_T^{ref})^TQ_f(z_T-z_T^{ref})
+\]
+
+各矩阵的作用为：
+
+- \(Q\)：惩罚预测状态与参考状态之间的误差；
+- \(R\)：惩罚过大的加速度和转角；
+- \(R_d\)：惩罚相邻控制输入变化过快；
+- \(Q_f\)：保证预测时域末端仍接近参考状态。
+
+这使 MPC 能够显式平衡：
+
+\[
+\boxed{\text{跟踪精度}\quad\text{vs}\quad\text{控制平滑性}}
+\]
+
+---
+
+### 3.5 车辆约束
+
+优化过程中加入车辆物理限制：
+
+\[
+v_{min}\le v\le v_{max}
+\]
+
+\[
+-a_{decel,max}\le a\le a_{max}
+\]
+
+\[
+|\delta|\le\delta_{max}
+\]
+
+以及转角变化率约束：
+
+\[
+|\delta_{t+1}-\delta_t|
+\le
+\dot\delta_{max}\Delta t
+\]
+
+与 PP/LQR 计算后再进行 `clamp()` 不同，MPC 在求解阶段就知道车辆控制边界，因此优化结果本身已经考虑车辆的可执行能力。
+
+该二次规划问题使用 OSQP 求解。
+
+---
+
+### 3.6 Iterative MPC 与滚动时域
+
+由于线性模型 \(A,B,C\) 依赖未来预测状态，而未来状态又依赖控制输入，因此本实现采用迭代方式：
 
 ```text
-run_experiment.py
-prepare_offline_basemap.py
-data/
-  gpx/
-    homework_route_1.gpx
-  planet_118.792,31.875_118.837,31.902.osm.geojson.xz
-vdm_lab/
-  config/
-    vehicle_params.py
-    routes.py
-    speed_profiles.py
-  common/
-    path.py
-    reference.py
-    simulation.py
-    gpx.py
-    basemap.py
-    vector_map.py
-    vehicle_backend.py
-    vehicle.py
-    bicycle_model.py
-    visualization.py
-    logging.py
-  solutions/
-  student/
-  tasks/
-  assets/
-    demo_gifs/
-    original_gifs/
+上一时刻控制作为初始猜测
+        ↓
+predict_motion()
+        ↓
+得到预测轨迹 z_bar
+        ↓
+沿 z_bar 建立 A、B、C
+        ↓
+solve_linear_mpc()
+        ↓
+得到新的控制序列
+        ↓
+若控制变化仍较大，则再次预测与求解
+        ↓
+收敛或达到最大迭代次数
+        ↓
+只执行 a[0]、steer[0]
 ```
 
-## 9. Troubleshooting
+因此每一个仿真时刻都会重新利用最新车辆状态进行优化。
 
-`ModuleNotFoundError: No module named 'cvxpy'`
+---
 
-```bash
-conda activate vdm-lab
-python -m pip install -r requirements.txt
+### 3.7 Student 与 Solution 验证
+
+使用 `double_lane_change` 低速工况验证 Student MPC：
+
+```powershell
+python run_experiment.py --algo mpc --version student --route double_lane_change --speed-mode low --save-log --save-fig
+python run_experiment.py --algo mpc --version solution --route double_lane_change --speed-mode low --save-log --save-fig
 ```
 
-`ValueError: numpy.dtype size changed`
+结果：
 
-This usually means that `numpy` and `scipy` binary builds are incompatible. Recreate the Conda environment:
+| Metric                 | Student | Solution |
+| ---------------------- | ------: | -------: |
+| Steps                  |     187 |      187 |
+| Reached goal           |    True |     True |
+| Mean lateral error / m |   0.177 |    0.177 |
+| Max lateral error / m  |   0.450 |    0.450 |
+| Finish error / m       |   0.088 |    0.088 |
 
-```bash
-conda deactivate
-conda env remove -n vdm-lab -y
-conda create -n vdm-lab python=3.10 -y
-conda activate vdm-lab
-python -m pip install -r requirements.txt
+Student 与 Solution 结果完全一致，因此 MPC 实现验证通过。
+
+在同一 `double_lane_change + low` 工况下：
+
+| Algorithm     | Mean lateral error / m | Max lateral error / m | Finish error / m |
+| ------------- | ---------------------: | --------------------: | ---------------: |
+| PP            |                  0.313 |                 0.756 |            0.879 |
+| Kinematic LQR |                  0.221 |                 0.562 |            0.784 |
+| MPC           |        **0.177** |       **0.450** |  **0.088** |
+
+在这个单一工况下，MPC 的横向误差最低，但该结果不能直接推广到所有路线与参数设置。
+
+---
+
+### 3.8 Circle 三档速度实验
+
+运行：
+
+```powershell
+python run_experiment.py --algo mpc --version student --route circle --speed-mode low --save-log --save-fig
+python run_experiment.py --algo mpc --version student --route circle --speed-mode medium --save-log --save-fig
+python run_experiment.py --algo mpc --version student --route circle --speed-mode high --save-log --save-fig
 ```
 
-`NotImplementedError`
+输出目录：
 
-You are running a student template and a required TODO formula is still missing. Open the `vdm_lab/student/*.py` file mentioned in the error message.
-
-No animation window appears
-
-Make sure your environment supports Matplotlib GUI windows. On a remote server, use `--save-fig` or `--save-gif` and inspect the saved files instead.
-
-`unrecognized arguments: --gpx / --waypoint-ds`
-
-Run the current root entry point:
-
-```bash
-cd ~/VDM_tracking
-python run_experiment.py --help
+```text
+outputs/20260915_120823_mpc_circle_low
+outputs/20260915_120946_mpc_circle_medium
+outputs/20260915_121034_mpc_circle_high
 ```
 
-`Connection reset by peer` or blank OSM tiles
+全程统计：
 
-This is an online-map connection issue, not a controller failure. Use the
-included offline GeoJSON scene:
+| Metric                 |   Low | Medium |  High |
+| ---------------------- | ----: | -----: | ----: |
+| Target speed / m/s     |   3.0 |    5.0 |   7.0 |
+| Mean lateral error / m | 0.144 |  0.157 | 0.168 |
+| Max lateral error / m  | 0.226 |  0.254 | 0.348 |
+| Finish error / m       | 0.031 |  0.041 | 0.029 |
+| Reached goal           |  True |   True |  True |
 
-```bash
---basemap geojson \
---basemap-file 'data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz'
+MPC 的平均和最大横向误差均随速度增加：
+
+\[
+0.144\rightarrow0.157\rightarrow0.168\,m
+\]
+
+\[
+0.226\rightarrow0.254\rightarrow0.348\,m
+\]
+
+因此在 MPC 实验中，“速度升高后跟踪难度增加”的趋势非常清楚。
+
+---
+
+### 3.9 MPC 稳态圆弧分析
+
+与 PP/LQR 使用相同筛选方法：
+
+```text
+abs(curvature - 1/12) < 0.005
 ```
 
-The GeoJSON scene and GPX are shifted relative to each other
+并去除候选圆弧段首尾各 10% 的过渡记录。
 
-They must use the same WGS84 origin. The current map automatically selects
-`(118.8145,31.8885)`, or set it explicitly:
+| Metric                              |              Low |           Medium |             High |
+| ----------------------------------- | ---------------: | ---------------: | ---------------: |
+| Target speed / m/s                  |            3.000 |            5.000 |            7.000 |
+| Mean actual speed / m/s             |            3.019 |            4.893 |            6.935 |
+| Mean steer / rad                    |           0.2097 |           0.2107 |           0.2101 |
+| Theory steer / rad                  |           0.2054 |           0.2054 |           0.2054 |
+| Steer error                         |            2.07% |            2.57% |            2.30% |
+| Mean yaw rate / rad/s               |           0.2555 |           0.4162 |           0.5900 |
+| Mean normal acceleration / m/s²    |           0.7593 |           1.9949 |           4.0085 |
+| Mean lateral error / m              | **0.2188** | **0.2520** | **0.3001** |
+| Max lateral error / m               | **0.2260** | **0.2541** | **0.3468** |
+| Lateral error std / m               |           0.0049 |          0.00065 |           0.0155 |
+| Max\(                               |            \beta |         \) / rad |           0.1370 |
+| Mean steer rate\(J_\delta\) / rad/s |           0.7728 |          0.00056 |           1.2451 |
 
-```bash
---map-origin 118.8145 31.8885
+稳态平均横向误差：
+
+\[
+0.2188\rightarrow0.2520\rightarrow0.3001\,m
+\]
+
+从 low 到 high 增加约 37.2%。
+
+同时 high 工况实际平均速度达到：
+
+\[
+6.935\,m/s
+\]
+
+已经非常接近目标 \(7\,m/s\)。相应平均法向加速度：
+
+\[
+4.0085\,m/s^2
+\]
+
+也接近目标速度理论值：
+
+\[
+\frac{7^2}{12}=4.0833\,m/s^2
+\]
+
+需要注意，日志中的 `normal_accel` 本身由速度和路径曲率计算，因此使用同一实际速度与曲率得到的理论值属于内部一致性检查，而不是独立的车辆动力学验证。
+
+---
+
+### 3.10 三算法 Circle 精度比较
+
+#### 全程平均与最大横向误差
+
+| Speed  | PP Mean | LQR Mean |        MPC Mean | PP Max | LQR Max |         MPC Max |
+| ------ | ------: | -------: | --------------: | -----: | ------: | --------------: |
+| low    |   0.286 |    0.219 | **0.144** |  0.446 |   0.342 | **0.226** |
+| medium |   0.288 |    0.239 | **0.157** |  0.505 |   0.413 | **0.254** |
+| high   |   0.275 |    0.190 | **0.168** |  0.525 |   0.476 | **0.348** |
+
+在当前 circle 实验中，三档速度的误差排序均为：
+
+\[
+\boxed{\text{MPC}<\text{LQR}<\text{PP}}
+\]
+
+这里只表示当前实验中横向误差的大小，不表示算法在所有场景下的普遍优劣。
+
+#### 稳态圆弧平均横向误差
+
+| Speed  | PP / m | LQR / m |          MPC / m |
+| ------ | -----: | ------: | ---------------: |
+| low    | 0.4379 |  0.3294 | **0.2188** |
+| medium | 0.4724 |  0.3791 | **0.2520** |
+| high   | 0.4804 |  0.3255 | **0.3001** |
+
+MPC 相比 PP 的稳态平均误差约降低：
+
+- low：50.0%；
+- medium：46.6%；
+- high：37.5%。
+
+MPC 相比 LQR 约降低：
+
+- low：33.6%；
+- medium：33.5%；
+- high：7.8%。
+
+high 工况下 MPC 仍具有最低平均误差，但相对于 LQR 的优势已经明显缩小。
+
+---
+
+### 3.11 三算法控制平滑性比较
+
+使用稳态圆弧中的平均转角变化率 \(J_\delta\)：
+
+| Speed  |       PP / rad/s | LQR / rad/s |       MPC / rad/s |
+| ------ | ---------------: | ----------: | ----------------: |
+| low    | **0.1941** |      0.9726 |            0.7728 |
+| medium |           0.0340 |      0.5035 | **0.00056** |
+| high   | **0.1091** |      5.6422 |            1.2451 |
+
+high 工况下：
+
+\[
+J_{\delta,LQR}=5.6422
+\]
+
+而：
+
+\[
+J_{\delta,MPC}=1.2451
+\]
+
+MPC 比 LQR 低约 77.9%，说明在当前高速圆弧工况下，MPC 在获得更低跟踪误差的同时，也明显抑制了方向盘快速变化。
+
+但 PP high 的 \(J_\delta\) 仍最低，因此不能简单把“控制最平滑”也归给 MPC。当前实验更适合总结为：
+
+```text
+PP  ：控制最简单、较平滑，但误差较大
+LQR ：误差较小，但高速下控制可能非常激进
+MPC ：误差最低，并明显改善 LQR 的高速控制平滑性
 ```
 
-`GPX contains sparse segments`
+---
 
-Some adjacent source points are far apart. `--waypoint-ds` densifies the
-existing polyline but cannot reconstruct missing road geometry. Export a
-denser BRouter route for formal experiments.
+### 3.12 侧偏响应比较
+
+high 工况最大 \(|\beta|\)：
+
+| Algorithm | max \(|\beta|\) / rad |
+| --- | ---: |
+| PP | 0.1162 |
+| LQR | **0.3368** |
+| MPC | 0.1628 |
+
+LQR high 的侧偏响应明显最大；MPC 高于 PP，但远低于 LQR。
+
+由于当前主仿真植物仍是运动学自行车模型，这里的 \(\beta\) 主要反映模型中的几何侧偏和转向激烈程度。轮胎侧向力、摩擦极限以及高速失稳等真实动力学效应，需要在后续动力学模型实验中进一步分析。
+
+---
+
+### 3.13 为什么速度升高后跟踪更困难
+
+Circle 实验给出了比较清楚的理论与实验对应关系。
+
+固定曲率：
+
+\[
+\kappa=\frac{1}{R}
+\]
+
+理论稳态转角近似：
+
+\[
+\delta\approx\arctan(L\kappa)
+\]
+
+因此在固定半径下，稳态转角基本不随速度变化。三种算法的实验也都显示平均稳态转角约为 \(0.20\sim0.21\,rad\)。
+
+但横摆角速度需求：
+
+\[
+\dot\psi\approx v\kappa
+\]
+
+随速度线性增加，而法向加速度：
+
+\[
+a_n=v^2\kappa
+\]
+
+随速度平方增加。
+
+此外，对固定仿真步长 \(\Delta t\)：
+
+\[
+\Delta s\approx v\Delta t
+\]
+
+速度越高，同样一个控制周期内车辆前进距离越大，因此每米路径上的可用修正次数减少，误差更容易在控制器下一次修正前继续累积。
+
+当前运动学模型还没有显式模拟轮胎侧向力饱和。因此“高速时轮胎更容易达到摩擦极限”属于后续动力学模型需要验证的现象，而不能由当前运动学实验直接证明。
+
+---
+
+### 3.14 MPC 阶段结论
+
+本阶段完成了 Linear MPC 的：
+
+- 预测时域参考轨迹构造；
+- 非线性运动学模型局部线性化；
+- 状态误差、控制输入、控制变化和终端状态代价；
+- 速度、加速度、转角和转角变化率约束；
+- OSQP 二次规划求解；
+- iterative linear MPC；
+- receding horizon 控制；
+- Student / Solution 一致性验证；
+- circle 三档速度实验；
+- PP / LQR / MPC 精度与平滑性初步比较。
+
+当前实验表明：MPC 在 `double_lane_change + low` 以及 circle 三档速度实验中都取得了最低的横向误差；在 high circle 工况中，其转角变化率明显低于 LQR，说明预测优化和控制变化惩罚能够改善高速控制激烈程度。但 PP 在部分工况下仍具有更小的转角变化率，因此三种算法之间存在跟踪精度、控制平滑性和计算复杂度之间的权衡。
+
+下一阶段需要在 `right_angle`、`s_curve` 等更多路线和统一条件下继续比较三种算法，避免仅依据 circle 和单一路况得出过度泛化结论。
+
+---
+
+### 3.15 当前 MPC 相关文件
+
+```text
+vdm_lab/student/mpc.py
+analyze_circle_mpc.py
+circle_speed_analysis_mpc.csv
+
+outputs/
+├── 20260915_120330_mpc_double_lane_change_low/
+├── 20260915_120823_mpc_circle_low/
+├── 20260915_120946_mpc_circle_medium/
+└── 20260915_121034_mpc_circle_high/
+```
+
+如果这些输出目录会提交 GitHub，可以在 README 中加入：
+
+| Low                                                     | Medium                                                     | High                                                     |
+| ------------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------- |
+| ![](outputs/20260915_120823_mpc_circle_low/summary.png) | ![](outputs/20260915_120946_mpc_circle_medium/summary.png) | ![](outputs/20260915_121034_mpc_circle_high/summary.png) |
+
+---
+
+## 4. 参数敏感性实验
+
+> 待完成：PP 前视距离、车辆最大转角、轴距等变量分析。
+
+---
+
+## 5. 运动学 / 动力学模型对比
+
+> 待完成。
+
+---
+
+## 6. GPX 实际路线导航
+
+> 待完成：寝室到教室路线规划、地图叠加、最大偏差位置与用时分析。
