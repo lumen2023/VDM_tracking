@@ -12,19 +12,28 @@ def control(state, reference, previous_control, config):
     controller = config.controller
     vehicle = config.vehicle
 
-    # TODO 学生填写 1：根据车速计算前视距离 Lf = 固定前视距离 + 速度增益 * 当前速度。
-    raise NotImplementedError("请先填写 Pure Pursuit 的前视距离公式。")
+    # 1. 原 PP 的速度相关前视距离，参数统一读取课程配置。
+    lookahead = max(1.0e-6, controller.pp_base_lookahead + controller.pp_speed_gain * state.v)
 
-    # TODO 学生填写 2：从最近点开始向前搜索，找到距离车辆不小于 Lf 的目标点。
+    # 2. 从最近点向前搜索，末端使用最后一个路径点。
     target_index = reference.nearest_index
+    while target_index < len(path.x) - 1:
+        distance = math.hypot(path.x[target_index] - state.x, path.y[target_index] - state.y)
+        if distance >= lookahead:
+            break
+        target_index += 1
 
-    # TODO 学生填写 3：计算目标点方向与车身航向之间的夹角 alpha。
+    # 3. 计算目标方向相对车身航向的夹角。
     target_x = path.x[target_index]
     target_y = path.y[target_index]
     alpha = math.atan2(target_y - state.y, target_x - state.x) - state.yaw
+    alpha = math.atan2(math.sin(alpha), math.cos(alpha))
 
-    # TODO 学生填写 4：根据几何关系计算前轮转角 delta = atan2(2L sin(alpha), Lf)。
-    steer = 0.0
+    # 4. 几何转角，并保留原程序的转角及转角变化率限制。
+    steer = math.atan2(2.0 * (vehicle.lf + vehicle.lr) * math.sin(alpha), lookahead)
+    steer = max(-vehicle.max_steer, min(vehicle.max_steer, steer))
+    max_change = vehicle.max_steer_rate * config.sim.dt
+    steer = previous_control.steer + max(-max_change, min(max_change, steer - previous_control.steer))
 
     goal_distance = math.hypot(state.x - path.x[-1], state.y - path.y[-1])
     acceleration = speed_pid(reference.target_speed, state.v, goal_distance, controller, vehicle)
