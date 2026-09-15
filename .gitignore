@@ -6,8 +6,6 @@ __pycache__/
 .venv/
 venv/
 .vscode/
-outputs/
 MotionPlanning/
 *.egg-info/
 .DS_Store
-circle_speed_analysis.csv
