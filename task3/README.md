@@ -27,7 +27,9 @@ task3/
 - PP、运动学 LQR、MPC 在目标速度 8 m/s 下各一组对比实验，三种算法均到达终点；
   精度排名 MPC（平均误差 0.029 m）> PP（0.050 m）> LQR（0.421 m）。
 - 最大偏差定位：LQR / MPC 在 s ≈ 146 m 急弯处（LQR 转角饱和 0.611 rad），
-  PP 在 s = 708 m 终点前直道（前视滞后"甩尾"）。
+  PP 在 s = 708 m 终点前直道（前视滞后"甩尾"）；
+  标注图见 [report/figures/deviation_map.png](report/figures/deviation_map.png)。
+- 仿真用时与真实通勤时间的边界说明见报告第七节。
 - 降速改进复测（8 → 5 m/s，三算法共 3 组）：LQR 平均误差 -76.5%（最敏感），
   MPC -0.7%（几乎不变，自身会主动减速）；三算法法向加速度普降 53%~61%。
 
@@ -54,6 +56,7 @@ python run_experiment.py \
 ```bash
 python task3/scripts/analyze_results.py
 python task3/scripts/extract_peaks.py
+python task3/scripts/plot_deviation_map.py   # 重新生成最大偏差位置标注图
 ```
 
 ## 隐私说明
