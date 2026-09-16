@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "baseline_same_reference": true,
+  "baseline_same_config": true,
+  "slowdown_geometry_unchanged": true,
+  "slowdown_only_cruise_cap_changed": true,
+  "lateral_error_recomputed": true,
+  "gpx_plan_max_difference_m": 7.240856040713717e-06,
+  "maximum_kinematically_feasible_cg_curvature_1pm": 0.26435014010890623,
+  "reference_max_curvature_1pm": 0.18889363709542828,
+  "reference_length_exceeding_steering_curvature_m": 0.0,
+  "dense_curvature_limit_passed": true,
+  "dense_max_geometric_steer_deg": 25.919184985190068,
+  "all_cases_reached_goal": true,
+  "turns": [
+    {
+      "name": "Turn 1",
+      "s_start_m": 261.40000000000003,
+      "s_end_m": 278.6
+    },
+    {
+      "name": "Turn 2",
+      "s_start_m": 663.2,
+      "s_end_m": 677.4000000000001
+    },
+    {
+      "name": "Turn 3",
+      "s_start_m": 818.0,
+      "s_end_m": 832.0
+    }
+  ],
+  "actual_steering_below_limit_all_cases": true
+}

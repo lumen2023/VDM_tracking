@@ -1,0 +1,54 @@
+{
+  "origin_lon_lat": [
+    118.8145,
+    31.8885
+  ],
+  "projection": "Spherical equirectangular R=6378137 m",
+  "source": "Same campus road sequence with locally widened smooth turns",
+  "route_length_m": 879.539098415298,
+  "points": 4399,
+  "ds_m": 0.2,
+  "source_plan_sha256": "673f4f0feb1fce2d6a380b6505880c4869704a29ae551957b27575d1fcaf884b",
+  "before_length_m": 885.4171047127589,
+  "before_max_curvature_1pm": 0.4168718100953606,
+  "max_abs_curvature_1pm": 0.18889363709542828,
+  "dense_check_max_curvature_1pm": 0.1888982403582561,
+  "minimum_radius_m": 5.293855560027685,
+  "vehicle_curvature_limit_1pm": 0.26435014010890623,
+  "max_geometric_steer_deg": 25.919184985190068,
+  "steer_limit_deg": 35,
+  "maximum_same_parameter_displacement_m": 2.264282733340958,
+  "endpoint_difference_m": 0.0,
+  "method": "Local quintic Hermite curves matched through second derivatives; unchanged curves outside four intervals. Dense 0.01 m parameter check; arc-length resampling to 0.2 m.",
+  "joins": [
+    {
+      "old_station_start_m": 260.4,
+      "old_station_end_m": 282.4,
+      "position_join_error_m": 0.0,
+      "tangent_join_error": 6.250861277594331e-15,
+      "second_derivative_join_error": 2.4785011537348183e-15
+    },
+    {
+      "old_station_start_m": 569.2,
+      "old_station_end_m": 582.0,
+      "position_join_error_m": 0.0,
+      "tangent_join_error": 1.3768556071205303e-14,
+      "second_derivative_join_error": 7.913075701228157e-15
+    },
+    {
+      "old_station_start_m": 665.3,
+      "old_station_end_m": 682.3,
+      "position_join_error_m": 0.0,
+      "tangent_join_error": 1.3999276490087926e-14,
+      "second_derivative_join_error": 4.6945971906269534e-15
+    },
+    {
+      "old_station_start_m": 821.5999999999999,
+      "old_station_end_m": 838.5999999999999,
+      "position_join_error_m": 0.0,
+      "tangent_join_error": 7.283406275994528e-15,
+      "second_derivative_join_error": 1.9219096551231847e-15
+    }
+  ],
+  "local_access_verified": false
+}

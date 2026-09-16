@@ -1,0 +1,11 @@
+{
+  "all_source_hashes_unchanged": true,
+  "cases": {
+    "lqr_baseline": true,
+    "mpc_baseline": true,
+    "pp_baseline": true,
+    "pp_slower": true
+  },
+  "pp_replay_max_difference": 0.0,
+  "python": "3.10.21 | packaged by conda-forge | (main, Aug 21 2026, 22:38:44) [MSC v.1944 64 bit (AMD64)]"
+}
