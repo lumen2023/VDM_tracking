@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-在路线图上标出三种算法的最大横向偏差位置（任务书 3.6 / 3.7 要求）。
+在路线图上标出三种算法的最大横向偏差位置。
 读取 task3/data/20260916_task3/ 下的实验日志，输出：
     task3/report/figures/deviation_map.png
 

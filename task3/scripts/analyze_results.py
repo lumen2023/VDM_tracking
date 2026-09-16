@@ -65,7 +65,7 @@ def analyze_one(output_dir: Path) -> dict:
 
 
 def pick_latest(results, algo_key, speed):
-    """从 results 中选出指定算法（目录名前缀）、指定速度的实验"""
+    """从 results 中选出指定算法、指定速度的实验"""
     candidates = []
     for name, data in results.items():
         if "error" in data:
@@ -121,7 +121,7 @@ def main():
 
     algo_keys = ["pp", "lqr_kinematic", "mpc"]
 
-    # === 三算法对比（速度 8） ===
+    # 三算法对比（速度 8） 
     latest_pairs_s8 = {ak: pick_latest(results, ak, 8.0) for ak in algo_keys}
 
     table_rows = [
@@ -137,7 +137,7 @@ def main():
     ]
     print_table("三算法对比 (目标速度 8 m/s)", table_rows, algo_keys, latest_pairs_s8)
 
-    # === 最大偏差位置详情（速度 8） ===
+    # 最大偏差位置详情（速度 8）
     peak_rows = [
         ("出现时间 (s)", "peak_time_s"),
         ("路线里程 s (m)", "peak_s_m"),
@@ -149,7 +149,7 @@ def main():
     ]
     print_table("最大偏差位置详情 (目标速度 8 m/s)", peak_rows, algo_keys, latest_pairs_s8)
 
-    # === 调低速度改进前后对比（三算法, 速度 8 vs 速度 5） ===
+    # 调低速度改进前后对比（三算法, 速度 8 vs 速度 5）
     algo_labels = {"pp": "PP", "lqr_kinematic": "LQR", "mpc": "MPC"}
 
     for ak in algo_keys:
@@ -196,7 +196,7 @@ def main():
             print(f"{label:<28}{str(v8):<22}{str(v5):<22}{change:<22}")
         print()
 
-    # === 所有实验列表 ===
+    # 所有实验列表
     print("=" * 100)
     print("所有实验列表")
     print("=" * 100)

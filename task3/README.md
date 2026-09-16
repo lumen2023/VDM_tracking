@@ -1,14 +1,12 @@
 # 任务 3：自主规划寝室到教室的路线并跟踪
 
-先看 [完整中文实验报告](report/report_task3.html)。
-
 本次新增的路线、实验数据、报告和分析脚本都在 `task3/` 内；GPX 路线按主项目约定放在
 `data/gpx/dorm_to_classroom.gpx`。原仓库的 `vdm_lab/`、`run_experiment.py` 等文件不作修改。
 
 ```text
 task3/
 ├── README.md                 使用入口
-├── report/                   完整中文实验报告（HTML）
+├── report/                   中文实验报告（HTML）
 ├── scripts/                  指标批量分析与最大偏差提取脚本
 └── data/20260916_task3/      6 组正式实验的原始日志
     ├── pp__speed8/           PP，目标速度 8 m/s
@@ -59,6 +57,6 @@ python task3/scripts/extract_peaks.py
 python task3/scripts/plot_deviation_map.py   # 重新生成最大偏差位置标注图
 ```
 
-## 隐私说明
+## 说明
 
 报告公开前已将寝室和教室名称匿名化；GPX 经纬度和地图截图仅覆盖校园公开道路范围。
