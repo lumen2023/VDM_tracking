@@ -1,4 +1,3 @@
-
 # VDM Path Tracking Simulation
 
 本仓库用于车辆动力学与运动控制课程的路径跟踪仿真实验。当前阶段围绕运动学自行车模型与路径跟踪控制展开，逐步实现并比较 Pure Pursuit（PP）、LQR 和 MPC，并进一步研究速度、车辆参数、控制器参数及车辆模型对跟踪性能的影响。
@@ -485,26 +484,13 @@ PP 的优点包括：
 vdm_lab/student/pure_pursuit.py
 analyze_circle.py
 circle_speed_analysis.csv
-
-outputs/
-├── 20260915_080400_pp_circle_low/
-├── 20260915_080444_pp_circle_medium/
-└── 20260915_080458_pp_circle_high/
 ```
 
-如果 `outputs/` 会提交到 GitHub，可以直接在 README 中加入以下结果图：
+结果图：
 
-| Low                                                    | Medium                                                    | High                                                    |
-| ------------------------------------------------------ | --------------------------------------------------------- | ------------------------------------------------------- |
-| ![](outputs/20260915_080400_pp_circle_low/summary.png) | ![](outputs/20260915_080444_pp_circle_medium/summary.png) | ![](outputs/20260915_080458_pp_circle_high/summary.png) |
-
-若不准备提交整个 `outputs/` 目录，建议将代表性图片复制到固定目录，例如：
-
-```text
-docs/figures/pp/
-```
-
-再从 README 中引用固定路径，避免时间戳目录变化导致图片链接失效。
+| Low                             | Medium                             | High                             |
+| ------------------------------- | ---------------------------------- | -------------------------------- |
+| ![](docs\figures\pp\pp_low.png) | ![](docs\figures\pp\pp_medium.png) | ![](docs\figures\pp\pp_high.png) |
 
 ---
 
@@ -924,18 +910,13 @@ high 工况下 LQR 的最大侧偏角约为 PP 的 2.9 倍。
 vdm_lab/student/lqr_kinematic.py
 analyze_circle_lqr.py
 circle_speed_analysis_lqr.csv
-
-outputs/
-├── 20260915_113151_lqr_kinematic_circle_low/
-├── 20260915_113156_lqr_kinematic_circle_medium/
-└── 20260915_113201_lqr_kinematic_circle_high/
 ```
 
-如果这些输出目录会提交到 GitHub，可以在 README 中加入：
+结果图：
 
-| Low                                                               | Medium                                                               | High                                                               |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| ![](outputs/20260915_113151_lqr_kinematic_circle_low/summary.png) | ![](outputs/20260915_113156_lqr_kinematic_circle_medium/summary.png) | ![](outputs/20260915_113201_lqr_kinematic_circle_high/summary.png) |
+| Low                                     | Medium                                     | High                                     |
+| --------------------------------------- | ------------------------------------------ | ---------------------------------------- |
+| ![](docs\figures\kinematic\lqr_low.png) | ![](docs\figures\kinematic\lqr_medium.png) | ![](docs\figures\kinematic\lqr_high.png) |
 
 ---
 
@@ -1419,19 +1400,13 @@ a_n=v^2\kappa
 vdm_lab/student/mpc.py
 analyze_circle_mpc.py
 circle_speed_analysis_mpc.csv
-
-outputs/
-├── 20260915_120330_mpc_double_lane_change_low/
-├── 20260915_120823_mpc_circle_low/
-├── 20260915_120946_mpc_circle_medium/
-└── 20260915_121034_mpc_circle_high/
 ```
 
-如果这些输出目录会提交 GitHub，可以在 README 中加入：
+结果图：
 
-| Low                                                     | Medium                                                     | High                                                     |
-| ------------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------- |
-| ![](outputs/20260915_120823_mpc_circle_low/summary.png) | ![](outputs/20260915_120946_mpc_circle_medium/summary.png) | ![](outputs/20260915_121034_mpc_circle_high/summary.png) |
+| Low                               | Medium                               | High                               |
+| --------------------------------- | ------------------------------------ | ---------------------------------- |
+| ![](docs\figures\mpc\mpc_low.png) | ![](docs\figures\mpc\mpc_medium.png) | ![](docs\figures\mpc\mpc_high.png) |
 
 ---
 
