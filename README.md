@@ -490,7 +490,7 @@ Results chart:
 
 | Low                             | Medium                             | High                             |
 | ------------------------------- | ---------------------------------- | -------------------------------- |
-| ![](docs\figures\pp\pp_low.png) | ![](docs\figures\pp\pp_medium.png) | ![](docs\figures\pp\pp_high.png) |
+| ![](docs/figures/pp/pp_low.png) | ![](docs/figures/pp/pp_medium.png) | ![](docs/figures/pp/pp_high.png) |
 
 ---
 
@@ -914,7 +914,7 @@ Results chart:
 
 | Low                                     | Medium                                     | High                                     |
 | --------------------------------------- | ------------------------------------------ | ---------------------------------------- |
-| ![](docs\figures\kinematic\lqr_low.png) | ![](docs\figures\kinematic\lqr_medium.png) | ![](docs\figures\kinematic\lqr_high.png) |
+| ![](docs/figures/kinematic/lqr_low.png) | ![](docs/figures/kinematic/lqr_medium.png) | ![](docs/figures/kinematic/lqr_high.png) |
 
 ---
 
@@ -1404,7 +1404,7 @@ Results chart:
 
 | Low                               | Medium                               | High                               |
 | --------------------------------- | ------------------------------------ | ---------------------------------- |
-| ![](docs\figures\mpc\mpc_low.png) | ![](docs\figures\mpc\mpc_medium.png) | ![](docs\figures\mpc\mpc_high.png) |
+| ![](docs/figures/mpc/mpc_low.png) | ![](docs/figures/mpc/mpc_medium.png) | ![](docs/figures/mpc/mpc_high.png) |
 
 ---
 
