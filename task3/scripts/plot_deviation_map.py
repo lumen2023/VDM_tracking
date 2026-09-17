@@ -18,11 +18,13 @@ import matplotlib.pyplot as plt
 DATA_DIR = Path(__file__).resolve().parents[1] / "data" / "20260916_task3"
 OUT_DIR = Path(__file__).resolve().parents[1] / "report" / "figures"
 
+# 标注位置：xytext 为相对点位的偏移（单位 pt），ha 控制文本对齐，
+# 底部三个点靠得很近，分别朝左上/右下/左下引出，避免互相遮挡。
 RUNS = {
-    "pp__speed8": ("PP (8 m/s)", "#d62728", "o", (12, 10)),
-    "lqr_kinematic__speed8": ("LQR (8 m/s)", "#1f77b4", "s", (-70, 12)),
-    "mpc__speed8": ("MPC (8 m/s)", "#2ca02c", "^", (14, -18)),
-    "pp__speed5": ("PP (5 m/s)", "#ff9896", "D", (-78, -20)),
+    "pp__speed8": ("PP (8 m/s)", "#d62728", "o", (14, 12), "left"),
+    "lqr_kinematic__speed8": ("LQR (8 m/s)", "#1f77b4", "s", (-12, 30), "right"),
+    "mpc__speed8": ("MPC (8 m/s)", "#2ca02c", "^", (58, 30), "left"),
+    "pp__speed5": ("PP (5 m/s)", "#e15759", "D", (-72, -2), "right"),
 }
 
 
@@ -47,24 +49,29 @@ def main():
     ax.plot(rx[0], ry[0], marker="*", ms=16, color="#356115", ls="none", label="Start (dorm)")
     ax.plot(rx[-1], ry[-1], marker="P", ms=12, color="#9467bd", ls="none", label="Goal (classroom)")
 
-    for run, (label, color, marker, offset) in RUNS.items():
+    for run, (label, color, marker, offset, ha) in RUNS.items():
         _, _, peak, near = load(run)
         err = abs(float(peak["lateral_error"]))
         ax.plot(
             float(peak["x"]), float(peak["y"]),
-            marker=marker, ms=11, color=color, ls="none",
+            marker=marker, ms=11, color=color, ls="none", mec="white", mew=0.8,
             label=f"{label}: max dev {err:.2f} m @ s={float(near['s_m']):.0f} m, t={float(peak['time']):.1f} s",
         )
         ax.annotate(
-            f"{err:.2f} m",
+            f"{label.split(' (')[0]}: {err:.2f} m",
             (float(peak["x"]), float(peak["y"])),
-            textcoords="offset points", xytext=offset, fontsize=9, color=color,
+            textcoords="offset points", xytext=offset, ha=ha,
+            fontsize=10, fontweight="bold", color=color,
+            bbox=dict(boxstyle="round,pad=0.3", fc="white", ec=color, lw=0.9, alpha=0.9),
+            arrowprops=dict(arrowstyle="-", color=color, lw=0.9, shrinkB=7),
+            zorder=5,
         )
 
     ax.set_title("Task 3: Maximum Lateral Deviation Locations (dorm-to-classroom route)")
     ax.set_xlabel("x (m, local frame, origin 118.8145E 31.8885N)")
     ax.set_ylabel("y (m)")
     ax.set_aspect("equal")
+    ax.margins(x=0.06, y=0.05)
     ax.grid(alpha=0.3)
     ax.legend(fontsize=9, loc="center left", bbox_to_anchor=(1.01, 0.5))
     fig.tight_layout()
