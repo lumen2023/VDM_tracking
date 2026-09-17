@@ -12,6 +12,11 @@ from vdm_lab.common.logging import (
 )
 from vdm_lab.common.simulation import load_controller, run_simulation
 from vdm_lab.common.types import LabConfig
+from vdm_lab.common.vehicle_backend import (
+    DynamicBicycleBackend,
+    KinematicBicycleBackend,
+    SimplifiedKinematicBackend,
+)
 from vdm_lab.common.vector_map import infer_geojson_bounds
 from vdm_lab.common.visualization import (
     save_gif,
@@ -25,6 +30,14 @@ from vdm_lab.config.vehicle_params import (
     available_vehicle_names,
     make_vehicle_config,
 )
+
+
+# 可切换的被控车辆模型（plant）。
+VEHICLE_BACKENDS = {
+    "kinematic": KinematicBicycleBackend,
+    "simplified": SimplifiedKinematicBackend,
+    "dynamic": DynamicBicycleBackend,
+}
 
 
 def parse_args():
@@ -155,6 +168,16 @@ def parse_args():
         choices=available_vehicle_names(),
         default=DEFAULT_VEHICLE_NAME,
         help="选择车辆参数组",
+    )
+    parser.add_argument(
+        "--vehicle-model",
+        choices=["kinematic", "simplified", "dynamic"],
+        default="kinematic",
+        help=(
+            "被控车辆模型：kinematic 标准运动学（含侧偏角，默认）/ "
+            "simplified 简化运动学（beta=0）/ "
+            "dynamic 线性二自由度动力学（含轮胎侧偏力）"
+        ),
     )
     parser.add_argument(
         "--speed-mode",
@@ -299,6 +322,7 @@ def main():
         config=config,
         animate=args.animate,
         gif_path=live_gif_path,
+        vehicle_backend=VEHICLE_BACKENDS[args.vehicle_model](),
     )
 
     metrics = compute_metrics(path, records)
@@ -353,7 +377,10 @@ def main():
         )
 
     print(f"algo={args.algo}, version={args.version}")
-    print(f"speed_mode={args.speed_mode}, vehicle={args.vehicle}")
+    print(
+        f"speed_mode={args.speed_mode}, vehicle={args.vehicle}, "
+        f"vehicle_model={args.vehicle_model}"
+    )
     if args.basemap != "none":
         print(f"basemap={args.basemap}")
     if map_origin is not None:
