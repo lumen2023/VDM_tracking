@@ -1416,7 +1416,163 @@ Results chart:
 
 ## 5. Kinematic / Dynamic Model Comparison
 
-> To be completed.
+### 5.1 Objective and Experimental Setup
+
+This experiment compares kinematic LQR with dynamic LQR on two continuous-curvature routes. Both controllers use the same `student_car`, `student` implementation, and medium-speed mode; only the lateral-error model and its curvature feedforward differ.
+
+| Item | Setting |
+| --- | --- |
+| Routes | `s_curve`, `mixed_course` |
+| Speed mode | `medium` |
+| Vehicle | `student_car` |
+| Controllers | `lqr_kinematic`, `lqr_dynamic` |
+
+Run the four comparisons from the repository root:
+
+```powershell
+python run_experiment.py --algo lqr_kinematic --version student --route s_curve --speed-mode medium --save-log --save-fig
+python run_experiment.py --algo lqr_dynamic --version student --route s_curve --speed-mode medium --save-log --save-fig
+python run_experiment.py --algo lqr_kinematic --version student --route mixed_course --speed-mode medium --save-log --save-fig
+python run_experiment.py --algo lqr_dynamic --version student --route mixed_course --speed-mode medium --save-log --save-fig
+```
+
+### 5.2 Why Use a Dynamic Vehicle Model?
+
+The kinematic bicycle model assumes pure rolling: tyre side-slip is ignored and the lateral response is determined only by geometry. This is a useful approximation at low speed and small steering angle. As speed and lateral acceleration rise, tyre side-slip and the force/moment balance increasingly affect the response; a dynamic model can then represent the vehicle more faithfully.
+
+The physical chain is:
+
+```text
+front-wheel steering angle
+        → tyre slip angles → lateral tyre forces
+        → lateral acceleration and yaw moment
+        → lateral and yaw response
+```
+
+| Quantity | Meaning | Role in the dynamic model |
+| --- | --- | --- |
+| `m` | vehicle mass | Converts lateral force into lateral acceleration |
+| `Iz` | yaw moment of inertia | Converts yaw moment into yaw acceleration |
+| `Cf`, `Cr` | front/rear cornering stiffness | Relate tyre side-slip to lateral force |
+| `lf`, `lr` | CG-to-front/rear-axle distances | Define force moment arms |
+| `v` | longitudinal speed | Appears in the lateral/yaw dynamics |
+
+The kinematic model does not contain `m`, `Iz`, `Cf`, or `Cr` because, under its no-side-slip assumption, it describes geometric motion rather than a force equilibrium.
+
+### 5.3 Dynamic LQR Model and Control Law
+
+Both LQR controllers use the error state
+
+\[
+x = [e_y,\; \dot e_y,\; e_\psi,\; \dot e_\psi]^T,
+\]
+
+where the terms are lateral error, lateral-error rate, heading error, and heading-error rate. For the linear two-degree-of-freedom dynamic model,
+
+\[
+\dot{x}=A_cx+B_c\delta,
+\]
+
+\[
+A_c =
+\begin{bmatrix}
+0&1&0&0\\
+0&-\frac{C_f+C_r}{mv}&\frac{C_f+C_r}{m}&\frac{l_rC_r-l_fC_f}{mv}\\
+0&0&0&1\\
+0&\frac{l_rC_r-l_fC_f}{I_zv}&\frac{l_fC_f-l_rC_r}{I_z}&-\frac{l_f^2C_f+l_r^2C_r}{I_zv}
+\end{bmatrix},\qquad
+B_c =
+\begin{bmatrix}0\\C_f/m\\0\\l_fC_f/I_z\end{bmatrix}.
+\]
+
+The implementation uses trapezoidal discretization:
+
+\[
+A=(I-0.5\Delta t A_c)^{-1}(I+0.5\Delta t A_c),\qquad B=B_c\Delta t.
+\]
+
+LQR minimizes the weighted state error and steering effort. Its feedback is \(\delta_{fb}=-Kx\). A curvature feedforward term compensates for the steering needed in a sustained turn:
+
+\[
+\delta_{ff}=L\kappa+k_vv^2\kappa-K_{0,2}e_{\psi,ss},
+\]
+
+\[
+k_v=\frac{l_rm}{2C_fL}-\frac{l_fm}{2C_rL},\qquad L=l_f+l_r.
+\]
+
+The final command is limited by the vehicle steering constraint:
+
+\[
+\delta=\operatorname{clamp}(\delta_{fb}+\delta_{ff},-\delta_{max},\delta_{max}).
+\]
+
+### 5.4 Results
+
+Both controllers reached the goal on both routes. Dynamic LQR substantially reduced lateral error and, especially on `mixed_course`, also required less steering, side-slip, and yaw-rate demand.
+
+#### `s_curve` at Medium Speed
+
+| Metric | Kinematic LQR | Dynamic LQR | Change |
+| --- | ---: | ---: | ---: |
+| Steps | 150 | 152 | — |
+| Reached goal | True | True | — |
+| Mean lateral error / m | 0.2164 | 0.0922 | ↓ 57% |
+| Max lateral error / m | 0.5469 | 0.2148 | ↓ 61% |
+| Finish error / m | 0.8429 | 0.8976 | slightly higher |
+| Mean heading error / rad | 0.0516 | 0.0690 | slightly higher |
+| Max steer / rad | 0.6109 | 0.5598 | ↓ 8% |
+| Max side-slip `beta` / rad | 0.3368 | 0.3036 | ↓ 10% |
+| Max yaw rate / rad/s | 1.7177 | 1.5542 | ↓ 10% |
+
+| Kinematic LQR | Dynamic LQR |
+| --- | --- |
+| ![Kinematic LQR on s_curve](vdm_lab/tasks/dynamic_lqr/figures/kinematic_s_curve.jpg) | ![Dynamic LQR on s_curve](vdm_lab/tasks/dynamic_lqr/figures/dynamic_s_curve.jpg) |
+
+The kinematic controller reaches about ±0.55 m lateral error in the bends and has visible steering spikes. Dynamic LQR limits the lateral error to about ±0.20 m with a smoother steering trace.
+
+#### `mixed_course` at Medium Speed
+
+| Metric | Kinematic LQR | Dynamic LQR | Change |
+| --- | ---: | ---: | ---: |
+| Steps | 184 | 183 | — |
+| Reached goal | True | True | — |
+| Mean lateral error / m | 0.1568 | 0.0706 | ↓ 55% |
+| Max lateral error / m | 0.4770 | 0.1518 | ↓ 68% |
+| Finish error / m | 0.9489 | 0.8231 | ↓ 13% |
+| Mean heading error / rad | 0.0547 | 0.0466 | ↓ 15% |
+| Max steer / rad | 0.6109 | 0.3344 | ↓ 45% |
+| Max side-slip `beta` / rad | 0.3368 | 0.1720 | ↓ 49% |
+| Max yaw rate / rad/s | 1.8504 | 0.9585 | ↓ 48% |
+
+| Kinematic LQR | Dynamic LQR |
+| --- | --- |
+| ![Kinematic LQR on mixed_course](vdm_lab/tasks/dynamic_lqr/figures/kinematic_mixed_course.jpg) | ![Dynamic LQR on mixed_course](vdm_lab/tasks/dynamic_lqr/figures/dynamic_mixed_course.jpg) |
+
+The kinematic controller shows high-frequency, saw-tooth lateral-error oscillation of roughly ±0.50 m. Dynamic LQR keeps the peak near ±0.15 m and largely removes this oscillation.
+
+### 5.5 Interpretation and Validation
+
+At low speed, side-slip and lateral acceleration are small, so the dynamic model approaches the kinematic approximation and the simpler model can be sufficient. As speed rises, the lateral-acceleration demand grows with \(v^2\kappa\), side-slip becomes more important, and the parameters `m`, `Iz`, `Cf`, and `Cr` help capture the resulting response.
+
+For these medium-speed continuous-turn experiments, dynamic LQR reduces mean lateral error by **55–57%** and maximum lateral error by **61–68%**. It also produces lower peak side-slip and yaw rate, indicating a more controlled lateral/yaw response. The results support using the dynamic model where tyre behaviour and repeated curvature changes matter; they do not by themselves prove performance for all speeds, routes, or non-linear tyre conditions.
+
+The dynamic student implementation was also checked against the reference implementation on `s_curve` at medium speed:
+
+```powershell
+python run_experiment.py --algo lqr_dynamic --version student --route s_curve --speed-mode medium --save-log --save-fig
+python run_experiment.py --algo lqr_dynamic --version solution --route s_curve --speed-mode medium --save-log --save-fig
+```
+
+| Metric | Student | Solution |
+| --- | ---: | ---: |
+| Steps | 152 | 152 |
+| Reached goal | True | True |
+| Mean lateral error / m | 0.0922 | 0.0922 |
+| Max lateral error / m | 0.2148 | 0.2148 |
+| Finish error / m | 0.8976 | 0.8976 |
+
+The matching metrics verify that the student Dynamic LQR implementation is consistent with the provided solution. Supporting source data and the original conclusion are available in [`vdm_lab/tasks/dynamic_lqr`](vdm_lab/tasks/dynamic_lqr/).
 
 ---
 

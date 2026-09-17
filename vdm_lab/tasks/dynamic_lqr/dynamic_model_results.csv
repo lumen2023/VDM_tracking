@@ -1,0 +1,5 @@
+route,speed_mode,algorithm,steps,reached_goal,mean_lateral_error_m,max_lateral_error_m,finish_error_m,mean_heading_error_rad,max_steer_rad,max_beta_rad,max_yaw_rate_radps,max_normal_accel_mps2
+s_curve,medium,kinematic_lqr,150,True,0.2164,0.5469,0.8429,0.0516,0.6109,0.3368,1.7177,11.188
+s_curve,medium,dynamic_lqr,152,True,0.0922,0.2148,0.8976,0.0690,0.5598,0.3036,1.5542,11.330
+mixed_course,medium,kinematic_lqr,184,True,0.1568,0.4770,0.9489,0.0547,0.6109,0.3368,1.8504,7.053
+mixed_course,medium,dynamic_lqr,183,True,0.0706,0.1518,0.8231,0.0466,0.3344,0.1720,0.9585,7.053
