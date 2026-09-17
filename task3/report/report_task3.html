@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VDM Tracking 任务三实验报告</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; color: #333; line-height: 1.7; background: #f5f5f5; padding: 24px; }
+  .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 48px 56px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  h1 { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { color: #888; font-size: 14px; margin-bottom: 40px; }
+  h2 { font-size: 18px; font-weight: 600; margin: 36px 0 16px; padding-left: 12px; border-left: 3px solid #2563eb; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 14px; }
+  th, td { padding: 9px 14px; text-align: center; border: 1px solid #e0e0e0; }
+  th { background: #f8f9fa; font-weight: 600; }
+  td:first-child, th:first-child { text-align: left; font-weight: 500; }
+  tr:hover td { background: #fafbfc; }
+  .pos { color: #16a34a; }
+  .neg { color: #dc2626; }
+  img { width: 100%; border: 1px solid #e0e0e0; margin: 12px 0; }
+  .caption { font-size: 13px; color: #888; text-align: center; margin-bottom: 24px; }
+  .note { background: #f8f9fa; border-left: 3px solid #ddd; padding: 12px 16px; margin: 16px 0; font-size: 14px; color: #555; }
+  .footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid #eee; font-size: 13px; color: #aaa; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>VDM Tracking 任务三实验报告</h1>
+<p class="subtitle">GPX 路线跟踪：PP / LQR 运动学 / MPC 三算法对比</p>
+
+<!-- 第1节：实验环境 -->
+<h2>一、实验环境与路线信息</h2>
+<table>
+  <tr><th style="width:40%">参数</th><th>值</th></tr>
+  <tr><td>GPX 文件</td><td>data/gpx/dorm_to_classroom.gpx（寝室到教室）</td></tr>
+  <tr><td>GPX 原始点数</td><td>27 个</td></tr>
+  <tr><td>重采样后参考点数</td><td>776 个（--waypoint-ds 1.0）</td></tr>
+  <tr><td>路线长度</td><td>774.1 m</td></tr>
+  <tr><td>最大相邻点距离</td><td>147.9 m（中位数 5.0 m）</td></tr>
+  <tr><td>坐标系</td><td>WGS84（GPX 标准坐标系）</td></tr>
+  <tr><td>底图来源</td><td>OpenStreetMap GeoJSON 离线底图</td></tr>
+</table>
+
+<!-- 第2节：坐标原点验证 -->
+<h2>二、坐标原点验证与地图覆盖范围</h2>
+<table>
+  <tr><th style="width:40%">参数</th><th>值</th></tr>
+  <tr><td>坐标原点经度</td><td>118.8145</td></tr>
+  <tr><td>坐标原点纬度</td><td>31.8885</td></tr>
+  <tr><td>地图覆盖经度范围</td><td>118.792 ~ 118.837</td></tr>
+  <tr><td>地图覆盖纬度范围</td><td>31.875 ~ 31.902</td></tr>
+  <tr><td>GPX 路线经度范围</td><td>118.8182 ~ 118.8211（在覆盖范围内）</td></tr>
+  <tr><td>GPX 路线纬度范围</td><td>31.8854 ~ 31.8894（在覆盖范围内）</td></tr>
+  <tr><td>验证结果</td><td>运行时控制台输出 map_origin_lon=118.8145000, map_origin_lat=31.8885000，与任务书要求一致</td></tr>
+</table>
+
+<div class="note">GPX 路线完全落在离线底图覆盖范围内，坐标原点与任务书规定值一致，坐标系为 WGS84，符合全部约束条件。</div>
+
+<!-- 第3节：三算法对比 -->
+<h2>三、三算法统一指标对比（目标速度 8 m/s）</h2>
+<table>
+  <tr>
+    <th>指标</th><th>PP</th><th>LQR 运动学</th><th>MPC</th>
+  </tr>
+  <tr><td>reached_goal</td><td>True</td><td>True</td><td>True</td></tr>
+  <tr><td>用时 (s)</td><td>99.4</td><td>104.0</td><td>102.1</td></tr>
+  <tr><td>路线长度 (m)</td><td>774.1</td><td>774.1</td><td>774.1</td></tr>
+  <tr><td>平均横向误差 (m)</td><td>0.0504</td><td>0.4208</td><td>0.0289</td></tr>
+  <tr><td>最大横向误差 (m)</td><td>1.901</td><td>2.789</td><td>1.424</td></tr>
+  <tr><td>终点误差 (m)</td><td>0.973</td><td>0.868</td><td>0.093</td></tr>
+  <tr><td>最大转角 (rad)</td><td>0.577</td><td>0.611</td><td>0.611</td></tr>
+  <tr><td>最大法向加速度 (m/s²)</td><td>5.78</td><td>95.91</td><td>87.10</td></tr>
+</table>
+
+<div class="note">
+  <b>分析：</b>MPC 精度最高，平均误差 0.029m，最大偏差 1.42m；PP 居中，平均 0.050m，最大 1.90m；LQR 偏差最大，平均 0.421m，最大 2.79m。<br><br>
+  三算法均成功到达终点。MPC 的终点误差仅 0.093m，远优于 PP（0.973m）和 LQR（0.868m）。LQR 最大法向加速度高达 95.91 m/s²，说明运动学线性化模型在弯道处控制量剧烈波动。
+</div>
+
+<!-- 第4节：最大偏差位置 -->
+<h2>四、最大偏差位置详情（目标速度 8 m/s）</h2>
+<table>
+  <tr>
+    <th>指标</th><th>PP</th><th>LQR 运动学</th><th>MPC</th>
+  </tr>
+  <tr><td>出现时间 (s)</td><td>88.5</td><td>20.2</td><td>20.2</td></tr>
+  <tr><td>路线里程 s (m)</td><td>708.0</td><td>146.0</td><td>147.0</td></tr>
+  <tr><td>经度 (lon)</td><td>118.81834</td><td>118.81964</td><td>118.81964</td></tr>
+  <tr><td>纬度 (lat)</td><td>31.88889</td><td>31.88540</td><td>31.88541</td></tr>
+  <tr><td>曲率 (1/m)</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+  <tr><td>当时速度 (m/s)</td><td>8.0</td><td>8.0</td><td>7.805</td></tr>
+  <tr><td>当时转角 (rad)</td><td>-0.418</td><td>-0.611</td><td>-0.519</td></tr>
+</table>
+
+<div class="note">
+  <b>分析：</b><br>
+  1. <b>LQR 与 MPC</b> 的最大偏差都出现在路线前段 s≈146-147m 处（约 18% 位置），该处转角接近最大值（-0.61 rad / -0.52 rad），说明这是一个急转弯路段。LQR 转角直接达到 -0.611 rad（约束上限），导致偏差累积至 2.79m；MPC 通过预判减速到 7.8 m/s，将偏差控制在 1.42m。<br><br>
+  2. <b>PP</b> 的最大偏差出现在路线后段 s=708m 处（约 91% 位置），曲率为 0（直道），转角 -0.418 rad。这里不是弯道，说明是由纯追踪在接近终点时的前视距离调整滞后引起的偏差。
+</div>
+
+<p>4.1 最大偏差位置标注图</p>
+<img src="figures/deviation_map.png" alt="最大偏差位置标注图">
+<p class="caption">图0：三种算法最大横向偏差位置标注（局部米制坐标，原点 118.8145E, 31.8885N）。LQR/MPC 的峰值在起点附近 s≈146m 急弯处（蓝色/绿色标记重合）；PP 的峰值在终点前 s=708m 直道；PP 降速 5 m/s 后峰值改变到 s=135m。</p>
+
+<!-- 第5节：调低速度对比 -->
+<h2>五、调低速度改进前后对比（三算法）</h2>
+
+<h3 style="margin:24px 0 8px; font-size:15px;">5.1 PP 算法</h3>
+<table>
+  <tr>
+    <th>指标</th><th>速度 8 m/s</th><th>速度 5 m/s</th><th>变化</th>
+  </tr>
+  <tr><td>reached_goal</td><td>True</td><td>True</td><td>-</td></tr>
+  <tr><td>用时 (s)</td><td>99.4</td><td>154.5</td><td class="neg">+55.4%</td></tr>
+  <tr><td>平均横向误差 (m)</td><td>0.0504</td><td>0.0376</td><td class="pos">-25.4%</td></tr>
+  <tr><td>最大横向误差 (m)</td><td>1.901</td><td>1.736</td><td class="pos">-8.7%</td></tr>
+  <tr><td>终点误差 (m)</td><td>0.973</td><td>0.924</td><td class="pos">-5.1%</td></tr>
+  <tr><td>最大法向加速度 (m/s²)</td><td>5.78</td><td>2.26</td><td class="pos">-60.9%</td></tr>
+  <tr><td>最大偏差出现时间 (s)</td><td>88.5</td><td>28.5</td><td>-67.8%</td></tr>
+  <tr><td>最大偏差路线里程 (m)</td><td>708.0</td><td>135.0</td><td>-80.9%</td></tr>
+  <tr><td>最大偏差处速度 (m/s)</td><td>8.0</td><td>5.0</td><td>-37.5%</td></tr>
+  <tr><td>最大偏差处转角 (rad)</td><td>-0.418</td><td>-0.545</td><td>+30.3%</td></tr>
+</table>
+
+<h3 style="margin:24px 0 8px; font-size:15px;">5.2 LQR 运动学</h3>
+<table>
+  <tr>
+    <th>指标</th><th>速度 8 m/s</th><th>速度 5 m/s</th><th>变化</th>
+  </tr>
+  <tr><td>reached_goal</td><td>True</td><td>True</td><td>-</td></tr>
+  <tr><td>用时 (s)</td><td>104.0</td><td>157.4</td><td class="neg">+51.3%</td></tr>
+  <tr><td>平均横向误差 (m)</td><td>0.4208</td><td>0.0988</td><td class="pos">-76.5%</td></tr>
+  <tr><td>最大横向误差 (m)</td><td>2.789</td><td>2.889</td><td class="neg">+3.6%</td></tr>
+  <tr><td>终点误差 (m)</td><td>0.868</td><td>0.887</td><td class="neg">+2.2%</td></tr>
+  <tr><td>最大法向加速度 (m/s²)</td><td>95.91</td><td>44.80</td><td class="pos">-53.3%</td></tr>
+  <tr><td>最大偏差出现时间 (s)</td><td>20.2</td><td>29.8</td><td>+47.5%</td></tr>
+  <tr><td>最大偏差路线里程 (m)</td><td>146.0</td><td>146.0</td><td>0.0%</td></tr>
+  <tr><td>最大偏差处速度 (m/s)</td><td>8.0</td><td>5.0</td><td>-37.5%</td></tr>
+  <tr><td>最大偏差处转角 (rad)</td><td>-0.611</td><td>-0.611</td><td>0.0%</td></tr>
+</table>
+
+<h3 style="margin:24px 0 8px; font-size:15px;">5.3 MPC</h3>
+<table>
+  <tr>
+    <th>指标</th><th>速度 8 m/s</th><th>速度 5 m/s</th><th>变化</th>
+  </tr>
+  <tr><td>reached_goal</td><td>True</td><td>True</td><td>-</td></tr>
+  <tr><td>用时 (s)</td><td>102.1</td><td>156.0</td><td class="neg">+52.8%</td></tr>
+  <tr><td>平均横向误差 (m)</td><td>0.0289</td><td>0.0287</td><td class="pos">-0.7%</td></tr>
+  <tr><td>最大横向误差 (m)</td><td>1.424</td><td>1.280</td><td class="pos">-10.1%</td></tr>
+  <tr><td>终点误差 (m)</td><td>0.093</td><td>0.118</td><td class="neg">+26.9%</td></tr>
+  <tr><td>最大法向加速度 (m/s²)</td><td>87.10</td><td>39.50</td><td class="pos">-54.6%</td></tr>
+  <tr><td>最大偏差出现时间 (s)</td><td>20.2</td><td>29.6</td><td>+46.5%</td></tr>
+  <tr><td>最大偏差路线里程 (m)</td><td>147.0</td><td>147.0</td><td>0.0%</td></tr>
+  <tr><td>最大偏差处速度 (m/s)</td><td>7.805</td><td>5.107</td><td>-34.6%</td></tr>
+  <tr><td>最大偏差处转角 (rad)</td><td>-0.519</td><td>-0.611</td><td>+17.7%</td></tr>
+</table>
+
+<h3 style="margin:24px 0 8px; font-size:15px;">5.4 三算法降速对比汇总</h3>
+<table>
+  <tr>
+    <th>指标</th><th>PP</th><th>LQR 运动学</th><th>MPC</th>
+  </tr>
+  <tr><td>平均误差变化</td><td class="pos">-25.4%</td><td class="pos">-76.5%</td><td class="pos">-0.7%</td></tr>
+  <tr><td>最大误差变化</td><td class="pos">-8.7%</td><td class="neg">+3.6%</td><td class="pos">-10.1%</td></tr>
+  <tr><td>终点误差变化</td><td class="pos">-5.1%</td><td class="neg">+2.2%</td><td class="neg">+26.9%</td></tr>
+  <tr><td>法向加速度变化</td><td class="pos">-60.9%</td><td class="pos">-53.3%</td><td class="pos">-54.6%</td></tr>
+  <tr><td>用时变化</td><td class="neg">+55.4%</td><td class="neg">+51.3%</td><td class="neg">+52.8%</td></tr>
+  <tr><td>偏差位置迁移</td><td>708m → 135m</td><td>146m（不变）</td><td>147m（不变）</td></tr>
+</table>
+
+<div class="note">
+  <b>分析：</b><br>
+  1. <b>LQR 对降速最敏感</b>，平均误差暴降 76.5%（0.421→0.099m），因为降速直接缓解了转向饱和问题。但最大误差反升 3.6%，说明急弯处的线性化模型缺陷无法仅靠降速解决。<br><br>
+  2. <b>MPC 几乎不受影响</b>，平均误差仅降 0.7%（0.0289→0.0287m），因为 MPC 本身就会主动减速，人为降低目标速度没有额外收益。终点误差反升 26.9%，可能是低速下求解器精度波动所致。<br><br>
+  3. <b>PP 居中</b>，降速有 25.4% 的平均误差改善，但收益不如 LQR 明显。偏差位置从终点附近（s=708m）改变到前段急弯（s=135m），说明降速缓解了纯追踪在接近终点时的前视距离调整滞后引起的偏差，但暴露了弯道瓶颈。<br><br>
+  4. <b>三算法的法向加速度均大幅降低</b>（-53% ~ -61%），说明降速对行驶平顺性的改善是普适的。<br><br>
+  5. <b>LQR 和 MPC 的偏差位置不变</b>（均在 s≈146-147m），说明急弯是结构性瓶颈；PP 的偏差位置发生了改变，说明其失效模式与速度相关。
+</div>
+
+<!-- 第6节：带底图的图片 -->
+<h2>六、带底图的可视化结果</h2>
+
+<p>6.1 GPX 路线与离线底图概览（PP 实验）</p>
+<img src="../data/20260916_task3/pp__speed8/gpx_overview.png" alt="GPX 路线与底图概览">
+<p class="caption">图1：GPX 路线（红色）叠加在 OpenStreetMap 离线底图上，坐标原点 (118.8145, 31.8885)</p>
+
+<p>6.2 PP 算法跟踪结果汇总</p>
+<img src="../data/20260916_task3/pp__speed8/summary.png" alt="PP 算法汇总图">
+<p class="caption">图2：PP 算法 summary（轨迹、横向误差、速度、转角）</p>
+
+<p>6.3 LQR 运动学算法跟踪结果汇总</p>
+<img src="../data/20260916_task3/lqr_kinematic__speed8/summary.png" alt="LQR 算法汇总图">
+<p class="caption">图3：LQR 运动学算法 summary</p>
+
+<p>6.4 MPC 算法跟踪结果汇总</p>
+<img src="../data/20260916_task3/mpc__speed8/summary.png" alt="MPC 算法汇总图">
+<p class="caption">图4：MPC 算法 summary</p>
+
+<p>6.5 降速后 PP 算法跟踪结果（速度 5 m/s）</p>
+<img src="../data/20260916_task3/pp__speed5/summary.png" alt="PP 速度5 汇总图">
+<p class="caption">图5：PP 算法在速度 5 m/s 下的 summary</p>
+
+<p>6.6 降速后 LQR 算法跟踪结果（速度 5 m/s）</p>
+<img src="../data/20260916_task3/lqr_kinematic__speed5/summary.png" alt="LQR 速度5 汇总图">
+<p class="caption">图6：LQR 运动学算法在速度 5 m/s 下的 summary</p>
+
+<p>6.7 降速后 MPC 算法跟踪结果（速度 5 m/s）</p>
+<img src="../data/20260916_task3/mpc__speed5/summary.png" alt="MPC 速度5 汇总图">
+<p class="caption">图7：MPC 算法在速度 5 m/s 下的 summary</p>
+
+<!-- 第7节：边界说明 -->
+<h2>七、仿真结果与真实通勤时间的区别说明</h2>
+
+<div class="note">
+  <b>仿真用时（99~157 s）不能等同于真实寝室到教室的通勤时间</b>，原因如下：<br><br>
+  1. <b>无交通规则建模</b>：仿真没有交通灯、行人、非机动车和路权让行，车辆全程无需停车等待；<br><br>
+  2. <b>无真实限速与路况</b>：仿真按固定目标速度（8 或 5 m/s）行驶，未考虑校园道路限速、拥堵、减速带和路面附着条件；<br><br>
+  3. <b>无动态障碍</b>：没有其他车辆、行人穿行等需要避让的场景，横向误差全部来自控制器本身而非避障行为；<br><br>
+  4. <b>底图仅作空间背景</b>：OSM GeoJSON 底图只提供道路几何参考，仿真并未对道路属性（车道数、单行、限速）进行建模。<br><br>
+  因此，本实验的用时只能用于<strong>相同设置下不同算法、不同速度之间的相对比较</strong>，不能作为真实通勤时间的预测。此外，运动学自行车模型假设轮胎无侧偏，结论在低速下可信，高速工况需要动力学模型进一步验证。
+</div>
+
+<div class="footer">
+  VDM Tracking 任务三 | 实验日期：2026-09-15 ~ 2026-09-16 | GPX 来源：GPX Studio (gpx.studio) 导出，WGS84 坐标系
+</div>
+
+</div>
+</body>
+</html>

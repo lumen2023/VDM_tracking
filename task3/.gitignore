@@ -1,0 +1,6 @@
+# This file only affects the task3 directory.
+# Local runtime/generated artifacts stay within this folder but are not submitted.
+/outputs/
+/artifacts/
+__pycache__/
+*.py[cod]
