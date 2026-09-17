@@ -32,7 +32,7 @@ Individual blocks:
 
 Lookahead is swept by setting `config.controller.pp_base_lookahead` in the student runner (the root CLI was not modified). Circle GIFs are only generated for PP low and PP high.
 
-**This batch:** `outputs/20260917_200917_student/` (55 closed-loop runs). Index: `outputs/20260917_200917_student/index.json`.
+**This batch:** `outputs/20260917_212117_student/` (55 closed-loop runs). Index: `outputs/20260917_212117_student/index.json`. Table metrics match the earlier `outputs/20260917_200917_student/` batch.
 
 ## 2. Skipped on purpose
 
@@ -63,8 +63,8 @@ Command: `python -m vdm_lab.student.experiments.plant_compare`
 
 | Plant | `reached_goal` | mean \(\|e_y\|\) / m | max \(\|e_y\|\) / m | max \(\|\beta\|\) / rad | max \(\|r\|\) / rad s\(^{-1}\) | dir |
 |---|---|---:|---:|---:|---:|---|
-| kinematic (default) | True | 0.279 | 0.487 | 0.122 | 0.488 | `outputs/20260917_200917_student/plant_pp_circle_medium_kinematic` |
-| `DynamicBicycleBackend` | True | 0.249 | 0.468 | 0.118 | 0.515 | `outputs/20260917_200917_student/plant_pp_circle_medium_dynamic` |
+| kinematic (default) | True | 0.279 | 0.487 | 0.122 | 0.488 | `outputs/20260917_212117_student/plant_pp_circle_medium_kinematic` |
+| `DynamicBicycleBackend` | True | 0.249 | 0.468 | 0.118 | 0.515 | `outputs/20260917_212117_student/plant_pp_circle_medium_dynamic` |
 
 On this mild circle the two plants stay close. Dynamic \(\beta\) is internal sideslip, so it is **not** the same signal as kinematic \(\beta(\delta)\). PP is still a kinematic controller: the comparison is plant mismatch, not “dynamic LQR vs dynamic plant”.
 
@@ -82,7 +82,7 @@ a_{n,\mathrm{th}}=\bar v^2/12.
 
 \(\delta_{\mathrm{th}}=0.2054\,\mathrm{rad}\) for \(L=2.5\,\mathrm{m}\). Relative error is \(|q_{\mathrm{sim}}-q_{\mathrm{th}}|/|q_{\mathrm{th}}|\). Logged \(a_n\) is \(v^2\kappa_{\mathrm{ref}}\), so \(\varepsilon(a_n)\approx 0\) only checks that substitution, not tracking.
 
-GIFs (minimum set): low `outputs/20260917_200917_student/circle_pp_low/animation.gif`; high `outputs/20260917_200917_student/circle_pp_high/animation.gif`. All other circle runs have `summary.png` only.
+GIFs (minimum set): low `outputs/20260917_212117_student/circle_pp_low/animation.gif`; high `outputs/20260917_212117_student/circle_pp_high/animation.gif`. All other circle runs have `summary.png` only.
 
 | algo | speed | \(\bar v\) | \(\bar\delta\) | \(\varepsilon_\delta\) | \(\bar r\) | \(\varepsilon_r\) | \(\bar a_n\) | \(\varepsilon_{a_n}\) | entry \(\max\|e_y\|\) | steady MAE | `reached_goal` | dir |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|
@@ -96,7 +96,7 @@ GIFs (minimum set): low `outputs/20260917_200917_student/circle_pp_low/animation
 | MPC | medium | 5.000 | 0.2089 | 1.72% | 0.4218 | 1.22% | 2.083 | 0.00% | 0.019 | 0.136 | True | `.../circle_mpc_medium` |
 | MPC | high | 6.993 | 0.2092 | 1.87% | 0.5915 | 1.50% | 4.075 | 0.00% | 0.008 | 0.103 | True | `.../circle_mpc_high` |
 
-Directories are under `outputs/20260917_200917_student/`.
+Directories are under `outputs/20260917_212117_student/`.
 
 **Entry vs steady.** For PP/LQR the *steady* MAE is larger than the *entry* peak: most of the offset is a constant lag on the circle (lookahead / model), not the straight-to-arc transient. MPC keeps both small.
 
@@ -218,4 +218,4 @@ Shifting mass distribution \(\ell_f,\ell_r\) while keeping \(L\) changed PP mixe
 - Kinematic default plant; dynamic backend is optional and linear-tire only.
 - `dt=0.1\,\mathrm{s}`; GPX vertices are sparse.
 - No environment constraints; `reached_goal` is a simulator stop test.
-- Student ≠ solution. Numbers in this file are student closed-loop logs under `outputs/20260917_200917_student/`.
+- Student ≠ solution. Numbers in this file are student closed-loop logs under `outputs/20260917_212117_student/`.
