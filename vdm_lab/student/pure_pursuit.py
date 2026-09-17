@@ -4,6 +4,7 @@ from vdm_lab.common.geometry import clamp, pi_to_pi
 from vdm_lab.common.types import ControlCommand
 from vdm_lab.common.vehicle import speed_pid
 from vdm_lab.student._controller_utils import (
+    command_target_speed,
     remaining_path_distance,
     validated_wheelbase,
 )
@@ -83,13 +84,17 @@ def _bounded_steer(desired, previous, config):
     return clamp(desired, previous - max_change, previous + max_change)
 
 
-def _bounded_acceleration(desired, speed, config):
+def _bounded_acceleration(desired, speed, config, speed_limit=None):
     """Respect acceleration limits without requesting reverse motion next step."""
     vehicle = config.vehicle
     max_accel = max(0.0, _finite(vehicle.max_accel, 0.0))
     max_decel = max(0.0, _finite(vehicle.max_decel, 0.0))
     min_speed = max(0.0, _finite(vehicle.min_speed, 0.0))
     max_speed = max(min_speed, _finite(vehicle.max_speed, min_speed))
+    if speed_limit is None:
+        cruise_limit = max_speed
+    else:
+        cruise_limit = min(max_speed, max(min_speed, _finite(speed_limit, max_speed)))
     dt = _finite(config.sim.dt, 0.0)
     speed = _finite(speed, math.nan)
     if not math.isfinite(speed):
@@ -101,7 +106,7 @@ def _bounded_acceleration(desired, speed, config):
     upper = max_accel
     if dt > 0.0:
         lower = max(lower, (min_speed - speed) / dt)
-        upper = min(upper, (max_speed - speed) / dt)
+        upper = min(upper, (cruise_limit - speed) / dt)
     if lower > upper:
         return -max_decel
     return clamp(_finite(desired, -max_decel), lower, upper)
@@ -196,7 +201,14 @@ def control(state, reference, previous_control, config):
             acceleration=_bounded_acceleration(-vehicle.max_decel, state.v, config),
             steer=_bounded_steer(0.0, previous_steer, config),
         )
-    target_speed = _finite(reference.target_speed, 0.0)
+    target_speed = command_target_speed(
+        _finite(reference.target_speed, 0.0),
+        reference,
+        speed,
+        vehicle,
+    )
     acceleration = speed_pid(target_speed, speed, goal_distance, controller, vehicle)
-    acceleration = _bounded_acceleration(acceleration, state.v, config)
+    acceleration = _bounded_acceleration(
+        acceleration, state.v, config, speed_limit=target_speed
+    )
     return ControlCommand(acceleration=acceleration, steer=steer)
