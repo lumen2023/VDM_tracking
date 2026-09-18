@@ -9,7 +9,9 @@ from vdm_lab.common.types import ControlCommand
 from vdm_lab.student._controller_utils import (
     bounded_acceleration,
     bounded_steer,
+    cg_steady_steer,
     finite,
+    geometric_arclength,
     state_in_speed_envelope,
     stop_command,
     tracking_speed_limit,
@@ -268,78 +270,93 @@ def _horizon_speed_caps(current_speed, z_ref, config):
 
 
 def nearest_horizon_reference(state, reference, config):
-    """Build an unwrapped [x, y, speed, yaw] reference over the MPC horizon."""
+    """Continuous arc-length preview with CG-consistent body heading.
+
+    The path yaw is the velocity/course tangent chi; the model state yaw is
+    body heading psi = chi - beta. At nonzero curvature these are different.
+    """
     path = reference.path
     horizon = _horizon(config)
-    point_count = min(
-        len(path.x), len(path.y), len(path.yaw), len(path.target_speed)
-    )
-    if point_count < 1:
+    n = len(path.x)
+    if n < 1 or any(
+        len(getattr(path, key)) != n
+        for key in ("y", "yaw", "curvature", "target_speed")
+    ):
         raise ValueError("reference path is empty or inconsistent")
-
+    arrays = [
+        np.asarray(getattr(path, key), dtype=float)
+        for key in ("x", "y", "yaw", "curvature", "target_speed")
+    ]
+    if not all(np.all(np.isfinite(array)) for array in arrays):
+        raise ValueError("reference path contains non-finite values")
+    path_s = geometric_arclength(path)
     try:
-        base_index = int(reference.nearest_index)
+        index = int(reference.nearest_index)
     except (TypeError, ValueError, OverflowError):
-        base_index = 0
-    base_index = int(clamp(base_index, 0, point_count - 1))
-    z_ref = np.zeros((4, horizon + 1))
-
-    preview_target = max(
-        0.0,
-        finite(reference.target_speed, path.target_speed[base_index]),
-    )
-    preview_speed = max(
-        0.0,
-        finite(state.v, 0.0),
-        0.5 * preview_target,
-    )
+        index = 0
+    index = int(clamp(index, 0, n - 1))
     dt = finite(config.sim.dt, 0.0)
     if dt <= 0.0:
         raise ValueError("dt must be positive")
-    waypoint_ds = finite(config.sim.waypoint_ds, 0.0)
-    if waypoint_ds <= 0.0:
-        raise ValueError("waypoint_ds must be positive")
-
-    path_s = np.asarray(path.s[:point_count], dtype=float)
-    use_path_s = (
-        path_s.shape == (point_count,)
-        and np.all(np.isfinite(path_s))
-        and np.all(np.diff(path_s) >= 0.0)
+    preview_target = max(
+        0.0,
+        finite(reference.target_speed, path.target_speed[index]),
     )
-    distance = 0.0
-    previous_yaw = finite(state.yaw, path.yaw[base_index])
-    if not math.isfinite(previous_yaw):
-        raise ValueError("state and reference yaw are non-finite")
+    speed = max(0.0, finite(state.v, 0.0), 0.5 * preview_target)
+    base_s = float(path_s[index])
+    best_d2 = float("inf")
+    for j in range(max(0, index - 1), min(n - 1, index + 1)):
+        dx = path.x[j + 1] - path.x[j]
+        dy = path.y[j + 1] - path.y[j]
+        norm2 = dx * dx + dy * dy
+        if norm2 <= 1e-18:
+            continue
+        fraction = float(
+            np.clip(
+                ((state.x - path.x[j]) * dx + (state.y - path.y[j]) * dy)
+                / norm2,
+                0.0,
+                1.0,
+            )
+        )
+        d2 = (state.x - path.x[j] - fraction * dx) ** 2 + (
+            state.y - path.y[j] - fraction * dy
+        ) ** 2
+        if d2 < best_d2:
+            best_d2 = d2
+            base_s = float(path_s[j] + fraction * (path_s[j + 1] - path_s[j]))
+    sample_s = np.minimum(path_s[-1], base_s + np.arange(horizon + 1) * speed * dt)
+    z_ref = np.zeros((4, horizon + 1))
+    z_ref[0] = np.interp(sample_s, path_s, arrays[0])
+    z_ref[1] = np.interp(sample_s, path_s, arrays[1])
     min_speed, max_speed = vehicle_speed_bounds(config.vehicle)
-
-    for i in range(horizon + 1):
-        if i > 0:
-            distance += preview_speed * dt
-        if use_path_s:
-            target_s = path_s[base_index] + distance
-            index = int(np.searchsorted(path_s, target_s, side="left"))
-            index = min(max(index, base_index), point_count - 1)
-        else:
-            offset = int(round(distance / waypoint_ds))
-            index = min(base_index + max(offset, 0), point_count - 1)
-
-        x_ref = finite(path.x[index], math.nan)
-        y_ref = finite(path.y[index], math.nan)
-        raw_yaw = finite(path.yaw[index], math.nan)
-        if not all(math.isfinite(value) for value in (x_ref, y_ref, raw_yaw)):
-            raise ValueError("reference path contains non-finite values")
-        yaw_ref = previous_yaw + _wrap_angle(raw_yaw - previous_yaw)
-        target_speed = clamp(
-            finite(path.target_speed[index], 0.0), min_speed, max_speed
+    curvature = np.interp(sample_s, path_s, arrays[3])
+    speeds = np.clip(np.interp(sample_s, path_s, arrays[4]), min_speed, max_speed)
+    for k, kappa in enumerate(curvature):
+        speeds[k] = tracking_speed_limit(speeds[k], kappa, config.vehicle)
+    z_ref[2] = speeds
+    course = np.interp(sample_s, path_s, np.unwrap(arrays[2]))
+    beta = np.zeros(horizon + 1)
+    if getattr(config.controller, "mpc_cg_heading", True):
+        wheelbase = validated_wheelbase(config.vehicle)
+        max_delta = config.vehicle.max_steer
+        max_beta = math.atan(
+            config.vehicle.lr / wheelbase * math.tan(max_delta)
         )
-        kappa = 0.0
-        if index < len(path.curvature):
-            kappa = finite(path.curvature[index], 0.0)
-        target_speed = tracking_speed_limit(
-            target_speed, kappa, config.vehicle
-        )
-        z_ref[:, i] = [x_ref, y_ref, target_speed, yaw_ref]
-        previous_yaw = yaw_ref
+        max_kappa = math.tan(max_delta) * math.cos(max_beta) / wheelbase
+        for k, kappa in enumerate(curvature):
+            delta = cg_steady_steer(
+                float(np.clip(kappa, -max_kappa, max_kappa)),
+                config.vehicle,
+            )
+            beta[k] = math.atan(
+                config.vehicle.lr / wheelbase * math.tan(delta)
+            )
+    desired_yaw = course - beta
+    desired_yaw += (float(state.yaw) - desired_yaw[0]) - _wrap_angle(
+        float(state.yaw) - desired_yaw[0]
+    )
+    z_ref[3] = desired_yaw
     return z_ref
 
 
@@ -481,12 +498,25 @@ def _solve_linear_mpc(
     applied_steer,
     config,
 ):
+    solver = getattr(config.controller, "mpc_solver", "auto")
+    if solver not in {"auto", "cvxpy", "scipy"}:
+        raise ValueError("mpc_solver must be auto, cvxpy, or scipy")
+    if solver == "scipy":
+        from vdm_lab.student.qp_solver import solve_condensed_mpc
+
+        return solve_condensed_mpc(
+            z_ref, z_bar, z0, nominal_steer, applied_steer, config
+        )
     try:
         import cvxpy as cp
-    except ImportError as exc:
-        raise ImportError(
-            "MPC requires CVXPY: pip install -r requirements.txt"
-        ) from exc
+    except ImportError:
+        if solver == "cvxpy":
+            raise ImportError("CVXPY requested but not installed")
+        from vdm_lab.student.qp_solver import solve_condensed_mpc
+
+        return solve_condensed_mpc(
+            z_ref, z_bar, z0, nominal_steer, applied_steer, config
+        )
 
     horizon = _horizon(config)
     vehicle = config.vehicle

@@ -35,16 +35,9 @@ def solve_lqr(A, B, Q, R, eps, max_iter):
     if not all(np.all(np.isfinite(item)) for item in (A, B, Q, R)):
         raise FloatingPointError("LQR matrices must be finite")
 
-    if not np.allclose(Q, Q.T, atol=1e-10) or not np.allclose(R, R.T, atol=1e-10):
-        raise ValueError("LQR weights must be symmetric")
-    if np.min(np.linalg.eigvalsh(Q)) < -1e-10:
-        raise ValueError("Q must be positive semidefinite")
-    if np.min(np.linalg.eigvalsh(R)) <= 0.0:
-        raise ValueError("R must be positive definite")
-    tolerance = max(1e-12, finite(eps, 1e-4))
+    tolerance = max(0.0, finite(eps, 0.0))
     iterations = max(1, int(finite(max_iter, 1)))
     P = 0.5 * (Q + Q.T)
-    converged = False
     for _ in range(iterations):
         gain = matrix_solve(R + B.T @ P @ B, B.T @ P @ A)
         P_next = A.T @ P @ A - A.T @ P @ B @ gain + Q
@@ -54,21 +47,8 @@ def solve_lqr(A, B, Q, R, eps, max_iter):
         difference = float(np.max(np.abs(P_next - P)))
         P = P_next
         if difference <= tolerance:
-            converged = True
             break
 
-    if not converged:
-        # A finite gain is not proof that fixed-point iteration converged.
-        # QZ DARE solution is a checked fallback, not another truncated iterate.
-        from scipy.linalg import solve_discrete_are
-
-        P = solve_discrete_are(A, B, Q, R)
-        residual_gain = np.linalg.solve(R + B.T @ P @ B, B.T @ P @ A)
-        residual = A.T @ P @ A - P - A.T @ P @ B @ residual_gain + Q
-        if np.linalg.norm(residual, ord="fro") > 1e-7 * (
-            1.0 + np.linalg.norm(P, ord="fro")
-        ):
-            raise FloatingPointError("DARE fallback residual is too large")
     K = matrix_solve(R + B.T @ P @ B, B.T @ P @ A)
     if not np.all(np.isfinite(K)):
         raise FloatingPointError("LQR gain is non-finite")

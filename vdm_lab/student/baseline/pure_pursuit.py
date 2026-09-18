@@ -74,15 +74,7 @@ def control(state, reference, previous_control, config):
         return stop_command(state, previous_control, config)
     yaw = finite(state.yaw, 0.0)
     alpha = pi_to_pi(math.atan2(target_y - state_y, target_x - state_x) - yaw)
-    # The geometric circle passes through the selected point. Its chord is
-    # the actual distance, not the requested look-ahead (especially near the
-    # endpoint and on sparse/irregular paths).
-    target_chord = math.hypot(target_x - state_x, target_y - state_y)
-    desired_steer = (
-        0.0
-        if target_chord < 1.0e-9
-        else math.atan2(2.0 * wheelbase * math.sin(alpha), target_chord)
-    )
+    desired_steer = math.atan2(2.0 * wheelbase * math.sin(alpha), lookahead)
     steer = bounded_steer(desired_steer, previous_steer, config)
 
     try:

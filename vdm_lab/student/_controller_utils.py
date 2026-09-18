@@ -271,15 +271,7 @@ def _reference_path_progress(reference):
     curvature = np.asarray(path.curvature[:point_count], dtype=float)
     if not np.all(np.isfinite(curvature)):
         raise ValueError("path curvature must be finite")
-    path_s = _monotonic_path_s(path, point_count)
-    if path_s is None:
-        x = np.asarray(path.x[:point_count], dtype=float)
-        y = np.asarray(path.y[:point_count], dtype=float)
-        if not np.all(np.isfinite(x)) or not np.all(np.isfinite(y)):
-            raise ValueError("path coordinates must be finite")
-        path_s = np.concatenate(
-            ([0.0], np.cumsum(np.hypot(np.diff(x), np.diff(y))))
-        )
+    path_s = geometric_arclength(path)[:point_count]
     return path_s, index, curvature, point_count
 
 
@@ -382,7 +374,50 @@ def longitudinal_command(state, reference, config, *, tracking_ok):
     return acceleration, target_speed
 
 
-def lqr_error_state(reference, speed, previous_steer, config):
+def geometric_arclength(path):
+    """Polyline arc length, not the cubic spline's waypoint parameter.
+
+    The common spline generator stores its interpolation parameter as ``s``;
+    that parameter is not generally physical distance. Controller preview must
+    use metric distances between the actual sampled coordinates.
+    """
+    x = np.asarray(path.x, dtype=float).reshape(-1)
+    y = np.asarray(path.y, dtype=float).reshape(-1)
+    if x.size == 0 or x.shape != y.shape:
+        raise ValueError(
+            "path coordinates must be nonempty, finite, and equal length"
+        )
+    if not np.all(np.isfinite(x)) or not np.all(np.isfinite(y)):
+        raise ValueError(
+            "path coordinates must be nonempty, finite, and equal length"
+        )
+    return np.r_[0.0, np.cumsum(np.hypot(np.diff(x), np.diff(y)))]
+
+
+def cg_steady_steer(curvature, vehicle):
+    """Exact CG kinematic steering for a steady trajectory curvature.
+
+    kappa = tan(delta) / sqrt(L**2 + lr**2*tan(delta)**2).
+    The geometric inverse exists only for |lr*kappa| < 1.
+    """
+    wheelbase = validated_wheelbase(vehicle)
+    kappa = finite_float(curvature, "curvature")
+    argument = 1.0 - (vehicle.lr * kappa) ** 2
+    if argument <= 0.0:
+        raise ValueError(
+            "requested CG curvature has no finite geometric inverse"
+        )
+    return math.atan(wheelbase * kappa / math.sqrt(argument))
+
+
+def lqr_error_state(
+    reference,
+    speed,
+    previous_steer,
+    config,
+    state=None,
+    measured_speed=None,
+):
     """Four-state lateral error used by both kinematic and dynamic LQR."""
     e_y = finite(reference.lateral_error, math.nan)
     raw_heading_error = finite(reference.heading_error, math.nan)
@@ -398,10 +433,27 @@ def lqr_error_state(reference, speed, previous_steer, config):
     previous_for_model = clamp(
         finite(previous_steer, 0.0), -max_steer, max_steer
     )
-    e_yaw_dot = speed / wheelbase * math.tan(previous_for_model) - speed * curvature
-    return np.array(
-        [[e_y], [speed * math.sin(e_yaw)], [e_yaw], [e_yaw_dot]]
-    )
+    measured_vy = getattr(state, "lateral_velocity", None)
+    measured_r = getattr(state, "measured_yaw_rate", None)
+    has_dynamics = measured_vy is not None and measured_r is not None
+    if has_dynamics:
+        measured_vy = float(measured_vy)
+        measured_r = float(measured_r)
+        if not math.isfinite(measured_vy + measured_r):
+            raise FloatingPointError("non-finite measured lateral states")
+        travel = (
+            speed
+            if measured_speed is None
+            else max(0.0, finite(measured_speed, 0.0))
+        )
+        e_y_dot = measured_vy * math.cos(e_yaw) + travel * math.sin(e_yaw)
+        e_yaw_dot = measured_r - speed * curvature
+    else:
+        e_y_dot = speed * math.sin(e_yaw)
+        e_yaw_dot = (
+            speed / wheelbase * math.tan(previous_for_model) - speed * curvature
+        )
+    return np.array([[e_y], [e_y_dot], [e_yaw], [e_yaw_dot]])
 
 
 def lqr_control(
@@ -441,7 +493,14 @@ def lqr_control(
         closed_loop_radius = float(np.max(np.abs(np.linalg.eigvals(A - B @ K))))
         if not math.isfinite(closed_loop_radius) or closed_loop_radius >= 1.0:
             raise FloatingPointError("LQR closed loop is not stable")
-        error_state = lqr_error_state(reference, speed, previous_steer, config)
+        error_state = lqr_error_state(
+            reference,
+            speed,
+            previous_steer,
+            config,
+            state=state,
+            measured_speed=measured_speed,
+        )
         feedback = float(-(K @ error_state)[0, 0])
         preview_time = finite(
             getattr(controller, preview_attr, default_preview),
