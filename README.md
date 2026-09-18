@@ -4,6 +4,87 @@ This repository contains path-tracking simulation experiments for a vehicle dyna
 
 ---
 
+## Project Structure
+
+The repository is organized into four main parts: the core path-tracking framework, baseline controller validation, extended experiments, and task-specific results.
+
+```text
+VDM_tracking/
+│
+├─ README.md                         # 项目总览、实验结论和使用说明
+├─ run_experiment.py                 # 主实验入口：选择算法、路线、速度和车辆
+├─ requirements.txt                  # Python 依赖
+├─ TEACHING_GUIDE.md                 # 教学与实验指导
+│
+├─ analyze_circle.py                 # PP 圆周稳态实验分析
+├─ analyze_circle_lqr.py             # Kinematic LQR 圆周稳态实验分析
+├─ analyze_circle_mpc.py             # MPC 圆周稳态实验分析
+│
+├─ algorithm_comparison.csv          # PP/LQR/MPC 多路线对比汇总
+├─ parameter_comparison.csv          # PP 前视距离参数敏感性结果
+│
+├─ analysis/                         # 多路线 Benchmark 与参数分析工具
+│  ├─ compare_algorithms.py          # 汇总三种算法在多条路线上的性能
+│  ├─ plot_benchmark.py              # 绘制轨迹、横向误差和转角对比图
+│  ├─ run_pp_param.py                # 运行 PP look-ahead 参数实验
+│  ├─ analyze_parameters.py          # 汇总参数敏感性实验结果
+│  └─ figs/                          # Benchmark 与参数实验生成的图
+│
+├─ docs/
+│  └─ figures/                       # Baseline 控制器验证图片
+│     ├─ pp/                         # Pure Pursuit baseline 图
+│     ├─ kinematic/                  # Kinematic LQR baseline 图
+│     └─ mpc/                        # MPC baseline 图
+│
+├─ data/                             # 实验所需路线与地图数据
+│  ├─ gpx/                           # GPX 路线文件
+│  └─ campus/                        # 校园路线、地图和规划路径数据
+│
+├─ examples/
+│  ├─ run_pp_demo.py                 # PP 示例程序
+│  └─ campus/                        # 校园路线实验脚本
+│     ├─ campus_route.py             # 校园路线处理
+│     ├─ run_campus.py               # 校园三算法跟踪实验
+│     ├─ campus_analysis.py          # 校园实验结果分析
+│     └─ adjust_campus_route.py      # 校园路线局部调整
+│
+├─ scripts/                          # 辅助脚本
+│
+├─ outputs/                          # 原始仿真实验输出
+│  └─ campus/                        # 校园实验原始运行结果
+│
+└─ vdm_lab/
+   │
+   ├─ common/                        # 公共仿真框架、车辆模型、几何和日志工具
+   ├─ config/                        # 车辆、控制器、路线和速度参数
+   │
+   ├─ student/                       # 学生实现的路径跟踪算法
+   │  ├─ pure_pursuit.py             # Pure Pursuit
+   │  ├─ lqr_kinematic.py            # Kinematic LQR
+   │  ├─ lqr_dynamic.py              # Dynamic LQR
+   │  └─ mpc.py                      # Linear MPC
+   │
+   ├─ solutions/                     # 参考实现，用于验证 student 版本
+   ├─ assets/                        # 教学图片、GIF 和演示资源
+   │
+   └─ tasks/                         # 各专题实验的最终报告与结果
+      │
+      ├─ benchmark/                  # 多路线 Benchmark + PP 参数敏感性
+      │  └─ README.md                # Benchmark 实验说明和主要结论
+      │
+      ├─ dynamic_lqr/                # Kinematic vs Dynamic LQR 对比
+      │  ├─ README.md                # 动力学模型推导与实验结论
+      │  ├─ dynamic_model_results.csv# Dynamic LQR 对比结果表
+      │  └─ figures/                 # Kinematic/Dynamic LQR 对比图
+      │
+      └─ campus/                     # 校园路线应用实验
+         ├─ README.md                # 校园实验说明与结论
+         ├─ Campus_Analysis_EN.md     # 校园实验英文分析
+         └─ results/                 # 校园实验最终汇总数据和图片
+```
+
+---
+
 ## 1. Pure Pursuit (PP)
 
 ### 1.1 Experimental objectives
@@ -584,9 +665,11 @@ where:
 
 \[
 \dot e_\psi
-=
-\dot\psi_{\text{vehicle}}
--
+===========
+
+\dot\psi_}
+----------
+
 \dot\psi_{\text{reference}}
 \]
 
@@ -1410,9 +1493,245 @@ Results chart:
 
 ## 4. Parameter sensitivity experiment
 
-> To be completed: sensitivity analysis for PP look-ahead distance, maximum steering angle, wheelbase, and other parameters.
+This section summarizes the controller benchmark completed on the current `VDM_tracking` framework. The study compares **Pure Pursuit (PP)**, **Kinematic LQR**, and **Linear MPC** on three representative routes, then evaluates the sensitivity of PP to the look-ahead distance.
 
----
+### 4.1 Objectives
+
+The experiments are designed to answer two questions:
+
+1. How do PP, Kinematic LQR, and MPC behave on paths with different geometric characteristics?
+2. How does the PP look-ahead distance affect tracking accuracy, steering activity, and response lag?
+
+All comparisons use the same vehicle, speed mode, route, and simulation settings. Only the controller or the tested parameter is changed.
+
+### 4.2 Experimental Setup
+
+#### Controllers
+
+- Pure Pursuit (`pp`)
+- Kinematic LQR (`lqr_kinematic`)
+- Linear MPC (`mpc`)
+
+#### Vehicle and speed
+
+- Vehicle: `student_car`
+- Speed mode: `medium`
+- Version: `student`
+
+#### Benchmark routes
+
+| Route                  | Main feature                           | Main observation                                |
+| ---------------------- | -------------------------------------- | ----------------------------------------------- |
+| `double_lane_change` | rapid curvature-direction changes      | return speed, overshoot, steering oscillation   |
+| `right_angle`        | sharp corner                           | peak error, corner cutting, steering saturation |
+| `s_curve`            | continuous positive/negative curvature | phase lag, oscillation, steering smoothness     |
+
+### 4.3 Multi-Route Benchmark
+
+All 9 controller-route combinations reached the goal.
+
+| Route              | Controller    | Mean lateral error / m | Max lateral error / m | J_delta |
+| ------------------ | ------------- | ---------------------: | --------------------: | ------: |
+| double_lane_change | PP            |                 0.3143 |                0.9447 |  0.1568 |
+| double_lane_change | Kinematic LQR |                 0.1904 |                0.6584 |  4.3656 |
+| double_lane_change | MPC           |                 0.1849 |                0.5036 |  0.5218 |
+| right_angle        | PP            |                 0.1352 |                1.1064 |  0.0767 |
+| right_angle        | Kinematic LQR |                 0.0989 |                0.7186 |  0.6268 |
+| right_angle        | MPC           |                 0.0667 |                0.4881 |  0.1326 |
+| s_curve            | PP            |                 0.3332 |                1.1710 |  0.2918 |
+| s_curve            | Kinematic LQR |                 0.2164 |                0.5469 |  1.4576 |
+| s_curve            | MPC           |                 0.1848 |                0.4891 |  0.4480 |
+
+#### Overall trend
+
+In the current benchmark:
+
+- **MPC produced the lowest mean and maximum lateral errors on all three routes.**
+- **Kinematic LQR ranked second in tracking accuracy, but showed the largest steering-rate activity.**
+- **PP had the largest tracking errors but the lowest `J_delta`, indicating the smoothest steering according to this metric.**
+
+Therefore, the experiments show a clear trade-off between **tracking accuracy** and **steering smoothness** rather than one controller being best in every metric.
+
+### 4.4 Route-Specific Observations
+
+#### 4.4.1 Double Lane Change
+
+PP showed the largest overshoot, with lateral-error peaks of approximately `+0.94 m` and `-0.85 m`.
+
+Kinematic LQR returned toward the reference rapidly, but its steering command exhibited strong high-frequency oscillation. Its `J_delta = 4.3656`, much larger than PP and MPC.
+
+MPC achieved a similar fast recovery while maintaining substantially smaller tracking-error peaks and lower steering activity than Kinematic LQR.
+
+**Main observation:** PP shows the largest overshoot; Kinematic LQR reacts aggressively but oscillates; MPC provides the smallest peak error with a more stable response.
+
+#### 4.4.2 Right Angle
+
+The maximum tracking errors occurred around the sharp corner for all three controllers.
+
+| Controller    | Max lateral error / m | Steering behavior                            |
+| ------------- | --------------------: | -------------------------------------------- |
+| PP            |                1.1064 | no steering saturation; clear corner cutting |
+| Kinematic LQR |                0.7186 | reaches the 35 deg steering limit            |
+| MPC           |                0.4881 | reaches the 35 deg steering limit            |
+
+The trajectory comparison shows that PP cuts furthest inside the corner. Kinematic LQR and MPC use the available steering authority more aggressively, while MPC achieves the smallest peak error.
+
+**Main observation:** Sharp curvature creates the largest error near the corner. In the detailed results, LQR and MPC reach the steering limit, while PP avoids saturation but sacrifices path-following accuracy through corner cutting.
+
+#### 4.4.3 S-Curve
+
+The S-curve highlights the differences in phase lag and steering oscillation.
+
+- PP shows the clearest phase lag and the largest error peaks, approximately `±1.17 m`.
+- Kinematic LQR shows sustained high-frequency steering oscillation.
+- MPC maintains smaller error peaks, approximately `±0.49 m`.
+
+The steering-rate metric is:
+
+```text
+PP   : 0.2918
+LQR  : 1.4576
+MPC  : 0.4480
+```
+
+**Main observation:** PP is relatively smooth but lags behind the changing curvature, while Kinematic LQR reacts aggressively and oscillates. MPC gives the lowest tracking error among the three in this experiment.
+
+### 4.5 PP Look-Ahead Sensitivity
+
+The PP base look-ahead distance was varied on the `s_curve` route while keeping all other conditions unchanged.
+
+#### Fixed setup
+
+```text
+route       = s_curve
+speed_mode  = medium
+vehicle     = student_car
+algorithm   = pp
+```
+
+#### Tested values
+
+```text
+pp_base_lookahead = 1.5 m
+pp_base_lookahead = 3.0 m
+pp_base_lookahead = 5.0 m
+```
+
+#### Results
+
+| Look-ahead / m | Mean lateral error / m | Max lateral error / m | Max steer / rad | J_delta |
+| -------------: | ---------------------: | --------------------: | --------------: | ------: |
+|            1.5 |                 0.2211 |                0.7671 |          0.4279 |  0.2324 |
+|            3.0 |                 0.3332 |                1.1710 |          0.5871 |  0.2918 |
+|            5.0 |                 0.5461 |                1.8542 |          0.3382 |  0.1688 |
+
+#### Interpretation
+
+**1.5 m look-ahead**
+
+- Lowest mean and maximum lateral errors.
+- Faster response to curvature changes.
+- No significant high-frequency oscillation was observed in this experiment.
+- Steering remained below saturation.
+
+**3.0 m look-ahead**
+
+- Intermediate tracking accuracy.
+- Largest maximum steering demand.
+- Largest `J_delta` among the three tested values.
+
+**5.0 m look-ahead**
+
+- Lowest steering-rate activity.
+- Largest lateral tracking errors.
+- Clear corner cutting and phase lag.
+
+#### Overall trend
+
+For the tested S-curve case:
+
+```text
+larger look-ahead
+    -> smoother steering
+    -> larger phase lag
+    -> larger tracking error
+
+smaller look-ahead
+    -> faster response
+    -> smaller tracking error
+    -> more active steering
+```
+
+The `1.5 m` value performed best in tracking accuracy in this specific experiment, but this should not be treated as a universal optimum for all routes and speeds.
+
+### 4.6 Reproducing the Benchmark
+
+Example commands:
+
+```powershell
+python run_experiment.py --algo pp --version student --route double_lane_change --speed-mode medium --vehicle student_car --save-log --save-fig
+python run_experiment.py --algo lqr_kinematic --version student --route double_lane_change --speed-mode medium --vehicle student_car --save-log --save-fig
+python run_experiment.py --algo mpc --version student --route double_lane_change --speed-mode medium --vehicle student_car --save-log --save-fig
+```
+
+Repeat the same three controllers for:
+
+```text
+right_angle
+s_curve
+```
+
+The benchmark summary can then be generated with the analysis scripts in:
+
+```text
+analysis/
+```
+
+Recommended retained outputs:
+
+```text
+algorithm_comparison.csv
+parameter_comparison.csv
+analysis/figs/
+```
+
+Raw timestamped runs under `outputs/` are reproducible experiment artifacts and do not need to be committed to Git.
+
+### 4.7 Key Figures
+
+Recommended figures for the repository:
+
+```text
+analysis/figs/error_double_lane_change.png
+analysis/figs/error_right_angle.png
+analysis/figs/error_s_curve.png
+
+analysis/figs/steer_double_lane_change.png
+analysis/figs/steer_right_angle.png
+analysis/figs/steer_s_curve.png
+
+analysis/figs/traj_double_lane_change.png
+analysis/figs/traj_right_angle.png
+analysis/figs/traj_s_curve.png
+
+analysis/figs/lookahead_sensitivity.png
+analysis/figs/lookahead_error_curves.png
+```
+
+For the root project README, only one or two representative figures are recommended. The full set can remain in this benchmark section.
+
+### 4.8 Main Conclusions
+
+The current medium-speed experiments show that path geometry strongly affects controller behavior.
+
+- MPC consistently achieved the smallest lateral tracking errors on the three tested routes.
+- Kinematic LQR improved tracking accuracy relative to PP, but showed strong steering oscillation in the more demanding transient cases.
+- PP produced smoother steering according to `J_delta`, but showed larger phase lag, overshoot, and corner cutting.
+- Increasing PP look-ahead distance reduced steering activity but increased tracking error and response lag.
+- Controller evaluation should therefore consider both **tracking accuracy** and **control smoothness**, rather than relying on a single metric.
+
+These conclusions apply to the current `student_car`, `medium` speed mode, tested routes, and controller parameters.
+-----------------------------------------------------------------------------------------------
 
 ## 5. Kinematic / Dynamic Model Comparison
 
@@ -1420,11 +1739,11 @@ Results chart:
 
 This experiment compares kinematic LQR with dynamic LQR on two continuous-curvature routes. Both controllers use the same `student_car`, `student` implementation, and medium-speed mode; only the lateral-error model and its curvature feedforward differ.
 
-| Item | Setting |
-| --- | --- |
-| Routes | `s_curve`, `mixed_course` |
-| Speed mode | `medium` |
-| Vehicle | `student_car` |
+| Item        | Setting                            |
+| ----------- | ---------------------------------- |
+| Routes      | `s_curve`, `mixed_course`      |
+| Speed mode  | `medium`                         |
+| Vehicle     | `student_car`                    |
 | Controllers | `lqr_kinematic`, `lqr_dynamic` |
 
 Run the four comparisons from the repository root:
@@ -1449,13 +1768,13 @@ front-wheel steering angle
         → lateral and yaw response
 ```
 
-| Quantity | Meaning | Role in the dynamic model |
-| --- | --- | --- |
-| `m` | vehicle mass | Converts lateral force into lateral acceleration |
-| `Iz` | yaw moment of inertia | Converts yaw moment into yaw acceleration |
-| `Cf`, `Cr` | front/rear cornering stiffness | Relate tyre side-slip to lateral force |
-| `lf`, `lr` | CG-to-front/rear-axle distances | Define force moment arms |
-| `v` | longitudinal speed | Appears in the lateral/yaw dynamics |
+| Quantity       | Meaning                         | Role in the dynamic model                        |
+| -------------- | ------------------------------- | ------------------------------------------------ |
+| `m`          | vehicle mass                    | Converts lateral force into lateral acceleration |
+| `Iz`         | yaw moment of inertia           | Converts yaw moment into yaw acceleration        |
+| `Cf`, `Cr` | front/rear cornering stiffness  | Relate tyre side-slip to lateral force           |
+| `lf`, `lr` | CG-to-front/rear-axle distances | Define force moment arms                         |
+| `v`          | longitudinal speed              | Appears in the lateral/yaw dynamics              |
 
 The kinematic model does not contain `m`, `Iz`, `Cf`, or `Cr` because, under its no-side-slip assumption, it describes geometric motion rather than a force equilibrium.
 
@@ -1513,40 +1832,40 @@ Both controllers reached the goal on both routes. Dynamic LQR substantially redu
 
 #### `s_curve` at Medium Speed
 
-| Metric | Kinematic LQR | Dynamic LQR | Change |
-| --- | ---: | ---: | ---: |
-| Steps | 150 | 152 | — |
-| Reached goal | True | True | — |
-| Mean lateral error / m | 0.2164 | 0.0922 | ↓ 57% |
-| Max lateral error / m | 0.5469 | 0.2148 | ↓ 61% |
-| Finish error / m | 0.8429 | 0.8976 | slightly higher |
-| Mean heading error / rad | 0.0516 | 0.0690 | slightly higher |
-| Max steer / rad | 0.6109 | 0.5598 | ↓ 8% |
-| Max side-slip `beta` / rad | 0.3368 | 0.3036 | ↓ 10% |
-| Max yaw rate / rad/s | 1.7177 | 1.5542 | ↓ 10% |
+| Metric                      | Kinematic LQR | Dynamic LQR |          Change |
+| --------------------------- | ------------: | ----------: | --------------: |
+| Steps                       |           150 |         152 |              — |
+| Reached goal                |          True |        True |              — |
+| Mean lateral error / m      |        0.2164 |      0.0922 |          ↓ 57% |
+| Max lateral error / m       |        0.5469 |      0.2148 |          ↓ 61% |
+| Finish error / m            |        0.8429 |      0.8976 | slightly higher |
+| Mean heading error / rad    |        0.0516 |      0.0690 | slightly higher |
+| Max steer / rad             |        0.6109 |      0.5598 |           ↓ 8% |
+| Max side-slip`beta` / rad |        0.3368 |      0.3036 |          ↓ 10% |
+| Max yaw rate / rad/s        |        1.7177 |      1.5542 |          ↓ 10% |
 
-| Kinematic LQR | Dynamic LQR |
-| --- | --- |
+| Kinematic LQR                                                                        | Dynamic LQR                                                                      |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
 | ![Kinematic LQR on s_curve](vdm_lab/tasks/dynamic_lqr/figures/kinematic_s_curve.jpg) | ![Dynamic LQR on s_curve](vdm_lab/tasks/dynamic_lqr/figures/dynamic_s_curve.jpg) |
 
 The kinematic controller reaches about ±0.55 m lateral error in the bends and has visible steering spikes. Dynamic LQR limits the lateral error to about ±0.20 m with a smoother steering trace.
 
 #### `mixed_course` at Medium Speed
 
-| Metric | Kinematic LQR | Dynamic LQR | Change |
-| --- | ---: | ---: | ---: |
-| Steps | 184 | 183 | — |
-| Reached goal | True | True | — |
-| Mean lateral error / m | 0.1568 | 0.0706 | ↓ 55% |
-| Max lateral error / m | 0.4770 | 0.1518 | ↓ 68% |
-| Finish error / m | 0.9489 | 0.8231 | ↓ 13% |
-| Mean heading error / rad | 0.0547 | 0.0466 | ↓ 15% |
-| Max steer / rad | 0.6109 | 0.3344 | ↓ 45% |
-| Max side-slip `beta` / rad | 0.3368 | 0.1720 | ↓ 49% |
-| Max yaw rate / rad/s | 1.8504 | 0.9585 | ↓ 48% |
+| Metric                      | Kinematic LQR | Dynamic LQR | Change |
+| --------------------------- | ------------: | ----------: | -----: |
+| Steps                       |           184 |         183 |     — |
+| Reached goal                |          True |        True |     — |
+| Mean lateral error / m      |        0.1568 |      0.0706 | ↓ 55% |
+| Max lateral error / m       |        0.4770 |      0.1518 | ↓ 68% |
+| Finish error / m            |        0.9489 |      0.8231 | ↓ 13% |
+| Mean heading error / rad    |        0.0547 |      0.0466 | ↓ 15% |
+| Max steer / rad             |        0.6109 |      0.3344 | ↓ 45% |
+| Max side-slip`beta` / rad |        0.3368 |      0.1720 | ↓ 49% |
+| Max yaw rate / rad/s        |        1.8504 |      0.9585 | ↓ 48% |
 
-| Kinematic LQR | Dynamic LQR |
-| --- | --- |
+| Kinematic LQR                                                                                  | Dynamic LQR                                                                                |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | ![Kinematic LQR on mixed_course](vdm_lab/tasks/dynamic_lqr/figures/kinematic_mixed_course.jpg) | ![Dynamic LQR on mixed_course](vdm_lab/tasks/dynamic_lqr/figures/dynamic_mixed_course.jpg) |
 
 The kinematic controller shows high-frequency, saw-tooth lateral-error oscillation of roughly ±0.50 m. Dynamic LQR keeps the peak near ±0.15 m and largely removes this oscillation.
@@ -1564,13 +1883,13 @@ python run_experiment.py --algo lqr_dynamic --version student --route s_curve --
 python run_experiment.py --algo lqr_dynamic --version solution --route s_curve --speed-mode medium --save-log --save-fig
 ```
 
-| Metric | Student | Solution |
-| --- | ---: | ---: |
-| Steps | 152 | 152 |
-| Reached goal | True | True |
-| Mean lateral error / m | 0.0922 | 0.0922 |
-| Max lateral error / m | 0.2148 | 0.2148 |
-| Finish error / m | 0.8976 | 0.8976 |
+| Metric                 | Student | Solution |
+| ---------------------- | ------: | -------: |
+| Steps                  |     152 |      152 |
+| Reached goal           |    True |     True |
+| Mean lateral error / m |  0.0922 |   0.0922 |
+| Max lateral error / m  |  0.2148 |   0.2148 |
+| Finish error / m       |  0.8976 |   0.8976 |
 
 The matching metrics verify that the student Dynamic LQR implementation is consistent with the provided solution. Supporting source data and the original conclusion are available in [`vdm_lab/tasks/dynamic_lqr`](vdm_lab/tasks/dynamic_lqr/).
 
@@ -1609,19 +1928,19 @@ The current route retains the original road sequence and endpoints while widenin
 
 #### 6.2.2 Shared Experimental Parameters
 
-| Parameter | Setting |
-| --- | --- |
-| Controllers | Student PP / Kinematic LQR / MPC |
-| Vehicle model | Kinematic bicycle model, `student_car` |
-| Wheelbase | `lf + lr = 1.25 + 1.25 = 2.5 m` |
-| Maximum front-wheel steering angle | 35° |
-| Simulation time step | 0.1 s |
-| Initial speed | 0 m/s |
-| Simulation time limit | 900 s |
-| Baseline cruise-speed cap | 3 m/s |
-| Reference normal-acceleration magnitude limit | 0.7 m/s² |
-| Speed-profile acceleration / deceleration limits | 0.7 / 0.8 m/s² |
-| Start / end target speeds | 0.5 / 0 m/s |
+| Parameter                                        | Setting                                 |
+| ------------------------------------------------ | --------------------------------------- |
+| Controllers                                      | Student PP / Kinematic LQR / MPC        |
+| Vehicle model                                    | Kinematic bicycle model,`student_car` |
+| Wheelbase                                        | `lf + lr = 1.25 + 1.25 = 2.5 m`       |
+| Maximum front-wheel steering angle               | 35°                                    |
+| Simulation time step                             | 0.1 s                                   |
+| Initial speed                                    | 0 m/s                                   |
+| Simulation time limit                            | 900 s                                   |
+| Baseline cruise-speed cap                        | 3 m/s                                   |
+| Reference normal-acceleration magnitude limit    | 0.7 m/s²                               |
+| Speed-profile acceleration / deceleration limits | 0.7 / 0.8 m/s²                         |
+| Start / end target speeds                        | 0.5 / 0 m/s                             |
 
 All three algorithms use exactly the same path geometry, reference-speed sequence, vehicle, and simulation settings. Each controller retains its default parameters, and MPC retains its original prediction horizon and constraints.
 
@@ -1640,11 +1959,11 @@ Forward and backward passes then enforce the acceleration and deceleration limit
 
 The following results are taken from `campus_results.csv`:
 
-| Algorithm | Reached Goal | Arrival Time / s | Mean Absolute Lateral Error / m | Max Absolute Lateral Error / m | Finish Distance / m |
-| --- | --- | ---: | ---: | ---: | ---: |
-| PP | True | 299.7 | 0.03071 | 0.77417 | 0.52964 |
-| Kinematic LQR | True | 300.2 | 0.02496 | 0.55586 | 0.63035 |
-| MPC | True | 299.5 | 0.01462 | 0.32623 | 0.00685 |
+| Algorithm     | Reached Goal | Arrival Time / s | Mean Absolute Lateral Error / m | Max Absolute Lateral Error / m | Finish Distance / m |
+| ------------- | ------------ | ---------------: | ------------------------------: | -----------------------------: | ------------------: |
+| PP            | True         |            299.7 |                         0.03071 |                        0.77417 |             0.52964 |
+| Kinematic LQR | True         |            300.2 |                         0.02496 |                        0.55586 |             0.63035 |
+| MPC           | True         |            299.5 |                         0.01462 |                        0.32623 |             0.00685 |
 
 The goal is reached when the vehicle is within **1.5 m** of the endpoint and its speed is below **0.5 m/s**. `Finish Distance` is the final distance from the vehicle to the endpoint, rather than a lateral tracking error.
 
@@ -1666,11 +1985,11 @@ J_\delta=\operatorname{mean}\left(\frac{|\delta_k-\delta_{k-1}|}{\Delta t}\right
 
 the results are:
 
-| Algorithm | Mean Absolute Steer Rate / rad/s | Steering Saturation Fraction |
-| --- | ---: | ---: |
-| PP | 0.00866 | 0 |
-| Kinematic LQR | 0.03264 | 0 |
-| MPC | 0.01903 | 0 |
+| Algorithm     | Mean Absolute Steer Rate / rad/s | Steering Saturation Fraction |
+| ------------- | -------------------------------: | ---------------------------: |
+| PP            |                          0.00866 |                            0 |
+| Kinematic LQR |                          0.03264 |                            0 |
+| MPC           |                          0.01903 |                            0 |
 
 PP produces the smoothest steering changes, MPC achieves the best tracking accuracy, and LQR has the highest steering rate. None of the three reaches the 35° steering limit, so the observed errors cannot simply be attributed to steering-angle saturation.
 
@@ -1682,19 +2001,19 @@ PP produces the smoothest steering changes, MPC achieves the best tracking accur
 
 For each trajectory, the peak row is selected using `argmax(abs(lateral_error))`. Time, speed, curvature, and steering are all taken from that same row:
 
-| Algorithm | Time / s | Reference Station / m | Signed Lateral Error / m | Actual Speed / m/s | Reference Curvature / m⁻¹ | Steer / ° |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| PP | 93.9 | 270.80 | -0.77417 | 2.176 | -0.1828 | -21.38 |
-| Kinematic LQR | 94.8 | 272.60 | -0.55586 | 2.100 | -0.1409 | -20.47 |
-| MPC | 93.2 | 270.20 | -0.32623 | 2.142 | -0.1880 | -21.63 |
+| Algorithm     | Time / s | Reference Station / m | Signed Lateral Error / m | Actual Speed / m/s | Reference Curvature / m⁻¹ | Steer / ° |
+| ------------- | -------: | --------------------: | -----------------------: | -----------------: | --------------------------: | ---------: |
+| PP            |     93.9 |                270.80 |                 -0.77417 |              2.176 |                     -0.1828 |     -21.38 |
+| Kinematic LQR |     94.8 |                272.60 |                 -0.55586 |              2.100 |                     -0.1409 |     -20.47 |
+| MPC           |     93.2 |                270.20 |                 -0.32623 |              2.142 |                     -0.1880 |     -21.63 |
 
 The station and curvature in the table refer to the controller-selected reference point. `campus_max_error.csv` stores both the vehicle and reference-point locations; the following table reports the **vehicle longitude and latitude at maximum deviation**:
 
-| Algorithm | Vehicle Longitude / ° | Vehicle Latitude / ° |
-| --- | ---: | ---: |
-| PP | 118.81966502 | 31.88540257 |
-| Kinematic LQR | 118.81965545 | 31.88541493 |
-| MPC | 118.81966414 | 31.88539696 |
+| Algorithm     | Vehicle Longitude / ° | Vehicle Latitude / ° |
+| ------------- | ---------------------: | --------------------: |
+| PP            |           118.81966502 |           31.88540257 |
+| Kinematic LQR |           118.81965545 |           31.88541493 |
+| MPC           |           118.81966414 |           31.88539696 |
 
 ![Maximum lateral-deviation locations and local trajectories](vdm_lab/tasks/campus/results/campus_max_error.png)
 
@@ -1729,11 +2048,11 @@ The adjusted reference route has a maximum curvature of approximately **0.1889 m
 
 Improved geometric feasibility does not imply that every tracking metric improves. `campus_route_change.csv` gives:
 
-| Algorithm | Before Mean Error / m | After Mean Error / m | Before Max Error / m | After Max Error / m |
-| --- | ---: | ---: | ---: | ---: |
-| PP | 0.03267 | 0.03071 | 1.37579 | 0.77417 |
-| Kinematic LQR | 0.01683 | 0.02496 | 0.53532 | 0.55586 |
-| MPC | 0.01017 | 0.01462 | 0.40539 | 0.32623 |
+| Algorithm     | Before Mean Error / m | After Mean Error / m | Before Max Error / m | After Max Error / m |
+| ------------- | --------------------: | -------------------: | -------------------: | ------------------: |
+| PP            |               0.03267 |              0.03071 |              1.37579 |             0.77417 |
+| Kinematic LQR |               0.01683 |              0.02496 |              0.53532 |             0.55586 |
+| MPC           |               0.01017 |              0.01462 |              0.40539 |             0.32623 |
 
 The maximum errors of PP and MPC decrease, whereas the LQR maximum error increases slightly. The full-route mean errors of LQR and MPC also increase. This adjustment corrects route-geometry feasibility without tuning controller parameters. Because changing curvature also changes the reference-speed sequence, the before-and-after comparison is not an isolated curvature-only experiment with speed held constant.
 
@@ -1743,13 +2062,13 @@ The maximum errors of PP and MPC decrease, whereas the LQR maximum error increas
 
 Keeping the route geometry, vehicle, controller, curvature-based speed rule, and acceleration/deceleration rules unchanged, only the PP cruise-speed cap is reduced from **3 m/s** to **2 m/s**:
 
-| Metric | PP: 3 m/s Cap | PP: 2 m/s Cap |
-| --- | ---: | ---: |
-| Reached goal | True | True |
-| Arrival time / s | 299.7 | 441.8 |
-| Mean absolute lateral error / m | 0.03071 | 0.02483 |
-| Max absolute lateral error / m | 0.77417 | 0.73853 |
-| Mean absolute steer rate / rad/s | 0.00866 | 0.00550 |
+| Metric                           | PP: 3 m/s Cap | PP: 2 m/s Cap |
+| -------------------------------- | ------------: | ------------: |
+| Reached goal                     |          True |          True |
+| Arrival time / s                 |         299.7 |         441.8 |
+| Mean absolute lateral error / m  |       0.03071 |       0.02483 |
+| Max absolute lateral error / m   |       0.77417 |       0.73853 |
+| Mean absolute steer rate / rad/s |       0.00866 |       0.00550 |
 
 ![Comparison before and after reducing the PP cruise-speed cap](vdm_lab/tasks/campus/results/campus_improvement.png)
 
@@ -1777,15 +2096,15 @@ In addition, `normal_accel` in the logs is calculated as actual speed squared ti
 
 ### 6.8 Current Campus Files
 
-| File | Contents |
-| --- | --- |
-| [Campus_Analysis_EN.md](vdm_lab/tasks/campus/results/Campus_Analysis_EN.md) | English analysis report |
-| [campus_route.gpx](data/gpx/campus_route.gpx) | Planned campus route |
-| [campus_results.csv](vdm_lab/tasks/campus/results/campus_results.csv) | Baseline statistics for the three algorithms |
-| [campus_max_error.csv](vdm_lab/tasks/campus/results/campus_max_error.csv) | Maximum deviations and vehicle/reference-point locations |
-| [campus_route_change.csv](vdm_lab/tasks/campus/results/campus_route_change.csv) | Comparison before and after route adjustment |
-| [campus_improvement.csv](vdm_lab/tasks/campus/results/campus_improvement.csv) | PP speed-reduction results |
-| [validation.json](vdm_lab/tasks/campus/results/validation.json) | Validation record for the existing results |
+| File                                                                           | Contents                                                 |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| [Campus_Analysis_EN.md](vdm_lab/tasks/campus/results/Campus_Analysis_EN.md)     | English analysis report                                  |
+| [campus_route.gpx](data/gpx/campus_route.gpx)                                   | Planned campus route                                     |
+| [campus_results.csv](vdm_lab/tasks/campus/results/campus_results.csv)           | Baseline statistics for the three algorithms             |
+| [campus_max_error.csv](vdm_lab/tasks/campus/results/campus_max_error.csv)       | Maximum deviations and vehicle/reference-point locations |
+| [campus_route_change.csv](vdm_lab/tasks/campus/results/campus_route_change.csv) | Comparison before and after route adjustment             |
+| [campus_improvement.csv](vdm_lab/tasks/campus/results/campus_improvement.csv)   | PP speed-reduction results                               |
+| [validation.json](vdm_lab/tasks/campus/results/validation.json)                 | Validation record for the existing results               |
 
 The original English report refers to `readme_wyh.md`, which is not present in the repository. This section therefore relies on the available results and data tables and does not present the missing reproduction instructions as executable steps.
 
