@@ -847,7 +847,43 @@ a_{\mathrm{cmd}}
 
 The square-root term follows the constant-deceleration stopping relation \(v^2=2ad\) with planned deceleration \(0.9\ \mathrm{m/s^2}\).
 
-The hardened student controllers apply an additional one-step speed bound:
+The hardened student controllers first replace \(v_r\) with a curvature-preview cruise cap before calling `speed_pid()`. Let \(s_i\) be the tracked path progress. Over a forward window
+
+\[
+d_{\mathrm{prev}}=\max(10\,\mathrm{m},\,1.5v),
+\]
+
+they take
+
+\[
+\kappa_{\mathrm{prev}}
+=\max_{s\in[s_i,s_i+d_{\mathrm{prev}}]}|\kappa_r(s)|
+\tag{63}
+\]
+
+and
+
+\[
+\delta_{\mathrm{req}}
+=\min\bigl(\arctan(L|\kappa_{\mathrm{prev}}|),\delta_{\max}\bigr).
+\]
+
+The tracking speed is then
+
+\[
+\boxed{
+v_{\mathrm{track}}
+=\min\left(
+v_r,\,
+v_{\max},\,
+\frac{2\dot\delta_{\max}}{\delta_{\mathrm{req}}|\kappa_{\mathrm{prev}}|}
+\right)}
+\tag{64}
+\]
+
+when \(\kappa_{\mathrm{prev}}>0\) and \(\delta_{\mathrm{req}}>0\); otherwise \(v_{\mathrm{track}}=\min(v_r,v_{\max})\). Equation (64) leaves the default 45°/s lab routes at their design speeds and only slows sharp GPX-like corners or reduced-steer-rate experiments. The PP lookahead law (49) is unchanged: it still uses measured speed, not \(v_{\mathrm{track}}\).
+
+`speed_pid()` is then called with \(v_{\mathrm{track}}\) in place of \(v_r\). The one-step acceleration bound also uses that cruise cap rather than the vehicle maximum:
 
 \[
 a_k\in
@@ -855,13 +891,14 @@ a_k\in
 \max\left(-a_{\mathrm{decel,max}},
 \frac{v_{\min}-v_k}{\Delta t}\right),
 \min\left(a_{\max},
-\frac{v_{\max}-v_k}{\Delta t}\right)
+\frac{v_{\mathrm{track}}-v_k}{\Delta t}\right)
 \right].
+\tag{65}
 \]
 
 A finite measured speed below \(v_{\min}\), including a negative speed, is treated as an invalid forward-only state and returns **neutral longitudinal acceleration \(a=0\)**. It never requests positive propulsion. A non-finite speed produces bounded braking. This is a controller fail-stop convention, not a substitute for gear, rollback, or signed-velocity handling in a vehicle supervisor.
 
-MPC does not call `speed_pid()`; it optimizes acceleration directly.
+MPC does not call `speed_pid()`. It optimizes acceleration directly, but it uses the same Equation (64) when filling the horizon reference speed and the reachable hard speed bounds of Section 7.5.
 
 ## 7. Linear MPC model, linearization, objective, and constraints
 
@@ -992,7 +1029,7 @@ The hardened student controller uses
 \Delta t.
 \]
 
-When a finite monotonic `path.s` array is available, it selects the next index with `searchsorted` on physical arc length. Otherwise it falls back to the sample-spacing calculation. Reference speed is clipped to \([v_{\min},v_{\max}]\).
+When a finite monotonic `path.s` array is available, it selects the next index with `searchsorted` on physical arc length. Otherwise it falls back to the sample-spacing calculation. Reference speed is first clipped to \([v_{\min},v_{\max}]\). The student controller then passes that sample's path curvature through Equation (64), so a sharp local \(\kappa_r\) lowers \(v_t^{ref}\) before the QP sees it.
 
 Both versions unwrap each reference yaw relative to the preceding yaw, preventing an artificial \(2\pi\) jump when a circle crosses \(\pi/-\pi\).
 
@@ -1034,12 +1071,14 @@ The hardened student controller requires each weight matrix to be finite, symmet
 
 ### 7.5 Constraints
 
-Both versions impose the affine dynamics, steering magnitude, and speed bounds:
+Both versions impose the affine dynamics
 
 \[
 \mathbf z_0=\mathbf z_{\mathrm{current}},\qquad
-\mathbf z_{t+1}=A_t\mathbf z_t+B_t\mathbf u_t+C_t,
+\mathbf z_{t+1}=A_t\mathbf z_t+B_t\mathbf u_t+C_t.
 \]
+
+The instructor speed envelope and steering magnitude are
 
 \[
 v_{\min}\leq v_t\leq v_{\max},
@@ -1050,6 +1089,26 @@ v_{\min}\leq v_t\leq v_{\max},
 |\delta_{f,t}|\leq\delta_{\max}.
 \tag{60}
 \]
+
+If that were the only speed constraint, the QP could trade a weak speed-tracking cost for extra path speed, because \(v_{\max}=12\,\mathrm{m/s}\) is well above typical lab targets. The hardened student MPC therefore replaces the predicted-speed upper bound, for \(t=1,\ldots,N\), with a reachable cruise cap
+
+\[
+\boxed{
+\bar v_t
+=\min\Bigl(
+v_{\max},\,
+\max\bigl(
+v_t^{ref},\,
+v_0-t\,a_{\mathrm{decel,max}}\Delta t,\,
+v_{\min}
+\bigr)
+\Bigr),
+\qquad
+v_{\min}\leq v_t\leq \bar v_t.}
+\tag{66}
+\]
+
+When already at the reference, \(\bar v_t=v_t^{ref}\) and the optimizer cannot request \(v>v^{ref}\). When already above the reference, \(\bar v_t\) falls at the maximum deceleration so the QP remains feasible. The nonlinear predictor in Equation (52) still clips to \([v_{\min},v_{\max}]\) so that it matches the shared plant; the cruise cap is enforced by the QP and by post-solve command sanitization using Equation (65) with \(v_{\mathrm{track}}=\bar v_t\).
 
 The instructor solution expresses acceleration as
 
@@ -1070,7 +1129,7 @@ The hardened student MPC uses the intended asymmetric interval
 \leq a_t\leq a_{\max}}
 \]
 
-and enforces the speed bounds on predicted states \(t=1,\ldots,N\) after separately validating the measured initial state.
+and enforces Equation (66) on predicted states \(t=1,\ldots,N\) after separately validating the measured initial state.
 
 For steering rate, the instructor solution constrains only adjacent future controls:
 
@@ -1102,7 +1161,7 @@ A normal control call performs the following sequence:
 1. Fill initial length-\(N\) control sequences from the preceding applied command.
 2. Predict a nominal trajectory \(\bar{\mathbf z}\) with Equation (52).
 3. Build Equation (53) along \(\bar{\mathbf z}\) and the nominal steering sequence.
-4. Solve Equations (58)-(62) with OSQP.
+4. Solve Equations (58)-(62) and, in the student controller, (66) with OSQP.
 5. Compare the new and old acceleration and steering sequences; stop when their maximum element change is at most `0.05`, or after at most five iterations.
 6. Execute only the first optimized control and solve again at the next sample.
 
@@ -1124,6 +1183,7 @@ The controller has no wall-clock deadline. A verification run on the medium-spee
 | Spline curvature \((x'y''-y'x'')/(x'^2+y'^2)^{3/2}\) | `vdm_lab/common/path.py` |
 | Vehicle, simulation, and controller parameters | `vdm_lab/common/types.py`, `vdm_lab/config/vehicle_params.py` |
 | Instructor reference controllers | `vdm_lab/solutions/*.py` |
+| Hardened student path/speed helpers | `vdm_lab/student/_controller_utils.py` |
 | Hardened PP | `vdm_lab/student/pure_pursuit.py` |
 | Hardened kinematic LQR | `vdm_lab/student/lqr_kinematic.py` |
 | Hardened dynamic LQR | `vdm_lab/student/lqr_dynamic.py` |
@@ -1187,9 +1247,9 @@ Although the hardened controllers apply a rate limit, `trajectory.csv` does not 
 
 ### 9.2 Controller hardening and its limits
 
-7. **Steering-rate protection is version-specific.** The instructor PP/LQR controllers and shared backend clip angle only. Instructor MPC constrains future in-horizon differences but omits the first change from the applied command. All hardened student controllers enforce both angle and first-command rate limits; student MPC enforces the limit throughout its horizon as well. This hardening can increase tracking error on abrupt paths because it removes physically implausible steering jumps that make the compact solutions appear more accurate.
+7. **Steering-rate protection is version-specific.** The instructor PP/LQR controllers and shared backend clip angle only. Instructor MPC constrains future in-horizon differences but omits the first change from the applied command. All hardened student controllers enforce both angle and first-command rate limits; student MPC enforces the limit throughout its horizon as well. Student PP and LQR additionally apply the curvature-preview cruise cap (64) so that a 15°/s S-curve or a sharp GPX corner reduces speed instead of saturating steer rate. This hardening can increase tracking error on abrupt paths because it removes physically implausible steering jumps that make the compact solutions appear more accurate.
 
-8. **The instructor MPC acceleration constraint is narrower than its configuration implies.** Its effective default interval is \([-2,2]\ \mathrm{m/s^2}\). The hardened student MPC uses \([-3.5,2]\ \mathrm{m/s^2}\) and post-validates predicted speed.
+8. **The instructor MPC acceleration constraint is narrower than its configuration implies.** Its effective default interval is \([-2,2]\ \mathrm{m/s^2}\). The hardened student MPC uses \([-3.5,2]\ \mathrm{m/s^2}\) and, in addition to the vehicle envelope \(v\leq v_{\max}\), applies the reachable reference-speed cap (66) so that cruise cannot overshoot \(v^{ref}\).
 
 9. **Hardened safety configuration fails closed at initialization.** Non-numeric, non-finite, non-positive, or contradictory safety limits raise `ValueError` before control. Runtime state/reference/model faults instead produce a finite stop-oriented command. This distinction prevents a corrupt safety envelope from being silently treated as a normal recoverable fault.
 

@@ -6,7 +6,17 @@ import numpy as np
 
 from vdm_lab.common.geometry import clamp
 from vdm_lab.common.types import ControlCommand
-from vdm_lab.student._controller_utils import validated_wheelbase
+from vdm_lab.student._controller_utils import (
+    bounded_acceleration,
+    bounded_steer,
+    finite,
+    state_in_speed_envelope,
+    stop_command,
+    tracking_speed_limit,
+    validate_safety_config,
+    validated_wheelbase,
+    vehicle_speed_bounds,
+)
 
 
 NAME = "Linear MPC Student"
@@ -169,9 +179,10 @@ class _MPCWorkspace:
         cost += cp.quad_form(
             self.z_ref[:, horizon] - self.z[:, horizon], qf_scaled
         )
+        self.speed_max = cp.Parameter(horizon)
         constraints += [
             self.z[2, 1:] >= min_speed / state_scales[2],
-            self.z[2, 1:] <= max_speed / state_scales[2],
+            self.z[2, 1:] <= self.speed_max,
             self.u[0, :] <= max_accel / input_scales[0],
             self.u[0, :] >= -max_decel / input_scales[0],
             cp.abs(self.u[1, :]) <= max_steer / input_scales[1],
@@ -216,67 +227,8 @@ def _solver_info(problem):
     )
 
 
-def _finite(value, default):
-    try:
-        value = float(value)
-    except (TypeError, ValueError, OverflowError):
-        return float(default)
-    return value if math.isfinite(value) else float(default)
-
-
-def _validate_safety_config(config):
-    vehicle = config.vehicle
-    validated_wheelbase(vehicle)
-    values = {
-        "dt": config.sim.dt,
-        "min_speed": vehicle.min_speed,
-        "max_speed": vehicle.max_speed,
-        "max_accel": vehicle.max_accel,
-        "max_decel": vehicle.max_decel,
-        "max_steer": vehicle.max_steer,
-        "max_steer_rate": vehicle.max_steer_rate,
-        "wheelbase": vehicle.wheelbase,
-    }
-    checked = {}
-    for name, value in values.items():
-        try:
-            checked[name] = float(value)
-        except (TypeError, ValueError, OverflowError) as exc:
-            raise ValueError(
-                f"invalid safety configuration: {name} must be numeric"
-            ) from exc
-        if not math.isfinite(checked[name]):
-            raise ValueError(
-                f"invalid safety configuration: {name} must be finite"
-            )
-    if checked["dt"] <= 0.0:
-        raise ValueError("invalid safety configuration: dt must be positive")
-    if checked["min_speed"] < 0.0:
-        raise ValueError("invalid safety configuration: min_speed cannot be negative")
-    if checked["max_speed"] <= checked["min_speed"]:
-        raise ValueError(
-            "invalid safety configuration: max_speed must exceed min_speed"
-        )
-    if checked["max_accel"] <= 0.0 or checked["max_decel"] <= 0.0:
-        raise ValueError(
-            "invalid safety configuration: acceleration limits must be positive"
-        )
-    if not 0.0 < checked["max_steer"] < 0.5 * math.pi:
-        raise ValueError(
-            "invalid safety configuration: max_steer must be in (0, pi/2)"
-        )
-    if checked["max_steer_rate"] <= 0.0:
-        raise ValueError(
-            "invalid safety configuration: max_steer_rate must be positive"
-        )
-    if checked["wheelbase"] <= 0.0:
-        raise ValueError(
-            "invalid safety configuration: wheelbase must be positive"
-        )
-
-
 def _horizon(config):
-    value = _finite(config.controller.mpc_horizon, 0.0)
+    value = finite(config.controller.mpc_horizon, 0.0)
     horizon = int(value)
     if horizon < 1 or value != horizon:
         raise ValueError("mpc_horizon must be a positive integer")
@@ -287,37 +239,32 @@ def _wrap_angle(angle):
     return math.atan2(math.sin(angle), math.cos(angle))
 
 
-def _bounded_steer(desired, previous, config):
+def _plant_steer_limit(vehicle):
+    return min(
+        max(0.0, finite(vehicle.max_steer, 0.0)),
+        0.5 * math.pi - 1.0e-3,
+    )
+
+
+def _horizon_speed_caps(current_speed, z_ref, config):
+    """Per-step speed upper bounds: track v_ref without making the QP infeasible."""
+    horizon = _horizon(config)
     vehicle = config.vehicle
-    max_steer = max(0.0, _finite(vehicle.max_steer, 0.0))
-    max_rate = max(0.0, _finite(vehicle.max_steer_rate, 0.0))
-    dt = max(0.0, _finite(config.sim.dt, 0.0))
-    previous = clamp(_finite(previous, 0.0), -max_steer, max_steer)
-    desired = clamp(_finite(desired, 0.0), -max_steer, max_steer)
-    max_change = max_rate * dt
-    return clamp(desired, previous - max_change, previous + max_change)
-
-
-def _bounded_acceleration(desired, speed, config):
-    vehicle = config.vehicle
-    max_accel = max(0.0, _finite(vehicle.max_accel, 0.0))
-    max_decel = max(0.0, _finite(vehicle.max_decel, 0.0))
-    min_speed = max(0.0, _finite(vehicle.min_speed, 0.0))
-    max_speed = max(min_speed, _finite(vehicle.max_speed, min_speed))
-    dt = _finite(config.sim.dt, 0.0)
-    speed = _finite(speed, math.nan)
-    if not math.isfinite(speed):
-        return -max_decel
-    if speed < min_speed:
-        return 0.0
-
-    lower, upper = -max_decel, max_accel
-    if dt > 0.0:
-        lower = max(lower, (min_speed - speed) / dt)
-        upper = min(upper, (max_speed - speed) / dt)
-    if lower > upper:
-        return -max_decel
-    return clamp(_finite(desired, -max_decel), lower, upper)
+    min_speed, vehicle_max = vehicle_speed_bounds(vehicle)
+    dt = finite(config.sim.dt, 0.0)
+    max_decel = max(0.0, finite(vehicle.max_decel, 0.0))
+    current_speed = finite(current_speed, 0.0)
+    z_ref = np.asarray(z_ref, dtype=float)
+    caps = np.full(horizon, vehicle_max)
+    for t in range(horizon):
+        ref = vehicle_max
+        if z_ref.ndim == 2 and z_ref.shape[0] > 2 and z_ref.shape[1] > t + 1:
+            ref = finite(z_ref[2, t + 1], vehicle_max)
+        reachable_low = current_speed
+        if dt > 0.0:
+            reachable_low = current_speed - float(t + 1) * max_decel * dt
+        caps[t] = min(vehicle_max, max(ref, reachable_low, min_speed))
+    return caps
 
 
 def nearest_horizon_reference(state, reference, config):
@@ -339,17 +286,17 @@ def nearest_horizon_reference(state, reference, config):
 
     preview_target = max(
         0.0,
-        _finite(reference.target_speed, path.target_speed[base_index]),
+        finite(reference.target_speed, path.target_speed[base_index]),
     )
     preview_speed = max(
         0.0,
-        _finite(state.v, 0.0),
+        finite(state.v, 0.0),
         0.5 * preview_target,
     )
-    dt = _finite(config.sim.dt, 0.0)
+    dt = finite(config.sim.dt, 0.0)
     if dt <= 0.0:
         raise ValueError("dt must be positive")
-    waypoint_ds = _finite(config.sim.waypoint_ds, 0.0)
+    waypoint_ds = finite(config.sim.waypoint_ds, 0.0)
     if waypoint_ds <= 0.0:
         raise ValueError("waypoint_ds must be positive")
 
@@ -360,9 +307,10 @@ def nearest_horizon_reference(state, reference, config):
         and np.all(np.diff(path_s) >= 0.0)
     )
     distance = 0.0
-    previous_yaw = _finite(state.yaw, path.yaw[base_index])
+    previous_yaw = finite(state.yaw, path.yaw[base_index])
     if not math.isfinite(previous_yaw):
         raise ValueError("state and reference yaw are non-finite")
+    min_speed, max_speed = vehicle_speed_bounds(config.vehicle)
 
     for i in range(horizon + 1):
         if i > 0:
@@ -375,19 +323,20 @@ def nearest_horizon_reference(state, reference, config):
             offset = int(round(distance / waypoint_ds))
             index = min(base_index + max(offset, 0), point_count - 1)
 
-        x_ref = _finite(path.x[index], math.nan)
-        y_ref = _finite(path.y[index], math.nan)
-        raw_yaw = _finite(path.yaw[index], math.nan)
+        x_ref = finite(path.x[index], math.nan)
+        y_ref = finite(path.y[index], math.nan)
+        raw_yaw = finite(path.yaw[index], math.nan)
         if not all(math.isfinite(value) for value in (x_ref, y_ref, raw_yaw)):
             raise ValueError("reference path contains non-finite values")
         yaw_ref = previous_yaw + _wrap_angle(raw_yaw - previous_yaw)
         target_speed = clamp(
-            _finite(path.target_speed[index], 0.0),
-            max(0.0, _finite(config.vehicle.min_speed, 0.0)),
-            max(
-                max(0.0, _finite(config.vehicle.min_speed, 0.0)),
-                _finite(config.vehicle.max_speed, 0.0),
-            ),
+            finite(path.target_speed[index], 0.0), min_speed, max_speed
+        )
+        kappa = 0.0
+        if index < len(path.curvature):
+            kappa = finite(path.curvature[index], 0.0)
+        target_speed = tracking_speed_limit(
+            target_speed, kappa, config.vehicle
         )
         z_ref[:, i] = [x_ref, y_ref, target_speed, yaw_ref]
         previous_yaw = yaw_ref
@@ -399,22 +348,18 @@ def update_kinematic_array(z, acceleration, steer, config):
     z = np.asarray(z, dtype=float).reshape(-1)
     if z.shape != (4,) or not np.all(np.isfinite(z)):
         raise ValueError("predicted state must contain four finite values")
-    dt = _finite(config.sim.dt, 0.0)
+    dt = finite(config.sim.dt, 0.0)
     vehicle = config.vehicle
     wheelbase = validated_wheelbase(vehicle)
     if dt <= 0.0 or wheelbase <= 0.0:
         raise ValueError("dt and wheelbase must be positive")
 
     x, y, speed, yaw = z
-    lr = _finite(vehicle.lr, 0.0)
-    min_speed = max(0.0, _finite(vehicle.min_speed, 0.0))
-    max_speed = max(min_speed, _finite(vehicle.max_speed, min_speed))
-    max_steer = min(
-        max(0.0, _finite(vehicle.max_steer, 0.0)),
-        0.5 * math.pi - 1.0e-3,
-    )
-    steer = clamp(_finite(steer, 0.0), -max_steer, max_steer)
-    acceleration = _bounded_acceleration(acceleration, speed, config)
+    lr = finite(vehicle.lr, 0.0)
+    min_speed, max_speed = vehicle_speed_bounds(vehicle)
+    max_steer = _plant_steer_limit(vehicle)
+    steer = clamp(finite(steer, 0.0), -max_steer, max_steer)
+    acceleration = bounded_acceleration(acceleration, speed, config)
 
     tangent = math.tan(steer)
     beta = math.atan2(lr * tangent, wheelbase)
@@ -453,22 +398,19 @@ def predict_motion(z0, acceleration, steer, z_ref, config):
 
 def linear_model(v, yaw, steer, config):
     """Linearize the exact student MPC predictor about one nominal point."""
-    dt = _finite(config.sim.dt, 0.0)
+    dt = finite(config.sim.dt, 0.0)
     vehicle = config.vehicle
     wheelbase = validated_wheelbase(vehicle)
-    v = _finite(v, math.nan)
-    yaw = _finite(yaw, math.nan)
+    v = finite(v, math.nan)
+    yaw = finite(yaw, math.nan)
     if dt <= 0.0 or wheelbase <= 0.0:
         raise ValueError("dt and wheelbase must be positive")
     if not math.isfinite(v) or not math.isfinite(yaw):
         raise ValueError("linearization state must be finite")
 
-    max_steer = min(
-        max(0.0, _finite(vehicle.max_steer, 0.0)),
-        0.5 * math.pi - 1.0e-3,
-    )
-    lr = _finite(vehicle.lr, 0.0)
-    steer = clamp(_finite(steer, 0.0), -max_steer, max_steer)
+    max_steer = _plant_steer_limit(vehicle)
+    lr = finite(vehicle.lr, 0.0)
+    steer = clamp(finite(steer, 0.0), -max_steer, max_steer)
     tangent = math.tan(steer)
     secant_squared = 1.0 / max(math.cos(steer) ** 2, 1.0e-12)
     ratio = lr * tangent / wheelbase
@@ -578,17 +520,16 @@ def _solve_linear_mpc(
     qf = _weight_matrix(controller.mpc_qf, 4, "mpc_qf")
     r = _weight_matrix(controller.mpc_r, 2, "mpc_r")
     rd = _weight_matrix(controller.mpc_rd, 2, "mpc_rd")
-    min_speed = max(0.0, _finite(vehicle.min_speed, 0.0))
-    max_speed = max(min_speed, _finite(vehicle.max_speed, min_speed))
-    max_accel = max(0.0, _finite(vehicle.max_accel, 0.0))
-    max_decel = max(0.0, _finite(vehicle.max_decel, 0.0))
-    max_steer = max(0.0, _finite(vehicle.max_steer, 0.0))
-    max_steer_rate = max(0.0, _finite(vehicle.max_steer_rate, 0.0))
-    dt = _finite(config.sim.dt, 0.0)
+    min_speed, max_speed = vehicle_speed_bounds(vehicle)
+    max_accel = max(0.0, finite(vehicle.max_accel, 0.0))
+    max_decel = max(0.0, finite(vehicle.max_decel, 0.0))
+    max_steer = max(0.0, finite(vehicle.max_steer, 0.0))
+    max_steer_rate = max(0.0, finite(vehicle.max_steer_rate, 0.0))
+    dt = finite(config.sim.dt, 0.0)
     if dt <= 0.0:
         raise ValueError("dt must be positive")
     applied_steer = clamp(
-        _finite(applied_steer, 0.0), -max_steer, max_steer
+        finite(applied_steer, 0.0), -max_steer, max_steer
     )
     max_steer_change = max_steer_rate * dt
 
@@ -668,6 +609,9 @@ def _solve_linear_mpc(
     workspace.z_ref.value = z_ref_scaled
     workspace.z0.value = z0_scaled
     workspace.applied_steer.value = applied_steer / input_scales[1]
+    workspace.speed_max.value = (
+        _horizon_speed_caps(z0[2], z_ref, config) / state_scales[2]
+    )
     for t in range(horizon):
         workspace.A[t].value = A_values[t]
         workspace.B[t].value = B_values[t]
@@ -732,7 +676,7 @@ def _solve_linear_mpc(
 
 def solve_linear_mpc(z_ref, z_bar, z0, previous_steer, config):
     """Public single-QP API retained for the assignment and unit checks."""
-    _validate_safety_config(config)
+    validate_safety_config(config)
     horizon = _horizon(config)
     nominal_steer = _nominal_steer_sequence(previous_steer, horizon)
     acceleration, steer, _, _ = _solve_linear_mpc(
@@ -744,7 +688,12 @@ def solve_linear_mpc(z_ref, z_bar, z0, previous_steer, config):
         config,
     )
     acceleration, steer = _sanitize_controls(
-        acceleration, steer, z0[2], nominal_steer[0], config
+        acceleration,
+        steer,
+        z0[2],
+        nominal_steer[0],
+        config,
+        speed_caps=_horizon_speed_caps(z0[2], z_ref, config),
     )
     prediction = predict_motion(
         z0, acceleration, steer, z_ref, config
@@ -752,58 +701,66 @@ def solve_linear_mpc(z_ref, z_bar, z0, previous_steer, config):
     return acceleration, steer, prediction
 
 
-def _sanitize_controls(acceleration, steer, initial_speed, applied_steer, config):
+def _sanitize_controls(
+    acceleration,
+    steer,
+    initial_speed,
+    applied_steer,
+    config,
+    speed_caps=None,
+):
     horizon = _horizon(config)
     acceleration = np.asarray(acceleration, dtype=float).reshape(-1)
     steer = np.asarray(steer, dtype=float).reshape(-1)
     if acceleration.shape != (horizon,) or steer.shape != (horizon,):
         raise MPCSolverError("MPC control sequence has the wrong shape")
+    if speed_caps is not None:
+        speed_caps = np.asarray(speed_caps, dtype=float).reshape(-1)
+        if speed_caps.shape != (horizon,) or not np.all(np.isfinite(speed_caps)):
+            raise MPCSolverError("MPC speed caps are invalid")
 
     safe_acceleration = np.zeros(horizon)
     safe_steer = np.zeros(horizon)
-    speed = _finite(initial_speed, math.nan)
+    speed = finite(initial_speed, math.nan)
     if not math.isfinite(speed):
         raise MPCSolverError("initial speed is non-finite")
-    previous = _finite(applied_steer, 0.0)
-    dt = _finite(config.sim.dt, 0.0)
+    previous = finite(applied_steer, 0.0)
+    dt = finite(config.sim.dt, 0.0)
+    min_speed, max_speed = vehicle_speed_bounds(config.vehicle)
     for i in range(horizon):
-        safe_acceleration[i] = _bounded_acceleration(
-            acceleration[i], speed, config
+        cap = None if speed_caps is None else float(speed_caps[i])
+        safe_acceleration[i] = bounded_acceleration(
+            acceleration[i], speed, config, speed_limit=cap
         )
-        safe_steer[i] = _bounded_steer(steer[i], previous, config)
+        safe_steer[i] = bounded_steer(steer[i], previous, config)
         if dt > 0.0:
             speed += safe_acceleration[i] * dt
-        speed = clamp(
-            speed,
-            max(0.0, _finite(config.vehicle.min_speed, 0.0)),
-            max(
-                max(0.0, _finite(config.vehicle.min_speed, 0.0)),
-                _finite(config.vehicle.max_speed, 0.0),
-            ),
-        )
+        upper = max_speed if cap is None else min(max_speed, cap)
+        speed = clamp(speed, min_speed, upper)
         previous = safe_steer[i]
     return safe_acceleration, safe_steer
 
 
 def _iterative_mpc_with_info(z_ref, z0, previous_control, config):
-    _validate_safety_config(config)
+    validate_safety_config(config)
     horizon = _horizon(config)
-    applied_steer = _finite(getattr(previous_control, "steer", 0.0), 0.0)
-    previous_acceleration = _finite(
+    applied_steer = finite(getattr(previous_control, "steer", 0.0), 0.0)
+    previous_acceleration = finite(
         getattr(previous_control, "acceleration", 0.0), 0.0
     )
     acceleration = np.full(horizon, previous_acceleration)
     steer = np.full(horizon, applied_steer)
+    speed_caps = _horizon_speed_caps(z0[2], z_ref, config)
     acceleration, steer = _sanitize_controls(
-        acceleration, steer, z0[2], applied_steer, config
+        acceleration, steer, z0[2], applied_steer, config, speed_caps=speed_caps
     )
     prediction = predict_motion(z0, acceleration, steer, z_ref, config)
 
     iteration_limit = max(
-        1, int(max(1.0, _finite(config.controller.mpc_iter_max, 1.0)))
+        1, int(max(1.0, finite(config.controller.mpc_iter_max, 1.0)))
     )
     threshold = max(
-        0.0, _finite(config.controller.mpc_du_threshold, 0.0)
+        0.0, finite(config.controller.mpc_du_threshold, 0.0)
     )
     total_solver_iterations = 0
     total_solve_time_ms = 0.0
@@ -829,7 +786,12 @@ def _iterative_mpc_with_info(z_ref, z0, previous_control, config):
         total_solve_time_ms += solve_info.solve_time_ms
         final_status = solve_info.status
         acceleration, steer = _sanitize_controls(
-            acceleration, steer, z0[2], applied_steer, config
+            acceleration,
+            steer,
+            z0[2],
+            applied_steer,
+            config,
+            speed_caps=speed_caps,
         )
         prediction = predict_motion(z0, acceleration, steer, z_ref, config)
         change = max(
@@ -872,31 +834,18 @@ def _safe_stop_command(
         horizon = _horizon(config)
     except ValueError:
         horizon = 1
-    speed = _finite(state.v, math.nan)
-    max_decel = max(0.0, _finite(config.vehicle.max_decel, 0.0))
-    acceleration = _bounded_acceleration(-max_decel, speed, config)
-    steer = _bounded_steer(
-        0.0, getattr(previous_control, "steer", 0.0), config
-    )
-    command = ControlCommand(acceleration=acceleration, steer=steer)
-
+    command = stop_command(state, previous_control, config)
+    min_speed, max_speed = vehicle_speed_bounds(config.vehicle)
     safe_state = np.array(
         [
-            _finite(state.x, 0.0),
-            _finite(state.y, 0.0),
-            clamp(
-                _finite(state.v, 0.0),
-                max(0.0, _finite(config.vehicle.min_speed, 0.0)),
-                max(
-                    max(0.0, _finite(config.vehicle.min_speed, 0.0)),
-                    _finite(config.vehicle.max_speed, 0.0),
-                ),
-            ),
-            _finite(state.yaw, 0.0),
+            finite(state.x, 0.0),
+            finite(state.y, 0.0),
+            clamp(finite(state.v, 0.0), min_speed, max_speed),
+            finite(state.yaw, 0.0),
         ]
     )
-    acceleration_sequence = np.full(horizon, acceleration)
-    steer_sequence = np.full(horizon, steer)
+    acceleration_sequence = np.full(horizon, command.acceleration)
+    steer_sequence = np.full(horizon, command.steer)
     try:
         acceleration_sequence, steer_sequence = _sanitize_controls(
             acceleration_sequence,
@@ -927,22 +876,8 @@ def _safe_stop_command(
 
 
 def control(state, reference, previous_control, config):
-    _validate_safety_config(config)
-    z0 = np.array(
-        [
-            _finite(state.x, math.nan),
-            _finite(state.y, math.nan),
-            _finite(state.v, math.nan),
-            _finite(state.yaw, math.nan),
-        ]
-    )
-    min_speed = max(0.0, _finite(config.vehicle.min_speed, 0.0))
-    max_speed = max(min_speed, _finite(config.vehicle.max_speed, min_speed))
-    if (
-        not np.all(np.isfinite(z0))
-        or z0[2] < min_speed - 1.0e-8
-        or z0[2] > max_speed + 1.0e-8
-    ):
+    validate_safety_config(config)
+    if not state_in_speed_envelope(state, config.vehicle):
         return _safe_stop_command(
             state,
             previous_control,
@@ -950,6 +885,14 @@ def control(state, reference, previous_control, config):
             reason="invalid vehicle state",
             solver_status="not_run",
         )
+    z0 = np.array(
+        [
+            finite(state.x, math.nan),
+            finite(state.y, math.nan),
+            finite(state.v, math.nan),
+            finite(state.yaw, math.nan),
+        ]
+    )
 
     try:
         z_ref = nearest_horizon_reference(state, reference, config)
