@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+
+<g id="bg">
+<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+</g>
+
+<g id="header">
+<text x="80" y="98" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, sans-serif" font-size="34" font-weight="bold" fill="#17375E">参考路径</text>
+<rect x="80" y="114" width="56" height="5" fill="#FFC000"/>
+<text x="1200" y="98" text-anchor="end" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#A6A6A6">原始折线在 s = 589 m 处半径仅 2.4 m</text>
+</g>
+
+<g id="annotation">
+<text x="80" y="148" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">虚线为车辆曲率极限 <tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#17375E">0.2801 1/m</tspan>（前轮 35°、轴距 2.50 m），原始折线超限 <tspan font-weight="bold" fill="#E92E25">5.7 倍</tspan></text>
+</g>
+
+<g id="bar-tracks">
+<rect x="250" y="184" width="900" height="40" fill="#F2F2F2"/>
+<rect x="250" y="244" width="900" height="40" fill="#F2F2F2"/>
+<rect x="250" y="304" width="900" height="40" fill="#F2F2F2"/>
+</g>
+
+<g id="bars">
+<rect x="250" y="184" width="900.0" height="40" fill="#E92E25"/>
+<rect x="250" y="244" width="76.0" height="40" fill="#2E7D32"/>
+<rect x="250" y="304" width="65.4" height="40" fill="#17375E"/>
+</g>
+
+<g id="bar-labels">
+<text x="80" y="212" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">原始折线</text>
+<text x="80" y="272" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">高斯平滑后</text>
+<text x="80" y="332" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">再倒圆角</text>
+</g>
+
+<g id="bar-values">
+<text x="1138" y="212" text-anchor="end" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">1.6049 1/m（R 0.62 m）</text>
+<text x="338" y="272" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#2E7D32">0.1355 1/m</text>
+<text x="327" y="332" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#17375E">0.1166 1/m</text>
+</g>
+
+<g id="limit-line">
+<line x1="407.1" y1="164" x2="407.1" y2="360" stroke="#FFC000" stroke-width="3" stroke-dasharray="8 6"/>
+<text x="413.1" y="176" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#404040">极限</text>
+</g>
+
+<g id="curvature-image">
+<image href="../images/fig3_curvature.png" x="329" y="380" width="622" height="280" preserveAspectRatio="xMidYMid meet"/>
+<text x="640" y="676" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">沿里程的曲率，平滑贡献 92% 降幅，倒圆角再贡献 14%</text>
+</g>
+
+<g id="footer">
+<text x="80" y="700" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">04</text>
+<rect x="1237.6" y="664" width="19.1" height="40" fill="#FFC000"/>
+</g>
+</svg>

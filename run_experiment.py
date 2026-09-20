@@ -68,6 +68,27 @@ def parse_args():
         help="GPX 原始相邻点超过该距离时发出稀疏路径警告 [m]",
     )
     parser.add_argument(
+        "--speed-profile",
+        choices=["constant", "curvature"],
+        default="constant",
+        help=(
+            "参考路径的速度设置：constant 巡航到目标速度、终点前减速（默认，"
+            "与原行为一致）；curvature 按 a_n = v^2 kappa 限速，弯道自动减速"
+        ),
+    )
+    parser.add_argument(
+        "--curvature-smooth-m",
+        type=float,
+        default=12.0,
+        help="曲率平滑窗口 [m]，仅 --speed-profile curvature 生效，默认 12",
+    )
+    parser.add_argument(
+        "--lateral-accel-limit",
+        type=float,
+        default=2.5,
+        help="侧向加速度舒适上限 [m/s^2]，仅 curvature 生效，默认 2.5",
+    )
+    parser.add_argument(
         "--view-mode",
         choices=["auto", "full", "follow"],
         default="auto",
@@ -263,6 +284,9 @@ def main():
     config.sim.gpx_file = args.gpx
     config.sim.waypoint_ds = args.waypoint_ds
     config.sim.gpx_gap_warning_m = args.gpx_gap_warning
+    config.sim.speed_profile = args.speed_profile
+    config.sim.curvature_smooth_m = args.curvature_smooth_m
+    config.sim.lateral_accel_limit = args.lateral_accel_limit
     if map_origin is not None:
         config.sim.coordinate_origin_lon = map_origin[0]
         config.sim.coordinate_origin_lat = map_origin[1]

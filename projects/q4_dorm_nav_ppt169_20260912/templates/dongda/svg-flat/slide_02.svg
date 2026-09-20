@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1280" height="720" viewBox="0 0 1280 720"><defs><filter id="fx1" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="-20" dy="0" stdDeviation="16" flood-color="#0D0D0D" flood-opacity="0.4"/></filter><filter id="fx2" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="2.67" flood-color="#A6A6A6" flood-opacity="0.4"/></filter><filter id="fx3" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="-20" dy="0" stdDeviation="16" flood-color="#595959" flood-opacity="0.4"/></filter><filter id="fx4" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="0" dy="-4" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx5" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="-20" dy="0" stdDeviation="16" flood-color="#0D0D0D" flood-opacity="0.4"/></filter><filter id="fx6" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="2.67" flood-color="#A6A6A6" flood-opacity="0.4"/></filter></defs><rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+<g id="shape-91" data-name="文本框 90">
+<rect x="55.96" y="56.26" width="343.02" height="63.01" fill="none"/>
+<text x="227.47" y="98.46" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="44" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="44" font-weight="bold">目 录</tspan><tspan fill="#404040" font-size="44" font-weight="bold">/</tspan><tspan fill="#404040" font-size="44">CONTENT</tspan></text>
+</g>
+<g id="shape-19" data-name="直接连接符 18">
+<line x1="411.71" y1="87.77" x2="1055.6" y2="87.77" stroke="#17375E" fill="#E92E25" stroke-width="1"/>
+</g>
+<g id="shape-20" data-name="矩形 19">
+<rect x="1068.33" y="56.26" width="155.71" height="63.01" fill="none"/>
+<text x="1146.19" y="98.46" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="44" fill="#404040"><tspan fill="#404040" font-size="44">LOGO</tspan></text>
+</g>
+<g id="shape-92" data-name="文本框 91">
+<rect x="681.34" y="244.02" width="170.18" height="54.93" fill="none"/>
+<text x="766.43" y="280.56" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="37.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="37.33" font-weight="bold">不足之处</tspan></text>
+</g>
+<g id="shape-93" data-name="文本框 92">
+<rect x="625.13" y="302.5" width="282.59" height="48.47" fill="none"/>
+<text x="766.43" y="320.9" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="16" fill="#404040"><tspan fill="#404040" font-size="16">The user can demonstrate on a </tspan><tspan x="766.43" dy="16" fill="#404040" font-size="16">projector or computer</tspan></text>
+</g>
+<g id="shape-94" data-name="组合 93">
+<g id="shape-95" data-name="圆角矩形 94">
+<rect x="881.45" y="390.78" width="275.65" height="77.67" rx="12.95" ry="12.95" stroke="none" fill="#E92E25" stroke-width="1" filter="url(#fx1)"/>
+</g>
+<g id="shape-96" data-name="等腰三角形 95" transform="translate(1019.78 481.71) scale(1 -1) translate(-1019.78 -481.71)">
+<polygon points="1019.78,468.27 1035.44,495.14 1004.12,495.14" stroke="none" fill="#E92E25" stroke-width="1" filter="url(#fx2)"/>
+</g>
+</g>
+<g id="shape-97" data-name="组合 96">
+<g id="shape-98" data-name="圆角矩形 97">
+<rect x="628.6" y="390.78" width="275.65" height="77.67" rx="12.95" ry="12.95" stroke="none" fill="#E92E25" stroke-width="1" filter="url(#fx3)"/>
+</g>
+<g id="shape-99" data-name="等腰三角形 98">
+<polygon points="767.72,356.68 784.68,391.1 750.77,391.1" stroke="none" fill="#E92E25" stroke-width="1" filter="url(#fx4)"/>
+</g>
+</g>
+<g id="shape-100" data-name="组合 99">
+<g id="shape-101" data-name="圆角矩形 100">
+<rect x="375.75" y="390.78" width="275.65" height="77.67" rx="12.95" ry="12.95" stroke="none" fill="#E92E25" stroke-width="1" filter="url(#fx5)"/>
+</g>
+<g id="shape-102" data-name="等腰三角形 101" transform="translate(514.08 481.71) scale(1 -1) translate(-514.08 -481.71)">
+<polygon points="514.08,468.27 529.74,495.14 498.42,495.14" stroke="none" fill="#E92E25" stroke-width="1" filter="url(#fx6)"/>
+</g>
+</g>
+<g id="shape-103" data-name="组合 102">
+<g id="shape-104" data-name="圆角矩形 103">
+<rect x="122.9" y="390.78" width="275.65" height="77.67" rx="12.95" ry="12.95" stroke="none" fill="#E92E25" stroke-width="1"/>
+</g>
+<g id="shape-105" data-name="等腰三角形 104">
+<polygon points="260.72,364.22 276.38,391.1 245.06,391.1" stroke="none" fill="#E92E25" stroke-width="1"/>
+</g>
+</g>
+<g id="shape-106" data-name="文本框 105">
+<rect x="188.82" y="407.5" width="121.04" height="50.08" fill="none"/>
+<text x="249.34" y="440.63" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="33.33" fill="#FFFFFF"><tspan fill="#FFFFFF" font-size="33.33">Part. 1</tspan></text>
+</g>
+<g id="shape-107" data-name="文本框 106">
+<rect x="709.71" y="407.5" width="121.04" height="50.08" fill="none"/>
+<text x="770.23" y="440.63" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="33.33" fill="#FFFFFF"><tspan fill="#FFFFFF" font-size="33.33">Part. 3</tspan></text>
+</g>
+<g id="shape-108" data-name="文本框 107">
+<rect x="429.31" y="507.92" width="170.18" height="54.93" fill="none"/>
+<text x="514.4" y="544.45" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="37.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="37.33" font-weight="bold">完成情况</tspan></text>
+</g>
+<g id="shape-109" data-name="文本框 108">
+<rect x="373.11" y="566.4" width="282.59" height="48.47" fill="none"/>
+<text x="514.4" y="584.8" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="16" fill="#404040"><tspan fill="#404040" font-size="16">The user can demonstrate on a </tspan><tspan x="514.4" dy="16" fill="#404040" font-size="16">projector or computer</tspan></text>
+</g>
+<g id="shape-110" data-name="文本框 109">
+<rect x="449.26" y="407.5" width="121.04" height="50.08" fill="none"/>
+<text x="509.78" y="440.63" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="33.33" fill="#FFFFFF"><tspan fill="#FFFFFF" font-size="33.33">Part. 2</tspan></text>
+</g>
+<g id="shape-111" data-name="文本框 110">
+<rect x="970.16" y="407.5" width="121.04" height="50.08" fill="none"/>
+<text x="1030.67" y="440.63" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="33.33" fill="#FFFFFF"><tspan fill="#FFFFFF" font-size="33.33">Part. 4</tspan></text>
+</g>
+<g id="shape-112" data-name="文本框 111">
+<rect x="935.61" y="507.92" width="170.18" height="54.93" fill="none"/>
+<text x="1096.19" y="544.45" text-anchor="end" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="37.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="37.33" font-weight="bold">下步计划</tspan></text>
+</g>
+<g id="shape-113" data-name="文本框 112">
+<rect x="879.41" y="566.4" width="282.59" height="48.47" fill="none"/>
+<text x="1020.7" y="584.8" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="16" fill="#404040"><tspan fill="#404040" font-size="16">The user can demonstrate on a </tspan><tspan x="1020.7" dy="16" fill="#404040" font-size="16">projector or computer</tspan></text>
+</g>
+<g id="shape-114" data-name="文本框 113">
+<rect x="176.24" y="244.02" width="170.18" height="54.93" fill="none"/>
+<text x="261.33" y="280.56" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="37.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="37.33" font-weight="bold">工作概述</tspan></text>
+</g>
+<g id="shape-115" data-name="文本框 114">
+<rect x="120.04" y="302.5" width="282.59" height="48.47" fill="none"/>
+<text x="261.33" y="320.9" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="16" fill="#404040"><tspan fill="#404040" font-size="16">The user can demonstrate on a </tspan><tspan x="261.33" dy="16" fill="#404040" font-size="16">projector or computer</tspan></text>
+</g></svg>

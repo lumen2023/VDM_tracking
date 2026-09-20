@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1280" height="720" viewBox="0 0 1280 720"><defs><filter id="fx1" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx2" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx3" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx4" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx5" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx6" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx7" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="4" dy="0" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx8" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="4" dy="0" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter></defs><g id="shape-2" data-name="56191337-588c-4417-b5b6-50e637eb3ae0">
+<g id="shape-5" data-name="ïSḻïḍé">
+<g id="shape-19" data-name="îṩḷiḓê">
+<path d="M 640.6 243.19 C 738.29 243.19 817.49 322.43 817.49 420.14 C 817.49 517.88 738.29 597.12 640.6 597.12 L 640.6 542.11 L 640.68 542.11 C 708.03 542.11 762.64 487.51 762.64 420.15 C 762.64 352.8 708.03 298.19 640.68 298.19 L 640.6 298.2 Z" fill="#17375E" stroke-width="4" stroke="none" filter="url(#fx1)"/>
+</g>
+<g id="shape-20" data-name="iṥliďé">
+<path d="M 640.6 243.19 L 640.6 298.2 L 628.21 298.82 C 566.71 305.07 518.72 357.01 518.72 420.15 C 518.72 483.3 566.71 535.24 628.21 541.48 L 640.6 542.11 L 640.6 597.12 C 543.01 597.12 463.86 517.88 463.86 420.14 C 463.86 322.43 543.01 243.19 640.6 243.19 Z" fill="#FFC000" stroke-width="4" stroke="none" filter="url(#fx2)"/>
+</g>
+</g>
+<g id="shape-15" data-name="íşlïḓé">
+<ellipse cx="491.29" cy="297.69" rx="46.22" ry="46.22" fill="#FFC000" stroke-width="4" stroke="none" filter="url(#fx3)"/>
+<text x="491.29" y="303.69" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="24" fill="#000000"><tspan fill="#000000" font-size="24">Q1</tspan></text>
+</g>
+<g id="shape-16" data-name="îṡlïḍé">
+<ellipse cx="491.29" cy="541.16" rx="46.22" ry="46.22" fill="#FFC000" stroke-width="4" stroke="none" filter="url(#fx4)"/>
+<text x="491.29" y="547.16" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="24" fill="#000000"><tspan fill="#000000" font-size="24">Q3</tspan></text>
+</g>
+<g id="shape-17" data-name="îṧlíḍê">
+<ellipse cx="787.66" cy="297.69" rx="46.22" ry="46.22" fill="#17375E" stroke-width="4" stroke="none" filter="url(#fx5)"/>
+<text x="787.66" y="303.69" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="24" fill="#000000"><tspan fill="#000000" font-size="24">Q2</tspan></text>
+</g>
+<g id="shape-18" data-name="îṥľïḋè">
+<ellipse cx="787.66" cy="541.16" rx="46.22" ry="46.22" fill="#17375E" stroke-width="4" stroke="none" filter="url(#fx6)"/>
+<text x="787.66" y="547.16" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="24" fill="#000000"><tspan fill="#000000" font-size="24">Q4</tspan></text>
+</g>
+</g>
+<g id="shape-21" data-name="组合 20">
+<g id="shape-22" data-name="文本框 21">
+<rect x="126.67" y="283.93" width="292.98" height="49.69" fill="none"/>
+<text x="410.05" y="300.06" text-anchor="end" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="13.33" fill="#404040"><tspan fill="#404040" font-size="13.33">提供全面且质优的多品类设计素材打破传统素</tspan><tspan x="410.05" dy="17.33" fill="#404040" font-size="13.33">材网站单向沟通的服务模式</tspan></text>
+</g>
+<g id="shape-23" data-name="文本框 22">
+<rect x="164.16" y="250.19" width="255.49" height="35.54" fill="none"/>
+<text x="410.05" y="273.12" text-anchor="end" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+</g>
+<g id="shape-24" data-name="组合 23">
+<g id="shape-25" data-name="文本框 24">
+<rect x="126.67" y="527.2" width="292.98" height="49.69" fill="none"/>
+<text x="410.05" y="543.34" text-anchor="end" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="13.33" fill="#404040"><tspan fill="#404040" font-size="13.33">提供全面且质优的多品类设计素材打破传统素</tspan><tspan x="410.05" dy="17.33" fill="#404040" font-size="13.33">材网站单向沟通的服务模式</tspan></text>
+</g>
+<g id="shape-26" data-name="文本框 25">
+<rect x="164.16" y="493.46" width="255.49" height="35.54" fill="none"/>
+<text x="410.05" y="516.4" text-anchor="end" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+</g>
+<g id="shape-27" data-name="组合 26">
+<g id="shape-28" data-name="文本框 27">
+<rect x="862.18" y="283.93" width="292.98" height="49.69" fill="none"/>
+<text x="871.78" y="300.06" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="13.33" fill="#404040"><tspan fill="#404040" font-size="13.33">提供全面且质优的多品类设计素材打破传统素</tspan><tspan x="871.78" dy="17.33" fill="#404040" font-size="13.33">材网站单向沟通的服务模式</tspan></text>
+</g>
+<g id="shape-29" data-name="文本框 28">
+<rect x="862.18" y="250.19" width="255.49" height="35.54" fill="none"/>
+<text x="871.78" y="273.12" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+</g>
+<g id="shape-30" data-name="组合 29">
+<g id="shape-31" data-name="文本框 30">
+<rect x="862.18" y="527.2" width="292.98" height="49.69" fill="none"/>
+<text x="871.78" y="543.34" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="13.33" fill="#404040"><tspan fill="#404040" font-size="13.33">提供全面且质优的多品类设计素材打破传统素</tspan><tspan x="871.78" dy="17.33" fill="#404040" font-size="13.33">材网站单向沟通的服务模式</tspan></text>
+</g>
+<g id="shape-32" data-name="文本框 31">
+<rect x="862.18" y="493.46" width="255.49" height="35.54" fill="none"/>
+<text x="871.78" y="516.4" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+</g>
+<g id="shape-33" data-name="组合 32">
+<g id="shape-34" data-name="组合 33">
+<g id="shape-45" data-name="文本框 44">
+<rect x="71.16" y="24.26" width="225.55" height="58.16" fill="none"/>
+<text x="80.76" y="63.06" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="40" fill="#404040"><tspan fill="#404040" font-size="40">3. </tspan><tspan fill="#404040" font-size="40">不足之处</tspan></text>
+</g>
+<g id="shape-46" data-name="文本框 45">
+<rect x="79.76" y="76.92" width="458.3" height="29.08" fill="none"/>
+<text x="89.36" y="95.32" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="16" fill="#404040"><tspan fill="#404040" font-size="16">The user can demonstrate on a projector or computer</tspan></text>
+</g>
+</g>
+<g id="shape-42" data-name="组合 41">
+<g id="shape-43" data-name="矩形 42">
+<rect x="0" y="30.38" width="21.49" height="69.52" fill="#FFC000" stroke="none" stroke-width="1" filter="url(#fx7)"/>
+</g>
+<g id="shape-44" data-name="矩形 43">
+<rect x="33.41" y="30.38" width="14.76" height="69.52" fill="#17375E" stroke="none" stroke-width="1" filter="url(#fx8)"/>
+</g>
+</g>
+</g>
+<g id="shape-4" data-name="图片占位符 3" data-ph-type="pic">
+<svg x="538.07" y="313.33" width="206.73" height="213.87" viewBox="0 0 1 0.96544" preserveAspectRatio="none"><image href="../assets/image11.jpeg" x="0" y="0" width="1" height="1" preserveAspectRatio="none"/></svg>
+</g>
+<g id="shape-35" data-name="图片 34">
+<image href="../assets/image3.png" x="1147.21" y="18.9" width="115.81" height="116.04" preserveAspectRatio="none"/>
+</g></svg>

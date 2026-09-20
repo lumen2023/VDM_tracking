@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1280" height="720" viewBox="0 0 1280 720"><defs><filter id="fx1" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx2" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx3" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx4" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx5" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="4" dy="0" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx6" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="4" dy="0" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter></defs><g id="shape-6" data-name="矩形 5">
+<rect x="-53" y="382.22" width="1386" height="7.56" fill="#F2F2F2" stroke-width="4" stroke-linecap="butt" stroke="none" stroke-linejoin="miter"/>
+</g>
+<g id="shape-2" data-name="矩形: 圆角 1" transform="rotate(45 284.67 386)">
+<rect x="238" y="339.33" width="93.34" height="93.34" rx="15.56" ry="15.56" fill="#FFC000" stroke-width="6" stroke="none" filter="url(#fx1)"/>
+</g>
+<g id="shape-3" data-name="矩形: 圆角 2" transform="rotate(45 520.44 386)">
+<rect x="473.78" y="339.33" width="93.34" height="93.34" rx="15.56" ry="15.56" fill="#17375E" stroke-width="4" stroke="none" filter="url(#fx2)"/>
+</g>
+<g id="shape-4" data-name="矩形: 圆角 3" transform="rotate(45 756.22 386)">
+<rect x="709.55" y="339.33" width="93.34" height="93.34" rx="15.56" ry="15.56" fill="#FFC000" stroke-width="6" stroke="none" filter="url(#fx3)"/>
+</g>
+<g id="shape-5" data-name="矩形: 圆角 4" transform="rotate(45 992 386)">
+<rect x="945.33" y="339.33" width="93.34" height="93.34" rx="15.56" ry="15.56" fill="#17375E" stroke-width="4" stroke="none" filter="url(#fx4)"/>
+</g>
+<g id="shape-33" data-name="椭圆 6">
+<path d="M 283.23 380.99 C 283.01 380.99 282.83 381.16 282.83 381.39 L 282.83 386.47 L 280.89 386.47 C 280.68 386.47 280.57 386.7 280.71 386.87 L 284.43 391.41 C 284.55 391.55 284.78 391.55 284.9 391.41 L 288.63 386.87 C 288.76 386.7 288.65 386.46 288.44 386.47 L 286.5 386.47 L 286.5 381.39 C 286.5 381.16 286.32 380.99 286.11 380.99 Z M 283.45 372.49 L 285.89 372.49 C 286.4 372.49 286.79 372.89 286.79 373.39 L 286.79 375.42 C 288.21 375.69 289.54 376.26 290.71 377.04 L 292.15 375.6 C 292.5 375.26 293.06 375.26 293.41 375.6 L 295.14 377.33 C 295.49 377.68 295.49 378.24 295.14 378.59 L 293.7 380.03 C 294.49 381.19 295.05 382.52 295.33 383.94 L 297.36 383.94 C 297.87 383.94 298.26 384.35 298.26 384.84 L 298.26 387.28 C 298.26 387.78 297.85 388.17 297.36 388.17 L 295.33 388.17 C 295.05 389.6 294.49 390.92 293.7 392.09 L 295.14 393.52 C 295.49 393.87 295.49 394.44 295.14 394.79 L 293.41 396.5 C 293.06 396.85 292.5 396.85 292.15 396.5 L 290.71 395.08 C 289.55 395.86 288.21 396.42 286.79 396.7 L 286.79 398.73 C 286.79 399.23 286.38 399.63 285.89 399.63 L 283.45 399.63 C 282.95 399.63 282.55 399.22 282.55 398.73 L 282.55 396.7 C 281.13 396.42 279.81 395.86 278.63 395.08 L 277.2 396.5 C 276.85 396.85 276.28 396.85 275.93 396.5 L 274.21 394.79 C 273.86 394.44 273.86 393.87 274.21 393.52 L 275.64 392.09 C 274.85 390.93 274.29 389.6 274.01 388.17 L 271.98 388.17 C 271.48 388.17 271.08 387.77 271.08 387.28 L 271.08 384.84 C 271.08 384.33 271.49 383.94 271.98 383.94 L 274.01 383.94 C 274.29 382.52 274.85 381.19 275.64 380.03 L 274.21 378.59 C 273.86 378.24 273.86 377.68 274.21 377.33 L 275.93 375.6 C 276.28 375.26 276.85 375.26 277.2 375.6 L 278.63 377.04 C 279.79 376.26 281.13 375.69 282.55 375.42 L 282.55 373.39 C 282.55 372.88 282.96 372.49 283.45 372.49 Z M 297.35 368.53 C 302.95 372.59 306.27 379.11 306.27 386 C 306.27 397.89 296.59 407.57 284.67 407.57 L 284.67 409.44 C 284.67 409.64 284.44 409.76 284.28 409.64 L 279.2 406.16 C 279.06 406.06 279.06 405.85 279.2 405.75 L 284.28 402.27 C 284.45 402.16 284.67 402.27 284.67 402.48 L 284.67 404.35 C 294.8 404.35 303.05 396.12 303.05 386 C 303.05 380.14 300.22 374.58 295.46 371.13 Z M 285.07 362.36 L 290.14 365.83 C 290.29 365.94 290.29 366.15 290.14 366.24 L 285.07 369.72 C 284.89 369.84 284.67 369.72 284.67 369.52 L 284.67 367.65 C 274.53 367.65 266.28 375.89 266.28 386.01 C 266.28 391.87 269.12 397.43 273.89 400.88 L 271.99 403.49 C 266.4 399.43 263.06 392.9 263.06 386.01 C 263.06 374.11 272.75 364.44 284.67 364.44 L 284.67 362.56 C 284.67 362.36 284.9 362.24 285.07 362.36 Z" fill="#FFFFFF" stroke="none" stroke-width="1"/>
+</g>
+<g id="shape-34" data-name="椭圆 7">
+<path d="M 526.06 399.24 C 526.71 399.43 527.35 399.58 527.99 399.67 C 527.04 402.36 524.49 404.28 521.49 404.28 L 503.68 404.28 C 499.87 404.28 496.75 401.17 496.75 397.36 L 496.75 375.61 C 496.75 371.81 499.87 368.69 503.68 368.69 L 509.02 368.69 C 509.49 365.36 512.37 362.77 515.85 362.77 L 525.44 362.77 C 529.28 362.77 532.37 365.89 532.37 369.69 L 532.37 374.4 C 531.73 374.28 531.06 374.18 530.4 374.16 L 530.4 369.69 C 530.4 366.96 528.18 364.74 525.44 364.74 L 515.85 364.74 C 513.44 364.74 511.44 366.46 510.99 368.69 L 521.49 368.69 C 524.85 368.69 527.64 371.07 528.28 374.23 C 527.64 374.3 526.99 374.45 526.35 374.64 C 525.9 372.38 523.9 370.69 521.49 370.69 L 503.68 370.69 C 500.97 370.69 498.73 372.9 498.73 375.61 L 498.73 397.36 C 498.73 400.07 500.97 402.31 503.68 402.31 L 521.49 402.31 C 523.56 402.31 525.33 401.03 526.06 399.24 Z M 535.83 397.32 C 530.11 400.6 522.78 398.65 519.49 392.94 C 516.18 387.24 518.16 379.94 523.85 376.63 C 529.56 373.35 536.9 375.3 540.18 381.01 C 543.49 386.71 541.52 394.01 535.83 397.32 Z M 534.83 395.61 C 539.59 392.87 541.23 386.76 538.47 382.01 C 535.73 377.23 529.61 375.59 524.85 378.34 C 520.09 381.1 518.44 387.19 521.18 391.97 C 523.94 396.72 530.06 398.36 534.83 395.61 Z M 538.83 396.58 L 533.68 399.55 L 537.64 406.4 L 542.78 403.43 L 538.83 396.58 Z M 543.33 404.35 L 538.16 407.33 C 538.99 408.75 540.8 409.23 542.23 408.4 C 543.64 407.59 544.14 405.78 543.33 404.35 Z M 515.87 375.87 L 502.68 375.87 L 502.68 377.35 L 515.87 377.35 L 515.87 375.87 Z M 512.83 382.46 L 502.68 382.46 L 502.68 383.93 L 512.83 383.93 L 512.83 382.46 Z M 502.68 390.52 L 512.83 390.52 L 512.83 389.04 L 502.68 389.04 L 502.68 390.52 Z M 502.68 397.1 L 515.87 397.1 L 515.87 395.63 L 502.68 395.63 L 502.68 397.1 Z M 527.9 389.04 L 524.83 385.62 L 523.37 386.95 L 527.71 391.75 L 536.21 384.69 L 534.94 383.17 L 527.9 389.04 Z" fill="#FFFFFF" stroke="none" stroke-width="1"/>
+</g>
+<g id="shape-35" data-name="椭圆 8">
+<path d="M 749 391.59 L 764.67 391.59 C 766 391.59 767.07 392.66 767.07 393.99 C 767.07 395.31 766 396.38 764.67 396.38 L 749 396.38 C 747.67 396.38 746.6 395.31 746.6 393.99 C 746.6 392.66 747.67 391.59 749 391.59 Z M 749 381.61 L 775.4 381.61 C 776.72 381.61 777.8 382.68 777.8 384.01 C 777.8 385.33 776.72 386.4 775.4 386.4 L 749 386.4 C 747.67 386.4 746.6 385.33 746.6 384.01 C 746.6 382.68 747.67 381.61 749 381.61 Z M 749 371.62 L 761.16 371.62 C 762.48 371.62 763.56 372.7 763.56 374.01 C 763.56 375.35 762.48 376.41 761.16 376.41 L 749 376.41 C 747.67 376.41 746.6 375.35 746.6 374.01 C 746.6 372.7 747.67 371.62 749 371.62 Z M 740.11 362.31 C 740.73 362.31 741.34 362.55 741.81 363.02 L 746.22 367.42 C 747.16 368.35 747.16 369.87 746.22 370.81 C 745.28 371.74 743.77 371.74 742.83 370.81 L 742.51 370.5 L 742.51 400.5 L 770.96 400.5 L 770.65 400.17 C 769.7 399.24 769.7 397.73 770.65 396.79 C 771.58 395.85 773.09 395.85 774.03 396.79 L 778.45 401.19 C 779.38 402.12 779.38 403.65 778.45 404.58 L 774.03 408.99 C 773.09 409.92 771.58 409.92 770.65 408.99 C 769.7 408.06 769.7 406.53 770.65 405.6 L 770.96 405.29 L 740.11 405.29 C 738.79 405.29 737.71 404.21 737.71 402.89 L 737.71 370.5 L 737.4 370.81 C 736.46 371.74 734.94 371.74 734 370.81 C 733.06 369.87 733.06 368.35 734 367.42 L 738.42 363.02 C 738.88 362.55 739.5 362.31 740.11 362.31 Z" fill="#FFFFFF" stroke="none" stroke-width="1"/>
+</g>
+<g id="shape-36" data-name="椭圆 9">
+<path d="M 989.58 404.86 L 994.42 404.86 L 994.42 407.27 C 994.42 408.6 993.33 409.69 992 409.69 C 990.67 409.69 989.58 408.6 989.58 407.27 Z M 1006.2 393.89 L 1011.04 393.89 L 1011.04 407.27 C 1011.04 408.6 1009.96 409.69 1008.62 409.69 C 1007.29 409.69 1006.2 408.6 1006.2 407.27 Z M 988.21 389.06 L 995.79 389.06 C 996.64 389.06 997.33 389.75 997.33 390.59 L 997.33 400.11 C 997.33 400.95 996.64 401.63 995.79 401.63 L 988.21 401.63 C 987.36 401.63 986.67 400.95 986.67 400.11 L 986.67 390.59 C 986.67 389.75 987.36 389.06 988.21 389.06 Z M 972.96 386.81 L 977.8 386.81 L 977.8 407.27 C 977.8 408.6 976.71 409.69 975.38 409.69 C 974.04 409.69 972.96 408.6 972.96 407.27 Z M 1004.83 378.11 L 1012.42 378.11 C 1013.27 378.11 1013.95 378.79 1013.95 379.63 L 1013.95 389.14 C 1013.95 389.99 1013.27 390.68 1012.42 390.68 L 1004.83 390.68 C 1003.99 390.68 1003.3 389.99 1003.3 389.14 L 1003.3 379.63 C 1003.3 378.79 1003.99 378.11 1004.83 378.11 Z M 971.58 371.01 L 979.17 371.01 C 980.02 371.01 980.71 371.7 980.71 372.55 L 980.71 382.05 C 980.71 382.9 980.02 383.59 979.17 383.59 L 971.58 383.59 C 970.73 383.59 970.05 382.9 970.05 382.05 L 970.05 372.55 C 970.05 371.7 970.73 371.01 971.58 371.01 Z M 1008.62 362.31 C 1009.96 362.31 1011.04 363.4 1011.04 364.73 L 1011.04 374.88 L 1006.2 374.88 L 1006.2 364.73 C 1006.2 363.4 1007.29 362.31 1008.62 362.31 Z M 992 362.31 C 993.33 362.31 994.42 363.4 994.42 364.73 L 994.42 385.84 L 989.58 385.84 L 989.58 364.73 C 989.58 363.4 990.67 362.31 992 362.31 Z M 975.38 362.31 C 976.71 362.31 977.8 363.4 977.8 364.73 L 977.8 367.79 L 972.96 367.79 L 972.96 364.73 C 972.96 363.4 974.04 362.31 975.38 362.31 Z" fill="#FFFFFF" stroke="none" stroke-width="1"/>
+</g>
+<g id="shape-11" data-name="组合 10">
+<g id="shape-12" data-name="文本框 11">
+<rect x="231.97" y="521.95" width="190.73" height="72.7" fill="none"/>
+<text x="241.57" y="538.09" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="13.33" fill="#404040"><tspan fill="#404040" font-size="13.33">提供全面且质优的多品类设</tspan><tspan x="241.57" dy="17.33" fill="#404040" font-size="13.33">计素材打破传统素材网站单</tspan><tspan x="241.57" dy="17.33" fill="#404040" font-size="13.33">向沟通的模式</tspan></text>
+</g>
+<g id="shape-13" data-name="文本框 12">
+<rect x="231.97" y="488.21" width="176.27" height="35.54" fill="none"/>
+<text x="241.57" y="511.15" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+</g>
+<g id="shape-14" data-name="组合 13">
+<g id="shape-15" data-name="文本框 14">
+<rect x="467.75" y="521.95" width="190.73" height="72.7" fill="none"/>
+<text x="477.35" y="538.09" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="13.33" fill="#404040"><tspan fill="#404040" font-size="13.33">提供全面且质优的多品类设</tspan><tspan x="477.35" dy="17.33" fill="#404040" font-size="13.33">计素材打破传统素材网站单</tspan><tspan x="477.35" dy="17.33" fill="#404040" font-size="13.33">向沟通的模式</tspan></text>
+</g>
+<g id="shape-16" data-name="文本框 15">
+<rect x="467.75" y="488.21" width="176.27" height="35.54" fill="none"/>
+<text x="477.35" y="511.15" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+</g>
+<g id="shape-17" data-name="组合 16">
+<g id="shape-18" data-name="文本框 17">
+<rect x="703.52" y="521.95" width="190.73" height="72.7" fill="none"/>
+<text x="713.12" y="538.09" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="13.33" fill="#404040"><tspan fill="#404040" font-size="13.33">提供全面且质优的多品类设</tspan><tspan x="713.12" dy="17.33" fill="#404040" font-size="13.33">计素材打破传统素材网站单</tspan><tspan x="713.12" dy="17.33" fill="#404040" font-size="13.33">向沟通的模式</tspan></text>
+</g>
+<g id="shape-19" data-name="文本框 18">
+<rect x="703.52" y="488.21" width="176.27" height="35.54" fill="none"/>
+<text x="713.12" y="511.15" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+</g>
+<g id="shape-20" data-name="组合 19">
+<g id="shape-21" data-name="文本框 20">
+<rect x="942.64" y="521.95" width="190.73" height="72.7" fill="none"/>
+<text x="952.24" y="538.09" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="13.33" fill="#404040"><tspan fill="#404040" font-size="13.33">提供全面且质优的多品类设</tspan><tspan x="952.24" dy="17.33" fill="#404040" font-size="13.33">计素材打破传统素材网站单</tspan><tspan x="952.24" dy="17.33" fill="#404040" font-size="13.33">向沟通的模式</tspan></text>
+</g>
+<g id="shape-22" data-name="文本框 21">
+<rect x="942.64" y="488.21" width="176.27" height="35.54" fill="none"/>
+<text x="952.24" y="511.15" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+</g>
+<g id="shape-29" data-name="文本框 28">
+<rect x="239.87" y="207.45" width="85.36" height="80.78" fill="none"/>
+<text x="282.55" y="262.12" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="58.67" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="58.67" font-weight="bold">01</tspan></text>
+</g>
+<g id="shape-30" data-name="文本框 29">
+<rect x="478.52" y="207.45" width="85.36" height="80.78" fill="none"/>
+<text x="521.2" y="262.12" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="58.67" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="58.67" font-weight="bold">02</tspan></text>
+</g>
+<g id="shape-31" data-name="文本框 30">
+<rect x="713.17" y="207.45" width="85.36" height="80.78" fill="none"/>
+<text x="755.85" y="262.12" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="58.67" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="58.67" font-weight="bold">03</tspan></text>
+</g>
+<g id="shape-32" data-name="文本框 31">
+<rect x="948.65" y="207.45" width="85.36" height="80.78" fill="none"/>
+<text x="991.33" y="262.12" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="58.67" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="58.67" font-weight="bold">04</tspan></text>
+</g>
+<g id="shape-43" data-name="组合 42">
+<g id="shape-44" data-name="组合 43">
+<g id="shape-48" data-name="文本框 47">
+<rect x="71.16" y="24.26" width="225.55" height="58.16" fill="none"/>
+<text x="80.76" y="63.06" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="40" fill="#404040"><tspan fill="#404040" font-size="40">3. </tspan><tspan fill="#404040" font-size="40">不足之处</tspan></text>
+</g>
+<g id="shape-49" data-name="文本框 48">
+<rect x="79.76" y="76.92" width="458.3" height="29.08" fill="none"/>
+<text x="89.36" y="95.32" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="16" fill="#404040"><tspan fill="#404040" font-size="16">The user can demonstrate on a projector or computer</tspan></text>
+</g>
+</g>
+<g id="shape-45" data-name="组合 44">
+<g id="shape-46" data-name="矩形 45">
+<rect x="0" y="30.38" width="21.49" height="69.52" fill="#FFC000" stroke="none" stroke-width="1" filter="url(#fx5)"/>
+</g>
+<g id="shape-47" data-name="矩形 46">
+<rect x="33.41" y="30.38" width="14.76" height="69.52" fill="#17375E" stroke="none" stroke-width="1" filter="url(#fx6)"/>
+</g>
+</g>
+</g>
+<g id="shape-37" data-name="图片 36">
+<image href="../assets/image3.png" x="1147.21" y="18.9" width="115.81" height="116.04" preserveAspectRatio="none"/>
+</g></svg>

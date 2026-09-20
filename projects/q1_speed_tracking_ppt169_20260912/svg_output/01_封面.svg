@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+<filter id="polyShadow" x="-25%" y="-25%" width="150%" height="150%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="2.67"/>
+<feOffset dx="2.83" dy="2.83" result="offsetBlur"/>
+<feFlood flood-color="#000000" flood-opacity="0.28" result="shadowColor"/>
+<feComposite in="shadowColor" in2="offsetBlur" operator="in" result="shadow"/>
+<feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>
+</defs>
+
+<g id="bg-decor">
+<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+<g transform="translate(713.07 486.81) scale(-1 1) translate(-713.07 -486.81)">
+<polygon points="146.15,253.61 146.15,720 1280,720" fill="#FFC000"/>
+</g>
+<g transform="rotate(135 1170.57 52.62)">
+<path d="M 968.56 -54.02 L 968.56 -6.92 L 1372.58 159.26 L 1372.58 112.16 Z" fill="#17375E" filter="url(#polyShadow)"/>
+</g>
+<g transform="rotate(135 866.15 159.07)">
+<path d="M 699.39 71.03 L 699.39 109.91 L 1032.91 247.1 L 1032.91 208.22 Z" fill="#FFC000" filter="url(#polyShadow)"/>
+</g>
+<g transform="rotate(135 886.97 169.76)">
+<path d="M 755.17 100.18 L 755.17 130.91 L 1018.78 239.35 L 1018.78 208.61 Z" fill="#002060" filter="url(#polyShadow)"/>
+</g>
+</g>
+
+<g id="cover-wordmark">
+<text x="179.92" y="94.68" text-anchor="middle" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="44" fill="#17375E">东南大学</text>
+<line x1="294.04" y1="83.98" x2="890.9" y2="83.98" stroke="#17375E" stroke-width="3"/>
+</g>
+
+<g id="cover-title">
+<text x="91" y="340" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="64" font-weight="bold" fill="#17375E">为什么速度越快，路径跟踪越难</text>
+<text x="91" y="420" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="26" fill="#404040">问题一：理论分析与实验验证</text>
+<line x1="92.13" y1="462" x2="632.48" y2="462" stroke="#17375E" stroke-width="0.667"/>
+</g>
+
+<g id="cover-info">
+<text x="93.13" y="540" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="24" fill="#404040">汇报人 / 姓名</text>
+<text x="311.01" y="540" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="24" fill="#404040">指导教师 / 姓名</text>
+</g>
+</svg>

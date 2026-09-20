@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+<g id="bg-plate">
+<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+</g>
+
+<g id="p03-header">
+<text x="80" y="92" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="34" font-weight="bold" fill="#17375E">实验设置与三个速度量</text>
+<rect x="80" y="104" width="56" height="5" fill="#FFC000"/>
+<text x="1200" y="92" text-anchor="end" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="15" fill="#757070">SETUP · 三个速度量</text>
+</g>
+
+<g id="p03-setup">
+<use data-icon="tabler-outline/ruler-measure" x="80" y="120" width="22" height="22" fill="#17375E" stroke-width="2"/>
+<text x="114" y="138" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#404040">平台 vdm_lab 运动学自行车模型 · dt = 0.1 s · 轴距 L = 2.50 m · 圆周半径 R = 12.0 m</text>
+<use data-icon="tabler-outline/gauge" x="80" y="146" width="22" height="22" fill="#17375E" stroke-width="2"/>
+<text x="114" y="164" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#404040">转角限幅 ±35° · 转角速率限幅 45°/s · 规模：3 算法 × 3 速度档 = <tspan font-weight="bold" fill="#17375E">9 组</tspan>，另加 <tspan font-weight="bold" fill="#17375E">19 组</tspan>受控实验</text>
+</g>
+
+<g id="p03-table">
+<rect x="80" y="184" width="1120" height="36" fill="#17375E"/>
+<text x="98" y="208" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF">量（单位）</text>
+<text x="410" y="208" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF">3 m/s</text>
+<text x="630" y="208" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF">7 m/s</text>
+<text x="820" y="208" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF">倍数</text>
+<text x="1010" y="208" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF">规律</text>
+
+<rect x="80" y="256" width="1120" height="36" fill="#F2F2F2"/>
+
+<text x="98" y="244" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">稳态转角 δ（rad）</text>
+<text x="410" y="244" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" font-weight="bold" fill="#17375E">0.2126</text>
+<text x="630" y="244" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" font-weight="bold" fill="#17375E">0.2149</text>
+<text x="820" y="244" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">几乎不变</text>
+<text x="1010" y="244" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" fill="#404040">δ ≈ arctan(Lκ)</text>
+
+<text x="98" y="280" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">横摆角速度 ψ̇（rad/s）</text>
+<text x="410" y="280" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" font-weight="bold" fill="#17375E">0.2575</text>
+<text x="630" y="280" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" font-weight="bold" fill="#17375E">0.5270</text>
+<text x="820" y="280" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#17375E">×2.05</text>
+<text x="1010" y="280" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" fill="#404040">ψ̇ = vκ</text>
+
+<text x="98" y="316" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">法向加速度 aₙ（m/s²）</text>
+<text x="410" y="316" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" font-weight="bold" fill="#17375E">0.750</text>
+<text x="630" y="316" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" font-weight="bold" fill="#17375E">3.172</text>
+<text x="820" y="316" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFC000">×4.23</text>
+<text x="1010" y="316" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" fill="#404040">aₙ = v²κ</text>
+
+<line x1="80" y1="220" x2="1200" y2="220" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="80" y1="256" x2="1200" y2="256" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="80" y1="292" x2="1200" y2="292" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="80" y1="328" x2="1200" y2="328" stroke="#D9D9D9" stroke-width="1"/>
+</g>
+
+<g id="p03-figures">
+<image href="../images/fig01_steer_vs_v.png" x="140" y="344" width="474" height="316" preserveAspectRatio="xMidYMid meet"/>
+<image href="../images/fig03_an_vs_v.png" x="666" y="344" width="474" height="316" preserveAspectRatio="xMidYMid meet"/>
+</g>
+
+<g id="p03-footer">
+<text x="80" y="690" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">03</text>
+<text x="1200" y="690" text-anchor="end" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">圆周转角与速度无关；峰值 aₙ 与 v²κ 理论与实测相对误差 ≤ 3.42%</text>
+<rect x="1260.9" y="646.21" width="19.1" height="57.31" fill="#FFC000"/>
+</g>
+</svg>

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+<filter id="polyShadow" x="-25%" y="-25%" width="150%" height="150%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="2.67"/>
+<feOffset dx="2.83" dy="2.83" result="offsetBlur"/>
+<feFlood flood-color="#000000" flood-opacity="0.28" result="shadowColor"/>
+<feComposite in="shadowColor" in2="offsetBlur" operator="in" result="shadow"/>
+<feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>
+</defs>
+
+<g id="bg-decor">
+<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+<g transform="translate(713.07 486.81) scale(-1 1) translate(-713.07 -486.81)">
+<polygon points="146.15,253.61 146.15,720 1280,720" fill="#FFC000"/>
+</g>
+<g transform="rotate(135 1170.57 52.62)">
+<path d="M 968.56 -54.02 L 968.56 -6.92 L 1372.58 159.26 L 1372.58 112.16 Z" fill="#17375E" filter="url(#polyShadow)"/>
+</g>
+<g transform="rotate(135 866.15 159.07)">
+<path d="M 699.39 71.03 L 699.39 109.91 L 1032.91 247.1 L 1032.91 208.22 Z" fill="#FFC000" filter="url(#polyShadow)"/>
+</g>
+<g transform="rotate(135 886.97 169.76)">
+<path d="M 755.17 100.18 L 755.17 130.91 L 1018.78 239.35 L 1018.78 208.61 Z" fill="#002060" filter="url(#polyShadow)"/>
+</g>
+</g>
+
+<g id="cover-school">
+<text x="179.92" y="94.68" text-anchor="middle" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, sans-serif" font-size="44" fill="#17375E">东南大学</text>
+<line x1="294.04" y1="83.98" x2="890.9" y2="83.98" stroke-width="3" stroke="#17375E"/>
+</g>
+
+<g id="cover-title">
+<text x="90.96" y="300" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, sans-serif" font-size="80" font-weight="bold" fill="#17375E">从寝室到教室</text>
+<text x="90.96" y="376" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, sans-serif" font-size="44" font-weight="bold" fill="#002060">1450.6 m · 全程离线</text>
+</g>
+
+<g id="cover-subtitle">
+<text x="94.68" y="424" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="22" fill="#404040">问题四 · 地图构建 / 参考路径 / 轨迹跟踪 / 实验分析</text>
+<line x1="92.13" y1="452" x2="632.48" y2="452" stroke-width="0.667" stroke="#17375E"/>
+</g>
+
+<g id="cover-meta">
+<text x="93.13" y="522" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="22.67" fill="#404040">汇报人 / ___</text>
+<text x="311.01" y="522" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="22.67" fill="#404040">指导教师 / ___</text>
+</g>
+
+<g id="cover-footer">
+<rect x="1237.6" y="611" width="19.1" height="57.31" fill="#17375E"/>
+<text x="1200" y="690" text-anchor="end" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#A6A6A6">《智能汽车与自动驾驶》课程作业</text>
+</g>
+</svg>

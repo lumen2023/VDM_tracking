@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+<linearGradient id="trackGrad" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#17375E"/>
+<stop offset="1" stop-color="#A6A6A6"/>
+</linearGradient>
+</defs>
+
+<g id="bg">
+<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+</g>
+
+<g id="header">
+<text x="80" y="98" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, sans-serif" font-size="34" font-weight="bold" fill="#17375E">四条结论</text>
+<rect x="80" y="114" width="56" height="5" fill="#FFC000"/>
+</g>
+
+<g id="track">
+<line x1="110" y1="190" x2="110" y2="590" stroke="url(#trackGrad)" stroke-width="4"/>
+</g>
+
+<g id="node-1">
+<circle cx="110" cy="210" r="30" fill="#F2F2F2"/>
+<circle cx="110" cy="210" r="20" fill="#17375E"/>
+<text x="110" y="217" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">1</text>
+<text x="160" y="206" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="26" font-weight="bold" fill="#17375E">曲率平滑影响最大</text>
+<text x="160" y="234" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">同一台车同一速度，只加平滑：<tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#E92E25">17.83</tspan> → <tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#2E7D32">7.97</tspan> m/s²</text>
+</g>
+
+<g id="node-2">
+<circle cx="110" cy="330" r="30" fill="#F2F2F2"/>
+<circle cx="110" cy="330" r="20" fill="#17375E"/>
+<text x="110" y="337" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">2</text>
+<text x="160" y="326" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="26" font-weight="bold" fill="#17375E">曲率限速压低侧向加速度</text>
+<text x="160" y="354" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">同一条路，匀速 7.30 → 限速 4.34 m/s²，终点误差 +0.31 m</text>
+</g>
+
+<g id="node-3">
+<circle cx="110" cy="450" r="30" fill="#F2F2F2"/>
+<circle cx="110" cy="450" r="20" fill="#17375E"/>
+<text x="110" y="457" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">3</text>
+<text x="160" y="446" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="26" font-weight="bold" fill="#17375E">速度越高误差越大</text>
+<text x="160" y="474" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">3 → 7 m/s，误差峰值 1.42 → 1.64 m，定量确认了问题 1</text>
+</g>
+
+<g id="node-4">
+<circle cx="110" cy="570" r="30" fill="#F2F2F2"/>
+<circle cx="110" cy="570" r="20" fill="#17375E"/>
+<text x="110" y="577" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">4</text>
+<text x="160" y="566" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="26" font-weight="bold" fill="#17375E">前视距离需要折中</text>
+<text x="160" y="594" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">L_f 1 → 12 m：误差峰值 <tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#E92E25">1.06 → 4.12 m</tspan>，抖动 <tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#2E7D32">23.8 → 1.8 °/s</tspan></text>
+</g>
+
+<g id="corner-image">
+<image href="../images/fig7_corner_zoom.png" x="760" y="150" width="441" height="450" preserveAspectRatio="xMidYMid meet"/>
+<text x="980" y="630" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">s ≈ 589 m 急弯放大，全程误差峰值都在这里</text>
+</g>
+
+<g id="footer">
+<text x="80" y="700" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">07</text>
+<rect x="1237.6" y="664" width="19.1" height="40" fill="#FFC000"/>
+</g>
+</svg>

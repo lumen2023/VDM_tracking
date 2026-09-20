@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+<marker id="flowArrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth">
+<path d="M 0,0 L 9,4.5 L 0,9 Z" fill="#17375E"/>
+</marker>
+</defs>
+
+<g id="bg">
+<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+</g>
+
+<g id="header">
+<text x="80" y="98" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, sans-serif" font-size="34" font-weight="bold" fill="#17375E">任务流程</text>
+<rect x="80" y="114" width="56" height="5" fill="#FFC000"/>
+<text x="1200" y="98" text-anchor="end" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#A6A6A6">全程 1450.6 m · 2903 个参考点 · 7 个拐点 · 离线运行</text>
+</g>
+
+<g id="step-map">
+<use data-icon="tabler-outline/map-2" x="180" y="148" width="40" height="40" fill="#17375E" stroke-width="2"/>
+<text x="200" y="228" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#404040">地图构建</text>
+<text x="200" y="252" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">输出 GPX 路径</text>
+</g>
+
+<g id="step-path">
+<use data-icon="tabler-outline/route-2" x="460" y="148" width="40" height="40" fill="#17375E" stroke-width="2"/>
+<text x="480" y="228" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#404040">参考路径生成</text>
+<text x="480" y="252" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">输出速度剖面</text>
+</g>
+
+<g id="step-pp">
+<use data-icon="tabler-outline/steering-wheel" x="740" y="148" width="40" height="40" fill="#17375E" stroke-width="2"/>
+<text x="760" y="228" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#404040">PP 算法实现</text>
+<text x="760" y="252" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">输出控制器</text>
+</g>
+
+<g id="step-analysis">
+<use data-icon="tabler-outline/trending-up" x="1020" y="148" width="40" height="40" fill="#17375E" stroke-width="2"/>
+<text x="1040" y="228" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#404040">实验数据分析</text>
+<text x="1040" y="252" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">输出结论</text>
+</g>
+
+<g id="flow-connectors">
+<line x1="292" y1="168" x2="392" y2="168" stroke="#17375E" stroke-width="2" marker-end="url(#flowArrow)"/>
+<line x1="572" y1="168" x2="672" y2="168" stroke="#17375E" stroke-width="2" marker-end="url(#flowArrow)"/>
+<line x1="852" y1="168" x2="952" y2="168" stroke="#17375E" stroke-width="2" marker-end="url(#flowArrow)"/>
+<line x1="80" y1="280" x2="1200" y2="280" stroke="#D9D9D9" stroke-width="1"/>
+</g>
+
+<g id="chase-cam">
+<image href="../images/fig13_chase_cam.gif" x="360" y="292" width="560" height="392" preserveAspectRatio="xMidYMid meet"/>
+<text x="640" y="700" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">跟随动画，全程 1450.6 m</text>
+</g>
+
+<g id="footer">
+<text x="80" y="700" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">02</text>
+<rect x="1237.6" y="664" width="19.1" height="40" fill="#FFC000"/>
+</g>
+</svg>

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1280" height="720" viewBox="0 0 1280 720"><defs><filter id="fx1" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx2" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx3" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx4" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx5" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx6" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx7" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="4" dy="0" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx8" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="4" dy="0" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter></defs><rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+<g id="shape-3" data-name="图片 2">
+<image href="../assets/image2.jpeg" x="887.67" y="181.93" width="282.2" height="423.33" preserveAspectRatio="none"/>
+</g>
+<g id="shape-9" data-name="组合 8">
+<g id="shape-10" data-name="文本框 9">
+<rect x="175.9" y="281.37" width="540.03" height="72.7" fill="none"/>
+<text x="185.5" y="297.5" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="13.33" fill="#000000"><tspan fill="#000000" font-size="13.33">提供全面且质优的多品类设计素材打破传统素材网站单向沟通</tspan><tspan fill="#000000" font-size="13.33">的模式提供全面且质优的多</tspan><tspan x="185.5" dy="17.33" fill="#000000" font-size="13.33">品类设计素材打破传统素材网站单向沟通的模式提供全面且质优的多品类设计素材打破传</tspan><tspan x="185.5" dy="17.33" fill="#000000" font-size="13.33">统素材网站单向沟通的模式</tspan></text>
+</g>
+<g id="shape-11" data-name="文本框 10">
+<rect x="175.9" y="247.63" width="204.46" height="35.54" fill="none"/>
+<text x="185.5" y="270.56" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#000000" font-weight="bold"><tspan fill="#000000" font-size="21.33" font-weight="bold">您的</tspan><tspan fill="#000000" font-size="21.33" font-weight="bold">文字输入这里</tspan></text>
+</g>
+</g>
+<g id="shape-29" data-name="组合 28">
+<g id="shape-30" data-name="矩形: 圆角 29" transform="rotate(45 932.7 299.5)">
+<rect x="856.2" y="223" width="153" height="153" rx="25.5" ry="25.5" fill="#FFC000" stroke-width="6" stroke="none"/>
+</g>
+<g id="shape-31" data-name="椭圆 12">
+<path d="M 930.3 309.21 L 935.11 309.21 C 935.57 309.21 935.94 309.57 935.94 310.04 L 935.94 318.08 C 935.94 318.54 935.57 318.91 935.11 318.91 L 930.3 318.91 C 929.84 318.91 929.47 318.54 929.47 318.08 L 929.47 310.04 C 929.47 309.57 929.84 309.21 930.3 309.21 Z M 930.29 302.74 C 926.26 302.74 922.98 306.01 922.98 310.04 L 922.98 318.08 C 922.98 322.11 926.26 325.39 930.29 325.39 L 935.11 325.39 C 939.15 325.39 942.43 322.11 942.43 318.08 L 942.43 310.04 C 942.43 306.01 939.15 302.74 935.11 302.74 Z M 932.7 260.67 C 945.21 260.67 955.38 270.83 955.38 283.32 L 955.38 293.02 L 961.86 293.02 C 963.65 293.02 965.11 294.48 965.11 296.26 L 965.11 335.09 C 965.11 336.89 963.65 338.33 961.86 338.33 L 903.53 338.33 C 901.74 338.33 900.3 336.89 900.3 335.09 L 900.3 296.26 C 900.3 294.48 901.74 293.02 903.53 293.02 L 948.91 293.02 L 948.91 283.32 C 948.91 274.4 941.64 267.14 932.7 267.14 C 923.77 267.14 916.5 274.4 916.5 283.32 C 916.5 285.1 915.05 286.56 913.26 286.56 C 911.47 286.56 910.02 285.1 910.02 283.32 C 910.02 270.83 920.19 260.67 932.7 260.67 Z" fill="#FFFFFF" stroke="none" stroke-width="1"/>
+</g>
+</g>
+<g id="shape-35" data-name="组合 34">
+<g id="shape-15" data-name="文本框 14">
+<rect x="175.9" y="416.13" width="176.27" height="35.54" fill="none"/>
+<text x="185.5" y="439.06" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#000000" font-weight="bold"><tspan fill="#000000" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+<g id="shape-20" data-name="组合 19">
+<g id="shape-18" data-name="矩形: 圆角 17">
+<rect x="296.71" y="423.49" width="411.23" height="20.82" rx="10.41" ry="10.41" fill="#F2F2F2" stroke-width="4" stroke-linecap="butt" stroke="none" stroke-linejoin="miter" filter="url(#fx1)"/>
+</g>
+<g id="shape-19" data-name="矩形: 圆角 18">
+<rect x="296.71" y="423.49" width="303.96" height="20.82" rx="10.41" ry="10.41" fill="#17375E" stroke-width="4" stroke="none" filter="url(#fx2)"/>
+</g>
+</g>
+<g id="shape-21" data-name="文本框 20">
+<rect x="175.9" y="489.14" width="176.27" height="35.54" fill="none"/>
+<text x="185.5" y="512.07" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#000000" font-weight="bold"><tspan fill="#000000" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+<g id="shape-22" data-name="组合 21">
+<g id="shape-23" data-name="矩形: 圆角 22">
+<rect x="296.71" y="496.5" width="411.23" height="20.82" rx="10.41" ry="10.41" fill="#F2F2F2" stroke-width="4" stroke-linecap="butt" stroke="none" stroke-linejoin="miter" filter="url(#fx3)"/>
+</g>
+<g id="shape-24" data-name="矩形: 圆角 23">
+<rect x="296.71" y="496.5" width="236.63" height="20.82" rx="10.41" ry="10.41" fill="#FFC000" stroke-width="4" stroke="none" filter="url(#fx4)"/>
+</g>
+</g>
+<g id="shape-25" data-name="文本框 24">
+<rect x="175.9" y="562.15" width="176.27" height="35.54" fill="none"/>
+<text x="185.5" y="585.09" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#000000" font-weight="bold"><tspan fill="#000000" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+<g id="shape-26" data-name="组合 25">
+<g id="shape-27" data-name="矩形: 圆角 26">
+<rect x="296.71" y="569.52" width="411.23" height="20.82" rx="10.41" ry="10.41" fill="#F2F2F2" stroke-width="4" stroke-linecap="butt" stroke="none" stroke-linejoin="miter" filter="url(#fx5)"/>
+</g>
+<g id="shape-28" data-name="矩形: 圆角 27">
+<rect x="296.71" y="569.52" width="355.96" height="20.82" rx="10.41" ry="10.41" fill="#17375E" stroke-width="4" stroke="none" filter="url(#fx6)"/>
+</g>
+</g>
+</g>
+<g id="shape-14" data-name="组合 13">
+<g id="shape-13" data-name="组合 12">
+<g id="shape-6" data-name="文本框 5">
+<rect x="71.16" y="24.26" width="225.55" height="58.16" fill="none"/>
+<text x="80.76" y="63.06" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="40" fill="#404040"><tspan fill="#404040" font-size="40">1. </tspan><tspan fill="#404040" font-size="40">工作概述</tspan></text>
+</g>
+<g id="shape-7" data-name="文本框 6">
+<rect x="79.76" y="76.92" width="458.3" height="29.08" fill="none"/>
+<text x="89.36" y="95.32" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="16" fill="#404040"><tspan fill="#404040" font-size="16">The user can demonstrate on a projector or computer</tspan></text>
+</g>
+</g>
+<g id="shape-12" data-name="组合 11">
+<g id="shape-2" data-name="矩形 1">
+<rect x="0" y="30.38" width="21.49" height="69.52" fill="#FFC000" stroke="none" stroke-width="1" filter="url(#fx7)"/>
+</g>
+<g id="shape-32" data-name="矩形 31">
+<rect x="33.41" y="30.38" width="14.76" height="69.52" fill="#17375E" stroke="none" stroke-width="1" filter="url(#fx8)"/>
+</g>
+</g>
+</g>
+<g id="shape-4" data-name="图片 3">
+<image href="../assets/image3.png" x="1147.21" y="18.9" width="115.81" height="116.04" preserveAspectRatio="none"/>
+</g></svg>

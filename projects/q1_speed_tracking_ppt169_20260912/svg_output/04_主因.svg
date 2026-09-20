@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+<g id="bg-plate">
+<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+</g>
+
+<g id="p04-header">
+<text x="80" y="88" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="34" font-weight="bold" fill="#17375E">主因：PP 的内切量正比于前视距离</text>
+<rect x="80" y="100" width="56" height="5" fill="#FFC000"/>
+<text x="1200" y="88" text-anchor="end" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="15" fill="#757070">MAIN CAUSE · 主因</text>
+</g>
+
+<g id="p04-evidence">
+<use data-icon="tabler-outline/route-2" x="80" y="126" width="22" height="22" fill="#17375E" stroke-width="2"/>
+<text x="114" y="148" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">3 m/s 圆周跟踪：实际内切 <tspan font-weight="bold" fill="#17375E">0.437 m</tspan>，而稳态转角仅 <tspan font-weight="bold" fill="#17375E">0.205 rad</tspan> —— 内切量无法由转角解释</text>
+
+<text x="114" y="192" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="26" font-weight="bold" fill="#17375E">e_cut ≈ 0.9302 · (L_f · β) − 0.0280 m</text>
+<rect x="1010" y="168" width="190" height="38" rx="19" fill="#FFC000"/>
+<text x="1105" y="194" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#17375E">R² = 0.99881</text>
+
+<text x="114" y="222" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">13 组受控实验回归 · 最大残差 0.0227 m · 决定性对照：令 lf/lr → (2.5, 0)，则 β = 0 → 内切量 −0.0423 m</text>
+
+<text x="114" y="254" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">机理链：速度 v ↑ <tspan font-weight="bold" fill="#FFC000">→</tspan> 前视距离 L_f = L₀ + 0.35v ↑ <tspan font-weight="bold" fill="#FFC000">→</tspan> 稳态内切量 ↑</text>
+</g>
+
+<g id="p04-figures">
+<image href="../images/fig06_trajectory_pp_low.png" x="111" y="282" width="462" height="370" preserveAspectRatio="xMidYMid meet"/>
+<image href="../images/fig11_cut_regression.png" x="613" y="282" width="555" height="370" preserveAspectRatio="xMidYMid meet"/>
+</g>
+
+<g id="p04-footer">
+<text x="80" y="690" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">04</text>
+<text x="1200" y="690" text-anchor="end" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">左：3 m/s 圆周轨迹与参考圆；右：13 组受控实验的内切量—前视距离回归</text>
+<rect x="1260.9" y="646.21" width="19.1" height="57.31" fill="#FFC000"/>
+</g>
+</svg>

@@ -48,6 +48,13 @@ class SimulationConfig:
     coordinate_origin_lon: float | None = None
     coordinate_origin_lat: float | None = None
 
+    # Reference-path speed setting for geographic routes.
+    # constant: cruise at the target speed, decelerate near the goal
+    # curvature: limit the speed by lateral acceleration on bends
+    speed_profile: str = "constant"
+    curvature_smooth_m: float = 12.0
+    lateral_accel_limit: float = 2.5
+
     # Long-route visualization.
     # auto: small route -> full; long route -> vehicle-following local view
     # full: always show the complete route

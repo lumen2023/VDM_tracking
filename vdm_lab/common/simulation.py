@@ -50,6 +50,11 @@ def build_reference_path(config):
             gap_warning_m=config.sim.gpx_gap_warning_m,
             origin_lat=config.sim.coordinate_origin_lat,
             origin_lon=config.sim.coordinate_origin_lon,
+            speed_profile=config.sim.speed_profile,
+            curvature_smooth_m=config.sim.curvature_smooth_m,
+            lateral_accel_limit=config.sim.lateral_accel_limit,
+            max_accel=config.vehicle.max_accel,
+            max_decel=config.vehicle.max_decel,
         )
 
     return generate_reference_path(

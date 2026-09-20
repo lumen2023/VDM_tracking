@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+
+<g id="bg">
+<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+</g>
+
+<g id="header">
+<text x="80" y="98" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, sans-serif" font-size="34" font-weight="bold" fill="#17375E">两条单调规律，一个共同拐点</text>
+<rect x="80" y="114" width="56" height="5" fill="#FFC000"/>
+<text x="1200" y="98" text-anchor="end" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#A6A6A6">18 组 L_f 扫描，全部工况的误差峰值都落在 s ≈ 589 m</text>
+</g>
+
+<g id="image-speed">
+<image href="../images/fig9_error_vs_speed.png" x="186" y="140" width="411" height="280" preserveAspectRatio="xMidYMid meet"/>
+<text x="391" y="445" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">越跑越快，误差峰值越高</text>
+</g>
+
+<g id="image-lookahead">
+<image href="../images/fig11_error_vs_lookahead.png" x="657" y="140" width="436" height="280" preserveAspectRatio="xMidYMid meet"/>
+<text x="875" y="445" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">前瞻越远，误差峰值越高</text>
+</g>
+
+<g id="table-area">
+<rect x="80" y="470" width="1120" height="188" fill="#FFFFFF" stroke="#D9D9D9" stroke-width="1"/>
+<rect x="80" y="470" width="1120" height="38" fill="#17375E"/>
+<text x="92" y="496" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">自变量</text>
+<text x="342" y="496" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">观测项</text>
+<text x="542" y="496" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">规律</text>
+<line x1="330" y1="470" x2="330" y2="658" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="530" y1="470" x2="530" y2="658" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="80" y1="558" x2="1200" y2="558" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="80" y1="608" x2="1200" y2="608" stroke="#D9D9D9" stroke-width="1"/>
+<rect x="80" y="558" width="1120" height="50" fill="#F2F2F2"/>
+</g>
+
+<g id="table-content">
+<text x="92" y="540" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">增大 L_f（1 → 12 m）</text>
+<text x="342" y="540" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">误差峰值</text>
+<text x="542" y="540" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">单调上升：@8 m/s 从 <tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#002060">1.06 m</tspan> 涨到 <tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#E92E25">4.12 m</tspan></text>
+
+<text x="92" y="590" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">增大 L_f（1 → 12 m）</text>
+<text x="342" y="590" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">转向速率 P95</text>
+<text x="542" y="590" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">单调下降：@3 m/s 从 <tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#002060">23.8</tspan> 降到 <tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#2E7D32">1.8 °/s</tspan>，反向次数 463 → 1</text>
+
+<text x="92" y="640" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">提高车速（3 → 8 m/s）</text>
+<text x="342" y="640" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">误差峰值</text>
+<text x="542" y="640" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">单调上升：L_f = 3 m 时 <tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#002060">1.42 m</tspan> → <tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#E92E25">1.71 m</tspan></text>
+</g>
+
+<g id="footer">
+<text x="80" y="700" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">06</text>
+<rect x="1237.6" y="664" width="19.1" height="40" fill="#FFC000"/>
+</g>
+</svg>

@@ -1,0 +1,29 @@
+{
+  "start": "橘园8舍",
+  "goal": "教学楼1",
+  "map": "data/planet_118.792,31.875_118.837,31.902.osm.geojson.xz",
+  "origin_lat": 31.8885,
+  "origin_lon": 118.8145,
+  "graph_nodes": 1745,
+  "graph_edges": 1989,
+  "graph_length_m": 146733.79269192345,
+  "snap": {
+    "橘园8舍": {
+      "offset_m": 44.44907062442709,
+      "node": 227
+    },
+    "教学楼1": {
+      "offset_m": 74.4867127792217,
+      "node": 1109
+    }
+  },
+  "raw_length_m": 1463.5464372198853,
+  "dense_length_m": 1463.000338529451,
+  "point_count": 2929,
+  "ds_m": 0.5,
+  "corner_radius_m": 0.0,
+  "min_turn_deg": 20.0,
+  "curvature_max_raw": 1.6049141134844787,
+  "curvature_max_dense": 0.14733967811460658,
+  "corners": []
+}

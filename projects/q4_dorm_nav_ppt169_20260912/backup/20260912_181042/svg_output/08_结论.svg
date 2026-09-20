@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+<linearGradient id="trackGrad" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#17375E"/>
+<stop offset="1" stop-color="#A6A6A6"/>
+</linearGradient>
+</defs>
+
+<g id="bg">
+<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+</g>
+
+<g id="header">
+<text x="80" y="98" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, sans-serif" font-size="34" font-weight="bold" fill="#17375E">五条结论</text>
+<rect x="80" y="114" width="56" height="5" fill="#FFC000"/>
+</g>
+
+<g id="track">
+<line x1="110" y1="175" x2="110" y2="615" stroke="url(#trackGrad)" stroke-width="4"/>
+</g>
+
+<g id="node-1">
+<circle cx="110" cy="195" r="30" fill="#F2F2F2"/>
+<circle cx="110" cy="195" r="20" fill="#17375E"/>
+<text x="110" y="202" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">1</text>
+<text x="160" y="191" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="26" font-weight="bold" fill="#17375E">曲率平滑是最关键的一步</text>
+<text x="160" y="219" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">LQR 峰值侧向加速度 <tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#E92E25">91.04</tspan> → <tspan font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-weight="bold" fill="#2E7D32">8.61</tspan> m/s²，差 10.6 倍</text>
+</g>
+
+<g id="node-2">
+<circle cx="110" cy="295" r="30" fill="#F2F2F2"/>
+<circle cx="110" cy="295" r="20" fill="#17375E"/>
+<text x="110" y="302" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">2</text>
+<text x="160" y="291" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="26" font-weight="bold" fill="#17375E">曲率限速把侧向加速度压回设计值</text>
+<text x="160" y="319" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">匀速 7.97 → 限速 4.34 m/s²，代价只是终点误差 +0.33 m</text>
+</g>
+
+<g id="node-3">
+<circle cx="110" cy="395" r="30" fill="#F2F2F2"/>
+<circle cx="110" cy="395" r="20" fill="#17375E"/>
+<text x="110" y="402" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">3</text>
+<text x="160" y="391" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="26" font-weight="bold" fill="#17375E">速度越快，误差越大</text>
+<text x="160" y="419" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">3 → 7 m/s，误差峰值 1.42 → 1.64 m，定量确认了问题 1</text>
+</g>
+
+<g id="node-4">
+<circle cx="110" cy="495" r="30" fill="#F2F2F2"/>
+<circle cx="110" cy="495" r="20" fill="#17375E"/>
+<text x="110" y="502" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">4</text>
+<text x="160" y="491" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="26" font-weight="bold" fill="#17375E">三种算法各有取舍</text>
+<text x="160" y="519" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">MPC 精度最好，LQR 转角无余量，PP 最便宜也最粗糙</text>
+</g>
+
+<g id="node-5">
+<circle cx="110" cy="595" r="30" fill="#F2F2F2"/>
+<circle cx="110" cy="595" r="20" fill="#17375E"/>
+<text x="110" y="602" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">5</text>
+<text x="160" y="591" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="26" font-weight="bold" fill="#17375E">前视距离是个两难</text>
+<text x="160" y="619" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">L_f 变大误差升、抖动降；误差峰值全落在同一个急弯</text>
+</g>
+
+<g id="corner-image">
+<image href="../images/fig7_corner_zoom.png" x="760" y="150" width="441" height="450" preserveAspectRatio="xMidYMid meet"/>
+<text x="980" y="630" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">把 s ≈ 589 m 那个急弯放大：跟踪质量的上限由它决定</text>
+</g>
+
+<g id="footer">
+<text x="80" y="700" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">08</text>
+<rect x="1237.6" y="664" width="19.1" height="40" fill="#FFC000"/>
+</g>
+</svg>

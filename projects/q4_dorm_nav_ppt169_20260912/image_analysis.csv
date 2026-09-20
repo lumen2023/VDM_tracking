@@ -1,0 +1,10 @@
+No,Filename,Width,Height,AspectRatio,SizeKB,Category,ImageArea_SxS,TextArea_SxS
+1,fig11_error_vs_lookahead.png,1091,701,1.56,90.5,Wide landscape,812x522,328x600
+2,fig13_chase_cam.gif,700,489,1.43,2720.6,Standard landscape,859x600,281x600
+3,fig1_road_graph.png,1081,1026,1.05,166.4,Near square,632x600,508x600
+4,fig3_curvature.png,1417,637,2.22,161.2,Ultra-wide,812x365,328x600
+5,fig4_speed_profile.png,1417,637,2.22,81.3,Ultra-wide,812x365,328x600
+6,fig5_lateral_accel.png,1417,637,2.22,105.1,Ultra-wide,812x365,328x600
+7,fig6_algorithms_map.png,1156,527,2.19,204.4,Ultra-wide,812x370,328x600
+8,fig7_corner_zoom.png,880,897,0.98,148.5,Near square,589x600,551x600
+9,fig9_error_vs_speed.png,1027,701,1.47,60.1,Standard landscape,812x554,328x600

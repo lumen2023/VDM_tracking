@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+<g id="bg-plate">
+<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+</g>
+
+<g id="p05-header">
+<text x="80" y="88" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="34" font-weight="bold" fill="#17375E">误差随速度全面上升，但有一个陷阱</text>
+<rect x="80" y="100" width="56" height="5" fill="#FFC000"/>
+<text x="1200" y="88" text-anchor="end" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="15" fill="#757070">EVIDENCE · 误差对比</text>
+</g>
+
+<g id="p05-lead">
+<use data-icon="tabler-outline/trending-up" x="80" y="114" width="22" height="22" fill="#17375E" stroke-width="2"/>
+<text x="114" y="134" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">稳态段与最大横向误差同步上升；精度排序 <tspan font-weight="bold" fill="#17375E">MPC &gt; LQR &gt; PP</tspan></text>
+</g>
+
+<g id="p05-chart">
+<circle cx="206" cy="176" r="7" fill="#17375E"/>
+<text x="222" y="182" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="15" fill="#757070">3 m/s</text>
+<circle cx="316" cy="176" r="7" fill="#FFC000"/>
+<text x="332" y="182" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="15" fill="#757070">7 m/s</text>
+<text x="680" y="182" text-anchor="end" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">横向误差（m）</text>
+
+<g id="chartArea">
+<!-- chart-plot-area: 200,216,680,496 -->
+<line x1="200" y1="216" x2="200" y2="496" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="320" y1="216" x2="320" y2="496" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="440" y1="216" x2="440" y2="496" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="560" y1="216" x2="560" y2="496" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="680" y1="216" x2="680" y2="496" stroke="#D9D9D9" stroke-width="1"/>
+
+<text x="200" y="522" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="15" fill="#757070">0.20</text>
+<text x="320" y="522" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="15" fill="#757070">0.30</text>
+<text x="440" y="522" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="15" fill="#757070">0.40</text>
+<text x="560" y="522" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="15" fill="#757070">0.50</text>
+<text x="680" y="522" text-anchor="middle" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="15" fill="#757070">0.60</text>
+
+<text x="175" y="263" text-anchor="end" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#17375E">MPC</text>
+<line x1="231.2" y1="256" x2="377.6" y2="256" stroke="#A6A6A6" stroke-width="3"/>
+<circle cx="231.2" cy="256" r="8" fill="#17375E"/>
+<circle cx="377.6" cy="256" r="8" fill="#FFC000"/>
+<text x="215.2" y="263" text-anchor="end" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" font-weight="bold" fill="#17375E">0.226</text>
+<text x="393.6" y="263" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" font-weight="bold" fill="#17375E">0.348</text>
+
+<text x="175" y="363" text-anchor="end" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#17375E">LQR</text>
+<line x1="370.4" y1="356" x2="531.2" y2="356" stroke="#A6A6A6" stroke-width="3"/>
+<circle cx="370.4" cy="356" r="8" fill="#17375E"/>
+<circle cx="531.2" cy="356" r="8" fill="#FFC000"/>
+<text x="354.4" y="363" text-anchor="end" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" font-weight="bold" fill="#17375E">0.342</text>
+<text x="547.2" y="363" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" font-weight="bold" fill="#17375E">0.476</text>
+
+<text x="175" y="463" text-anchor="end" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#17375E">PP</text>
+<line x1="495.2" y1="456" x2="590" y2="456" stroke="#A6A6A6" stroke-width="3"/>
+<circle cx="495.2" cy="456" r="8" fill="#17375E"/>
+<circle cx="590" cy="456" r="8" fill="#FFC000"/>
+<text x="479.2" y="463" text-anchor="end" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" font-weight="bold" fill="#17375E">0.446</text>
+<text x="606" y="463" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" font-weight="bold" fill="#17375E">0.525</text>
+</g>
+</g>
+
+<g id="p05-figure">
+<image href="../images/fig17_pp_high_lateral_error.png" x="730" y="180" width="470" height="326" preserveAspectRatio="xMidYMid meet"/>
+<text x="965" y="530" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">7 m/s 时 PP 的横向误差时序：内切持续存在</text>
+</g>
+
+<g id="p05-trap">
+<rect x="80" y="556" width="1120" height="92" rx="6" fill="#F2F2F2"/>
+<rect x="80" y="556" width="5" height="92" rx="2" fill="#E92E25"/>
+<use data-icon="tabler-outline/alert-triangle" x="108" y="574" width="22" height="22" fill="#E92E25" stroke-width="2"/>
+<text x="142" y="594" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">陷阱：只看全程平均误差，结论会反过来 —— PP 的全程平均误差从 <tspan font-weight="bold" fill="#E92E25">0.286 m 降到 0.275 m</tspan></text>
+<text x="142" y="624" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">高速下车辆更早进入、更久停留在大幅内切状态，把过渡段平均掉了。判断难度必须看稳态段与最大值。</text>
+</g>
+
+<g id="p05-footer">
+<text x="80" y="690" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">05</text>
+<text x="1200" y="690" text-anchor="end" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">圆周 R = 12.0 m · 稳态段 / 最大横向误差 · 三种控制器对比</text>
+<rect x="1260.9" y="646.21" width="19.1" height="57.31" fill="#FFC000"/>
+</g>
+</svg>

@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+
+<g id="bg">
+<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+</g>
+
+<g id="header">
+<text x="80" y="98" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, sans-serif" font-size="34" font-weight="bold" fill="#17375E">三种算法，同一段路，谁更稳？</text>
+<rect x="80" y="114" width="56" height="5" fill="#FFC000"/>
+</g>
+
+<g id="table-area">
+<rect x="80" y="150" width="530" height="392" fill="#FFFFFF" stroke="#D9D9D9" stroke-width="1"/>
+<rect x="80" y="150" width="530" height="44" fill="#17375E"/>
+<text x="92" y="180" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">8 m/s 下的对比</text>
+<text x="310" y="180" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">PP</text>
+<text x="430" y="180" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">LQR</text>
+<text x="550" y="180" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">MPC</text>
+</g>
+
+<g id="table-rows">
+<rect x="80" y="252" width="530" height="58" fill="#F2F2F2"/>
+<rect x="80" y="368" width="530" height="58" fill="#F2F2F2"/>
+<rect x="80" y="484" width="530" height="58" fill="#F2F2F2"/>
+<rect x="490" y="484" width="120" height="58" fill="#FDECEA"/>
+<line x1="250" y1="150" x2="250" y2="542" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="370" y1="150" x2="370" y2="542" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="490" y1="150" x2="490" y2="542" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="80" y1="194" x2="610" y2="194" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="80" y1="252" x2="610" y2="252" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="80" y1="310" x2="610" y2="310" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="80" y1="368" x2="610" y2="368" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="80" y1="426" x2="610" y2="426" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="80" y1="484" x2="610" y2="484" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="80" y1="542" x2="610" y2="542" stroke="#D9D9D9" stroke-width="1"/>
+</g>
+
+<g id="table-content">
+<text x="92" y="228" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">误差均值 <tspan font-size="12" fill="#A6A6A6">[m]</tspan></text>
+<text x="310" y="228" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" fill="#404040">0.065</text>
+<text x="430" y="228" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" fill="#404040">0.303</text>
+<text x="550" y="228" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#2E7D32">0.033</text>
+
+<text x="92" y="286" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">误差峰值 <tspan font-size="12" fill="#A6A6A6">[m]</tspan></text>
+<text x="310" y="286" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" fill="#404040">1.712</text>
+<text x="430" y="286" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#2E7D32">0.632</text>
+<text x="550" y="286" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" fill="#404040">0.936</text>
+
+<text x="92" y="344" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">终点误差 <tspan font-size="12" fill="#A6A6A6">[m]</tspan></text>
+<text x="310" y="344" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#2E7D32">1.228</text>
+<text x="430" y="344" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" fill="#404040">1.250</text>
+<text x="550" y="344" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" fill="#404040">1.625</text>
+
+<text x="92" y="402" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">侧向加速度峰值 <tspan font-size="12" fill="#A6A6A6">[m/s²]</tspan></text>
+<text x="310" y="402" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" fill="#404040">4.338</text>
+<text x="430" y="402" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" fill="#404040">4.352</text>
+<text x="550" y="402" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#2E7D32">3.463</text>
+
+<text x="92" y="460" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">最大前轮转角 <tspan font-size="12" fill="#A6A6A6">[°]</tspan></text>
+<text x="310" y="460" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#2E7D32">25.56</text>
+<text x="430" y="460" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#E92E25">35.00</text>
+<text x="550" y="460" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#E92E25">35.00</text>
+
+<text x="92" y="518" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">到达终点</text>
+<text x="310" y="518" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">是</text>
+<text x="430" y="518" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">是</text>
+<text x="550" y="518" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" font-weight="bold" fill="#E92E25">否</text>
+</g>
+
+<g id="algorithms-image">
+<image href="../images/fig6_algorithms_map.png" x="650" y="150" width="550" height="251" preserveAspectRatio="xMidYMid meet"/>
+<text x="925" y="422" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">三条轨迹叠在同一张路网图上，线宽由粗到细依次为 PP / LQR / MPC</text>
+</g>
+
+<g id="takeaway">
+<circle cx="656" cy="462" r="5" fill="#17375E"/>
+<text x="674" y="469" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">MPC 均值最低，却没跑到终点</text>
+<circle cx="656" cy="510" r="5" fill="#17375E"/>
+<text x="674" y="517" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">LQR 峰值误差最小，但转角贴住上限</text>
+<circle cx="656" cy="558" r="5" fill="#17375E"/>
+<text x="674" y="565" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">PP 参数最少，全程始终没到上限</text>
+</g>
+
+<g id="footer">
+<text x="80" y="700" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">06</text>
+<rect x="1237.6" y="664" width="19.1" height="40" fill="#FFC000"/>
+</g>
+</svg>

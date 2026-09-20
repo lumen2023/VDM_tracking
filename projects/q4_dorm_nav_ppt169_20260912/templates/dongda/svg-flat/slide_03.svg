@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1280" height="720" viewBox="0 0 1280 720"><defs><filter id="fx1" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx2" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="-4" dy="0" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx3" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx4" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="-4" dy="0" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter></defs><rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+<g id="shape-21" data-name="任意多边形 20">
+<path d="M 0 490.39 L 535.34 490.39 L 472.23 586.27 L 0 586.27 Z" fill="#17375E" stroke="none" stroke-width="1" filter="url(#fx1)"/>
+</g>
+<g id="shape-17" data-name="任意多边形 16" transform="translate(872.79 233.07) scale(-1 -1) translate(-872.79 -233.07)">
+<path d="M 1179.56 309.37 L 465.58 309.37 L 465.58 156.78 L 1280 156.78 Z" fill="#002060" stroke="none" stroke-width="1" filter="url(#fx2)"/>
+</g>
+<g id="shape-11" data-name="任意多边形 10">
+<path d="M 0 209.67 L 814.42 209.67 L 613.55 514.87 L 0 514.87 Z" fill="#FFC000" stroke="none" stroke-width="1" filter="url(#fx3)"/>
+</g>
+<g id="shape-22" data-name="文本框 21">
+<rect x="854.15" y="183.8" width="263.75" height="98.55" fill="none"/>
+<text x="863.75" y="250.93" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, sans-serif" font-size="73.33" fill="#FFFFFF"><tspan fill="#FFFFFF" font-size="73.33">Part  1.</tspan></text>
+</g>
+<g id="shape-23" data-name="文本框 22">
+<rect x="73.23" y="286.33" width="493.3" height="151.87" fill="none"/>
+<text x="319.89" y="390.87" text-anchor="middle" xml:space="preserve" font-family="sans-serif" font-size="117.33" fill="#FFFFFF"><tspan fill="#FFFFFF" font-size="117.33">工作概述</tspan></text>
+</g>
+<g id="shape-24" data-name="文本框 23">
+<rect x="718.57" y="388.85" width="399.34" height="126.02" fill="none"/>
+<text x="728.17" y="407.25" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑&quot;, +mn-cs, sans-serif" font-size="16" fill="#404040"><tspan fill="#404040" font-size="16">The user can demonstrate on a projector </tspan><tspan fill="#404040" font-size="16">or </tspan><tspan x="728.17" dy="24" fill="#404040" font-size="16">computerThe</tspan><tspan fill="#404040" font-size="16"> user can demonstrate on a </tspan><tspan x="728.17" dy="24" fill="#404040" font-size="16">projector or computer  The user can </tspan><tspan x="728.17" dy="24" fill="#404040" font-size="16">demonstrate on a projector or computer</tspan></text>
+</g>
+<g id="shape-6" data-name="矩形 5">
+<rect x="1260.9" y="646.21" width="19.1" height="57.31" fill="#FFC000" stroke="none" stroke-width="1" filter="url(#fx4)"/>
+</g>
+<g id="shape-7" data-name="文本框 6">
+<rect x="1094.69" y="647.4" width="166.21" height="54.93" fill="none"/>
+<text x="1177.79" y="683.93" text-anchor="middle" xml:space="preserve" font-family="sans-serif" font-size="37.33" fill="#000000"><tspan fill="#000000" font-size="37.33">过 渡 页</tspan></text>
+</g></svg>

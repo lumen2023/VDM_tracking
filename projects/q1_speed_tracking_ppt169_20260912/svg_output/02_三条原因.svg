@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+<g id="bg-plate">
+<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+</g>
+
+<g id="p02-header">
+<text x="80" y="100" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="34" font-weight="bold" fill="#17375E">速度越快越难，因为三件事同时发生</text>
+<rect x="80" y="116" width="56" height="5" fill="#FFC000"/>
+<text x="1200" y="100" text-anchor="end" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="15" fill="#757070">CAUSES · 三条原因</text>
+</g>
+
+<g id="p02-track">
+<line x1="140" y1="196" x2="140" y2="516" stroke="#17375E" stroke-width="3"/>
+<circle cx="140" cy="230" r="26" fill="#17375E"/>
+<text x="140" y="237" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">01</text>
+<circle cx="140" cy="360" r="26" fill="#17375E"/>
+<text x="140" y="367" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">02</text>
+<circle cx="140" cy="490" r="26" fill="#17375E"/>
+<text x="140" y="497" text-anchor="middle" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">03</text>
+<line x1="190" y1="310" x2="1200" y2="310" stroke="#D9D9D9" stroke-width="1"/>
+<line x1="190" y1="440" x2="1200" y2="440" stroke="#D9D9D9" stroke-width="1"/>
+</g>
+
+<g id="cause-1">
+<text x="190" y="216" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="26" font-weight="bold" fill="#17375E">转弯的侧向加速度按速度平方增长</text>
+<text x="190" y="248" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">速度 3 → 7 m/s，需求从 <tspan font-weight="bold" fill="#17375E">0.75</tspan> 涨到 <tspan font-weight="bold" fill="#17375E">4.08 m/s²</tspan></text>
+<text x="190" y="280" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" fill="#404040" font-weight="bold">aₙ = v²κ<tspan font-weight="bold" fill="#FFC000">          ×5.44</tspan></text>
+<rect x="1078" y="200" width="122" height="32" rx="16" fill="#F2F2F2"/>
+<text x="1139" y="221" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">物理硬约束</text>
+</g>
+
+<g id="cause-2">
+<text x="190" y="346" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="26" font-weight="bold" fill="#17375E">前视距离随速度变长，PP 的稳态内切量正比于前视距离</text>
+<text x="190" y="378" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">Lf 从 <tspan font-weight="bold" fill="#17375E">4.05</tspan> 涨到 <tspan font-weight="bold" fill="#17375E">5.12 m</tspan>；13 组受控实验拟合，R² = 0.99881</text>
+<text x="190" y="410" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" fill="#404040" font-weight="bold">e_ss ≈ 0.93 · (L₀ + 0.35v) · β</text>
+<rect x="1050" y="330" width="150" height="32" rx="16" fill="#FFC000"/>
+<text x="1125" y="351" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" font-weight="bold" fill="#17375E">本文主因</text>
+</g>
+
+<g id="cause-3">
+<text x="190" y="476" font-family="&quot;Century Gothic&quot;, &quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif" font-size="26" font-weight="bold" fill="#17375E">每拍前进距离变长，可用修正次数按 1/v 减少</text>
+<text x="190" y="508" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">控制周期固定 dt = 0.1 s，同一个弯道能用的控制拍数变少</text>
+<text x="190" y="540" font-family="Consolas, &quot;Courier New&quot;, monospace" font-size="20" fill="#404040" font-weight="bold">每拍前进 v·dt：<tspan font-weight="bold" fill="#17375E">0.3 m → 0.7 m</tspan></text>
+<rect x="1078" y="460" width="122" height="32" rx="16" fill="#F2F2F2"/>
+<text x="1139" y="481" text-anchor="middle" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="15" fill="#757070">时间代价</text>
+</g>
+
+<g id="p02-note">
+<rect x="80" y="576" width="1120" height="64" rx="6" fill="#F2F2F2"/>
+<rect x="80" y="576" width="5" height="64" rx="2" fill="#FFC000"/>
+<text x="108" y="615" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="20" fill="#404040">特别提示：<tspan font-weight="bold" fill="#E92E25">不是“转向不够用”</tspan> —— 稳态转角与速度无关，高速只用掉限幅的 <tspan font-weight="bold" fill="#17375E">38%</tspan></text>
+</g>
+
+<g id="p02-footer">
+<text x="80" y="690" font-family="&quot;Century Gothic&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">02</text>
+<text x="1200" y="690" text-anchor="end" font-family="&quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, Arial, sans-serif" font-size="12" fill="#A6A6A6">问题一 · 速度与路径跟踪难度</text>
+<rect x="1260.9" y="646.21" width="19.1" height="57.31" fill="#FFC000"/>
+</g>
+</svg>

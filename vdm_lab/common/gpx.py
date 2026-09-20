@@ -131,6 +131,25 @@ def latlon_to_local_xy(lat, lon, origin_lat=None, origin_lon=None):
     return x, y
 
 
+def local_xy_to_latlon(x, y, origin_lat, origin_lon):
+    """
+    Local East/North coordinates [m] -> WGS84 latitude/longitude [deg].
+
+    Exact inverse of latlon_to_local_xy for the same origin.  Needed when a
+    path is generated in the local frame (for example from the road graph)
+    but must still be drawn on the geographic basemap.
+    """
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+
+    lat0 = np.deg2rad(float(origin_lat))
+    lon0 = np.deg2rad(float(origin_lon))
+
+    lat = lat0 + y / EARTH_RADIUS_M
+    lon = lon0 + x / (EARTH_RADIUS_M * np.cos(lat0))
+    return np.rad2deg(lat), np.rad2deg(lon)
+
+
 def _remove_consecutive_duplicates(x, y, lat, lon, elevation):
     step = np.hypot(np.diff(x), np.diff(y))
     keep = np.ones(len(x), dtype=bool)
@@ -182,6 +201,11 @@ def generate_gpx_path(
     gap_warning_m=50.0,
     origin_lat=None,
     origin_lon=None,
+    speed_profile="constant",
+    curvature_smooth_m=12.0,
+    lateral_accel_limit=2.5,
+    max_accel=2.0,
+    max_decel=3.5,
 ):
     """
     Convert a GPX route into the existing vdm_lab.common.types.Path.
@@ -256,14 +280,36 @@ def generate_gpx_path(
     yaw = np.unwrap(np.arctan2(dy, dx))
 
     if len(s) >= 3:
-        curvature = np.gradient(yaw, s, edge_order=1)
+        # Curvature is a property of the reference path, not of the speed
+        # profile: it feeds the lateral-acceleration metric and the LQR
+        # feedforward as well as the speed limit.  It is therefore always
+        # smoothed.  Differentiating the heading directly would make the
+        # constant and the curvature speed profile produce different
+        # reference paths, which confounds any A/B comparison between them.
+        from vdm_lab.common.reference_path import curvature_profile
+
+        _, curvature, _ = curvature_profile(
+            np.column_stack([x_new, y_new]), ds, smooth_m=curvature_smooth_m
+        )
     else:
         curvature = np.zeros_like(s)
 
     # Store yaw in [-pi, pi] for compatibility/readability.
     yaw = np.arctan2(np.sin(yaw), np.cos(yaw))
 
-    target = _forward_speed_profile(s, target_speed)
+    if speed_profile == "curvature":
+        from vdm_lab.common.reference_path import curvature_speed_profile
+
+        target = curvature_speed_profile(
+            s,
+            curvature,
+            target_speed=target_speed,
+            lateral_accel_limit=lateral_accel_limit,
+            max_accel=max_accel,
+            max_decel=max_decel,
+        )
+    else:
+        target = _forward_speed_profile(s, target_speed)
 
     path = Path(
         x=x_new,

@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1280" height="720" viewBox="0 0 1280 720"><defs><filter id="fx1" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx2" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx3" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="2.83" dy="2.83" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx4" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="4" dy="0" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter><filter id="fx5" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="4" dy="0" stdDeviation="2.67" flood-color="#000000" flood-opacity="0.4"/></filter></defs><g id="shape-36" data-name="组合 35">
+<g id="shape-3" data-name="RelativeShape">
+<rect x="250.5" y="253.31" width="779" height="7.93" rx="1.32" ry="1.32" fill="#D9D9D9" stroke="none" stroke-width="1"/>
+</g>
+<g id="shape-4" data-name="ValueShape">
+<rect x="250.5" y="253.31" width="459.61" height="7.93" rx="1.32" ry="1.32" fill="#FFC000" stroke-width="4" stroke="none" filter="url(#fx1)"/>
+</g>
+<g id="shape-6" data-name="ValueText">
+<rect x="280.89" y="281.67" width="39.25" height="29.44" fill="none"/>
+</g>
+<g id="shape-24" data-name="文本框 23">
+<rect x="485.01" y="283.93" width="544.49" height="28.68" fill="none"/>
+<text x="1019.9" y="300.06" text-anchor="end" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="13.33" fill="#404040"><tspan fill="#404040" font-size="13.33">提供全面且质优的多品类设计素材打破传统素材网站单向沟通的服务模式</tspan></text>
+</g>
+<g id="shape-25" data-name="文本框 24">
+<rect x="250.5" y="216.75" width="255.49" height="35.54" fill="none"/>
+<text x="260.1" y="239.69" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+</g>
+<g id="shape-37" data-name="组合 36">
+<g id="shape-10" data-name="RelativeShape">
+<rect x="250.5" y="393.37" width="779" height="7.93" rx="1.32" ry="1.32" fill="#D9D9D9" stroke="none" stroke-width="1"/>
+</g>
+<g id="shape-11" data-name="ValueShape">
+<rect x="250.5" y="393.37" width="303.81" height="7.93" rx="1.32" ry="1.32" fill="#FFC000" stroke-width="4" stroke="none" filter="url(#fx2)"/>
+</g>
+<g id="shape-13" data-name="ValueText">
+<rect x="280.89" y="421.73" width="39.25" height="29.44" fill="none"/>
+</g>
+<g id="shape-26" data-name="文本框 25">
+<rect x="250.5" y="355.96" width="255.49" height="35.54" fill="none"/>
+<text x="260.1" y="378.89" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+<g id="shape-28" data-name="文本框 27">
+<rect x="485.01" y="421.07" width="544.49" height="28.68" fill="none"/>
+<text x="1019.9" y="437.2" text-anchor="end" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="13.33" fill="#404040"><tspan fill="#404040" font-size="13.33">提供全面且质优的多品类设计素材打破传统素材网站单向沟通的服务模式</tspan></text>
+</g>
+</g>
+<g id="shape-38" data-name="组合 37">
+<g id="shape-17" data-name="RelativeShape">
+<rect x="250.5" y="533.44" width="779" height="7.93" rx="1.32" ry="1.32" fill="#D9D9D9" stroke="none" stroke-width="1"/>
+</g>
+<g id="shape-18" data-name="ValueShape">
+<rect x="250.5" y="533.44" width="638.78" height="7.93" rx="1.32" ry="1.32" fill="#FFC000" stroke-width="4" stroke="none" filter="url(#fx3)"/>
+</g>
+<g id="shape-20" data-name="ValueText">
+<rect x="280.89" y="561.8" width="39.25" height="29.44" fill="none"/>
+</g>
+<g id="shape-27" data-name="文本框 26">
+<rect x="250.5" y="496.84" width="255.49" height="35.54" fill="none"/>
+<text x="260.1" y="519.78" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="21.33" fill="#404040" font-weight="bold"><tspan fill="#404040" font-size="21.33" font-weight="bold">文字输入</tspan></text>
+</g>
+<g id="shape-29" data-name="文本框 28">
+<rect x="485.01" y="561.14" width="544.49" height="28.68" fill="none"/>
+<text x="1019.9" y="577.27" text-anchor="end" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="13.33" fill="#404040"><tspan fill="#404040" font-size="13.33">提供全面且质优的多品类设计素材打破传统素材网站单向沟通的服务模式</tspan></text>
+</g>
+</g>
+<g id="shape-39" data-name="组合 38">
+<g id="shape-40" data-name="组合 39">
+<g id="shape-44" data-name="文本框 43">
+<rect x="71.16" y="24.26" width="211.92" height="54.93" fill="none"/>
+<text x="80.76" y="60.8" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="37.33" fill="#404040"><tspan fill="#404040" font-size="37.33">4. </tspan><tspan fill="#404040" font-size="37.33">下步计划</tspan></text>
+</g>
+<g id="shape-45" data-name="文本框 44">
+<rect x="79.76" y="76.92" width="458.3" height="29.08" fill="none"/>
+<text x="89.36" y="95.32" text-anchor="start" xml:space="preserve" font-family="&quot;Century Gothic&quot;, &quot;微软雅黑 Light&quot;, sans-serif" font-size="16" fill="#404040"><tspan fill="#404040" font-size="16">The user can demonstrate on a projector or computer</tspan></text>
+</g>
+</g>
+<g id="shape-41" data-name="组合 40">
+<g id="shape-42" data-name="矩形 41">
+<rect x="0" y="30.38" width="21.49" height="69.52" fill="#FFC000" stroke="none" stroke-width="1" filter="url(#fx4)"/>
+</g>
+<g id="shape-43" data-name="矩形 42">
+<rect x="33.41" y="30.38" width="14.76" height="69.52" fill="#17375E" stroke="none" stroke-width="1" filter="url(#fx5)"/>
+</g>
+</g>
+</g></svg>
