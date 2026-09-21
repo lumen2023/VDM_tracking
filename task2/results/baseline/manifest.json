@@ -1,0 +1,130 @@
+{
+  "created_at": "2026-09-16T20:40:29.328199",
+  "python": "3.12.13",
+  "controller_version": "solution",
+  "route": "circle",
+  "vehicle": "student_car",
+  "steady_selection": "abs(kappa-1/12)<0.005; central 60% of reference arc length",
+  "packages": {
+    "numpy": "1.26.4",
+    "scipy": "1.17.1",
+    "matplotlib": "3.11.2",
+    "cvxpy": "1.7.5",
+    "osqp": "1.1.3",
+    "pillow": "12.3.0"
+  },
+  "source_sha256": {
+    "vdm_lab/__init__.py": "3c0ac4ad6c4846a1563fadb2adadb4e87f154260cdb896e8c92f732663d6ce99",
+    "vdm_lab/common/__init__.py": "da4cbfab65d8170b978aa6f121c160779fe40b2db0f9c1eb086848421e8da4f1",
+    "vdm_lab/common/basemap.py": "af935f02522ae53d261a2362b78589ac0fefe499c1f747f77ff047d4018ae14c",
+    "vdm_lab/common/bicycle_model.py": "f73b3bd5afb4b25268719d7ebcd9d197b245dd13935b1b8e6e3ec1c7965652c8",
+    "vdm_lab/common/geometry.py": "9f81fd26cc7e67b2d4a5988a0c289b36144ad2e91b4f642c72d3d7864ba481a0",
+    "vdm_lab/common/gpx.py": "ac728d237dbc6e5e438334f8be690cb79caddd70ac1d01771d8596c037f5b135",
+    "vdm_lab/common/logging.py": "bc92c12c15b38732c9f47441dea3e1059561b3f5a6341da15a7bc8abf967f865",
+    "vdm_lab/common/path.py": "e7e6cbfdf54097499e318d7d7a85d95f9571870f6929f9a761bb43a2793c1117",
+    "vdm_lab/common/reference.py": "fd177da2991bff66f423d6ee279e2c12f9b7e3983017ffd86e2bdecf6f23e75f",
+    "vdm_lab/common/simulation.py": "178bdfb2b12d541d049603ec6a78ff71d02da777ea4d9ee5488dcbdd6cbc6149",
+    "vdm_lab/common/types.py": "88afa2aaad6aea2cec6e91fa6f7f0a480587caf76a6f8d01598cc237234f7c3f",
+    "vdm_lab/common/vector_map.py": "0777fc509fe9bef503958ef0858d995d01e297c79be963cfcac23c4d111d7873",
+    "vdm_lab/common/vehicle.py": "96549d79cf2bc8c9a51ed2fc67292aea2e476b44e72ab114a6174b9d3706da70",
+    "vdm_lab/common/vehicle_backend.py": "5379fd7483cfb5be20e542f7f22328087fc3b63aa1945291a91c5594e9cc8dfa",
+    "vdm_lab/common/visualization.py": "484ae09df0d4c6df5e1b1ec903dfcecfcf4538a4d72764a48c47495094224d17",
+    "vdm_lab/config/__init__.py": "f15d741db3a39dfa6cb7e3a52cc0c9efdc6b654b7b5beff22b679df01871a27b",
+    "vdm_lab/config/routes.py": "17ea45f7d69ebca98877ac44f2316fd53de1d556a0d0b283188bee52bfe88370",
+    "vdm_lab/config/speed_profiles.py": "0062f298fc2a4d5682181ae28853b32893ee688c7853dbd8e82e7fa770daf8b1",
+    "vdm_lab/config/vehicle_params.py": "771dfe615ac394e5db5021985b9424d6cc4343bc35d6449c5001d403b26578cb",
+    "vdm_lab/solutions/__init__.py": "64bc8f628cb212052fbbd68a30e658444eec1a5e10a657bc3dea382830cc666c",
+    "vdm_lab/solutions/lqr_dynamic.py": "049fbbea0cc0b2a9b1f691d2ffc024c12a8e58e7ac4527a9f54cc4fcf0d11280",
+    "vdm_lab/solutions/lqr_kinematic.py": "509ccfdf9dad857037fb4dbec9dfecaff44d2f6219eaef7df79495bd94efc66f",
+    "vdm_lab/solutions/mpc.py": "7becf560ae823292ccd7afa6ae502ff3ec3b02c4c413704090f07ae507a35f95",
+    "vdm_lab/solutions/pure_pursuit.py": "f9a6afcce04049a89057b3465ca80e51a25e76dfe9f67fe08dd4191d67b2c0b7",
+    "vdm_lab/student/__init__.py": "ce202ccecd2e7f95824a308a9fa012d61e6389d8cabc85b32d8e6b413b15d49d",
+    "vdm_lab/student/lqr_dynamic.py": "5a4e34b03a998fb036a08be92a3e30cb455fda1f26eb4acd5cecc1c0fde607af",
+    "vdm_lab/student/lqr_kinematic.py": "28fc5b51ce9637ff0c6c65eeb8342d633e3c7475bb969f19bfa972cf9cddd24a",
+    "vdm_lab/student/mpc.py": "12c7d42915bf4e5085081a811a8905a0f8f70f5956113f47b590971e73b21ff5",
+    "vdm_lab/student/pure_pursuit.py": "27a71391de3f7856b97eda48aeca3138d73ade89308a87cd026f17179fab9e89"
+  },
+  "runs": [
+    {
+      "algorithm": "pp",
+      "speed_mode": "low",
+      "directory": "runs/pp_low",
+      "equivalent_command": "python run_experiment.py --algo pp --version solution --route circle --vehicle student_car --speed-mode low --save-log --save-fig",
+      "warnings": [],
+      "status": "completed",
+      "reached_goal": true
+    },
+    {
+      "algorithm": "pp",
+      "speed_mode": "medium",
+      "directory": "runs/pp_medium",
+      "equivalent_command": "python run_experiment.py --algo pp --version solution --route circle --vehicle student_car --speed-mode medium --save-log --save-fig",
+      "warnings": [],
+      "status": "completed",
+      "reached_goal": true
+    },
+    {
+      "algorithm": "pp",
+      "speed_mode": "high",
+      "directory": "runs/pp_high",
+      "equivalent_command": "python run_experiment.py --algo pp --version solution --route circle --vehicle student_car --speed-mode high --save-log --save-fig",
+      "warnings": [],
+      "status": "completed",
+      "reached_goal": true
+    },
+    {
+      "algorithm": "lqr_kinematic",
+      "speed_mode": "low",
+      "directory": "runs/lqr_kinematic_low",
+      "equivalent_command": "python run_experiment.py --algo lqr_kinematic --version solution --route circle --vehicle student_car --speed-mode low --save-log --save-fig",
+      "warnings": [],
+      "status": "completed",
+      "reached_goal": true
+    },
+    {
+      "algorithm": "lqr_kinematic",
+      "speed_mode": "medium",
+      "directory": "runs/lqr_kinematic_medium",
+      "equivalent_command": "python run_experiment.py --algo lqr_kinematic --version solution --route circle --vehicle student_car --speed-mode medium --save-log --save-fig",
+      "warnings": [],
+      "status": "completed",
+      "reached_goal": true
+    },
+    {
+      "algorithm": "lqr_kinematic",
+      "speed_mode": "high",
+      "directory": "runs/lqr_kinematic_high",
+      "equivalent_command": "python run_experiment.py --algo lqr_kinematic --version solution --route circle --vehicle student_car --speed-mode high --save-log --save-fig",
+      "warnings": [],
+      "status": "completed",
+      "reached_goal": true
+    },
+    {
+      "algorithm": "mpc",
+      "speed_mode": "low",
+      "directory": "runs/mpc_low",
+      "equivalent_command": "python run_experiment.py --algo mpc --version solution --route circle --vehicle student_car --speed-mode low --save-log --save-fig",
+      "warnings": [],
+      "status": "completed",
+      "reached_goal": true
+    },
+    {
+      "algorithm": "mpc",
+      "speed_mode": "medium",
+      "directory": "runs/mpc_medium",
+      "equivalent_command": "python run_experiment.py --algo mpc --version solution --route circle --vehicle student_car --speed-mode medium --save-log --save-fig",
+      "warnings": [],
+      "status": "completed",
+      "reached_goal": true
+    },
+    {
+      "algorithm": "mpc",
+      "speed_mode": "high",
+      "directory": "runs/mpc_high",
+      "equivalent_command": "python run_experiment.py --algo mpc --version solution --route circle --vehicle student_car --speed-mode high --save-log --save-fig",
+      "warnings": [],
+      "status": "completed",
+      "reached_goal": true
+    }
+  ]
+}

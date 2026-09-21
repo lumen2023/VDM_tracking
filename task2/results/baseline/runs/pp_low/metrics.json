@@ -1,0 +1,14 @@
+{
+  "mean_lateral_error_m": 0.2859095093353732,
+  "max_lateral_error_m": 0.4461523267301436,
+  "finish_error_m": 0.6632333295366198,
+  "mean_heading_error_rad": 0.06459127696737445,
+  "max_steer_rad": 0.23212306890462017,
+  "max_acceleration_mps2": 2.386416160791237,
+  "max_normal_acceleration_mps2": 0.7499999999999991,
+  "max_side_slip_beta_rad": 0.11764618347083451,
+  "max_yaw_rate_radps": 0.28169997118598106,
+  "min_speed_mps": 0.0,
+  "steps": 372,
+  "reached_goal": true
+}
